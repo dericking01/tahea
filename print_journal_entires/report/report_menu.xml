@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<odoo>
+	<!-- Define the report action -->
+	<record id="journal_entries_move_print_id" model="ir.actions.report">
+		<field name="name">Journal Entries</field>
+		<field name="model">account.move</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">print_journal_entires.journal_entries_report_id</field>
+		<field name="report_file">print_journal_entires.journal_entries_report_id</field>
+		<field name="print_report_name">'Journal Entries - %s' % (object.name)</field>
+		<field name="binding_model_id" ref="account.model_account_move"/>
+		<field name="binding_type">report</field>
+	</record>
+
+
+	<!-- Define the report template -->
+	<template id="journal_entries_report_id">
+		<t t-call="web.html_container">
+			<t t-call="web.external_layout">
+				<t t-foreach="docs" t-as="o">
+					<div class="page" style="font-size:15px;">
+						<div>
+							<h3>
+								<span t-field="o.name"/>
+							</h3>
+						</div>
+						<br></br>
+						<div class="row">
+							<table width="100%" class="table-bordered">
+
+								<tr>
+									<td style="padding-left: 20px;"><strong>Journal:</strong></td>
+									<td style="text-align: center;"> <span t-field="o.journal_id.name" /></td>
+									<td style="padding-left: 20px;"><strong>Date:</strong></td>
+									<td style="text-align: center;"><span t-field="o.date"/></td>
+								</tr>
+								<tr>
+									<td style="padding-left: 20px;"><strong>Date:</strong></td>
+									<td style="text-align: center;"><span t-field="o.partner_id.name"/></td>
+									<td style="padding-left: 20px;"><strong>Reference:</strong></td>
+									<td style="text-align: center;"><span t-field="o.ref"/></td>
+								</tr>
+							</table>
+						</div>
+						<br/>
+						<br/>
+						<div class="row">
+							<style>
+								.tblbordr {
+								text-align: center;
+								border: 2px solid black;
+								}
+							</style>
+							<br></br>
+							<table width="100%" class="border-collapse:separate;">
+								<thead >
+									<tr >
+										<th style="width: 15%;">Account</th>
+										<!--										<th>Date</th>-->
+										<th style="width: 15%;">Partner</th>
+										<th style="width: 30%;">Lable</th>
+										<th style="width: 20%;">Analytic Distribution</th>
+										<th style="width: 10%;">Debit</th>
+										<th style="width: 10%;">Credit</th>
+									</tr>
+								</thead>
+								<tbody>
+									<t t-foreach="o.line_ids" t-as="line">
+										<tr>
+											<td style="text-align: center;">
+												<span t-field="line.account_id.name"/>
+											</td>
+											<!--											<td>-->
+											<!--												<span t-field="line.date"/>-->
+											<!--											</td>-->
+											<td style="text-align: center;">
+												<span t-field="line.partner_id.name"/>
+											</td>
+											<td style="padding-left: 5px;">
+												<span t-field="line.name"/>
+											</td>
+											<td style="text-align: center;">
+												<t t-if="line.analytic_distribution">
+													<t t-foreach="line.analytic_distribution.items()" t-as="item">
+														<t t-set="analytic_ids" t-value="[int(i) for i in item[0].split(',')] if isinstance(item[0], str) else [item[0]]"/>
+														<t t-foreach="env['account.analytic.account'].browse(analytic_ids)" t-as="analytic_account">
+															<t t-esc="analytic_account.name"/>: <t t-esc="item[1]"/>
+														</t>
+													</t>
+												</t>
+											</td>
+											<td style="text-align: center;">
+												<span t-field="line.debit"
+													  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+											</td>
+											<td style="text-align: center;">
+												<span t-field="line.credit"
+													  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+											</td>
+										</tr>
+									</t>
+								</tbody>
+								<tfooter>
+									<tr>
+										<td colspan="3"></td>
+										<td style="padding-left: 20px;"><strong>Total:</strong></td>
+										<td style="text-align: center;">
+											<strong><span t-esc="o.total_debit_credit().get('dr_total')"
+														  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+										</td>
+										<td style="text-align: center;">
+											<strong><span t-esc="o.total_debit_credit().get('cr_total')"
+														  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+										</td>
+									</tr>
+								</tfooter>
+							</table>
+						</div>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+</odoo>
