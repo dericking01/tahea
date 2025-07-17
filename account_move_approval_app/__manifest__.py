@@ -15,8 +15,8 @@
         'security/groups.xml',
         'views/account_move_view.xml',
         'views/account_move_views.xml',
-        'views/account_payment_view.xml', 
         'views/account_voucher_view.xml',
+        'views/account_payment_view.xml', 
         'report/report_account_voucher.xml'
     ],
     'installable': True,
