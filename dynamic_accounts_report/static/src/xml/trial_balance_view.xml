@@ -5,7 +5,6 @@
                 <h1 style="padding:10px">
                     Trial Balance
                 </h1>
-
             </div>
 
             <div>
@@ -17,6 +16,7 @@
             </div>
         </div>
     </t>
+
     <t t-name="TrialTable">
         <div>
             <div class="table_main_view">
@@ -27,7 +27,6 @@
                             <t t-if="filter['date_from']">
                                 <th class="mon_fld">Initial Debit</th>
                                 <th class="mon_fld">Initial Credit</th>
-
                             </t>
                             <th class="mon_fld">Debit</th>
                             <th class="mon_fld">Credit</th>
@@ -35,7 +34,6 @@
                     </thead>
 
                     <tbody>
-
                         <t t-set="none_value" t-value="_"/>
                         <t t-foreach="report_lines" t-as="account">
                             <t t-set="common_id" t-value="0"/>
@@ -66,7 +64,6 @@
                                                         </li>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
@@ -74,31 +71,24 @@
                                 <t t-if="filter['date_from']">
                                     <t t-if="account['Init_balance']">
                                         <t t-if="currency[1] == 'before'">
-
                                             <td class="mon_fld">
                                                 <t t-esc="currency[0]"/>
                                                 <t t-out="Math.round(account['Init_balance']['debit'] * Math.pow(10, currency[3])) / Math.pow(10, currency[3])"/>
-                                                <!--                                                <t t-raw="account['Init_balance']['debit']"/>-->
                                             </td>
                                             <td class="mon_fld">
                                                 <t t-esc="currency[0]"/>
-                                                <!--                                                <t t-raw="account['Init_balance']['credit']"/>-->
                                                 <t t-out="Math.round(account['Init_balance']['credit'] * Math.pow(10, currency[3])) / Math.pow(10, currency[3])"/>
                                             </td>
                                         </t>
                                         <t t-else="">
                                             <td class="mon_fld">
-                                                <!--                                                <t t-raw="account['Init_balance']['debit']"/>-->
                                                 <t t-out="Math.round(account['Init_balance']['debit'] * Math.pow(10, currency[3])) / Math.pow(10, currency[3])"/>
                                                 <t t-esc="currency[0]"/>
                                             </td>
                                             <td class="mon_fld">
-                                                <!--                                                <t t-raw="account['Init_balance']['credit']"/>-->
                                                 <t t-out="Math.round(account['Init_balance']['credit'] * Math.pow(10, currency[3])) / Math.pow(10, currency[3])"/>
                                                 <t t-esc="currency[0]"/>
                                             </td>
-
-
                                         </t>
                                     </t>
                                     <t t-else="">
@@ -112,12 +102,10 @@
                                         </t>
                                         <t t-else="">
                                             <td class="mon_fld">
-                                                0
-                                                <t t-esc="currency[0]"/>
+                                                0<t t-esc="currency[0]"/>
                                             </td>
                                             <td class="mon_fld">
-                                                0
-                                                <t t-esc="currency[0]"/>
+                                                0<t t-esc="currency[0]"/>
                                             </td>
                                         </t>
                                     </t>
@@ -131,7 +119,6 @@
                                         <t t-esc="currency[0]"/>
                                         <t t-raw="account['credit']"/>
                                     </td>
-
                                 </t>
                                 <t t-else="">
                                     <td class="mon_fld">
@@ -142,9 +129,7 @@
                                         <t t-raw="account['credit']"/>
                                         <t t-esc="currency[0]"/>
                                     </td>
-
                                 </t>
-
                                 <t t-set="common_id" t-value="'a'+account['id']"/>
                             </tr>
                         </t>
@@ -152,7 +137,6 @@
                             <strong>Total</strong>
                         </td>
                         <t t-if="filter['date_from']">
-
                             <td class="mon_fld" style="">
                                 <strong></strong>
                             </td>
@@ -164,20 +148,17 @@
                             <td class="mon_fld" style="">
                                 <strong>
                                     <t t-esc="currency[0]"/>
-                                    <!--                                    <t t-raw="Math.round(debit_total * Math.pow(10, 2)) / Math.pow(10, 2)"/>-->
                                     <t t-esc="debit_total"/>
                                 </strong>
                             </td>
                             <td class="mon_fld" style="">
                                 <strong>
                                     <t t-esc="currency[0]"/>
-                                    <!--                                    <t t-raw="Math.round(credit_total * Math.pow(10, 2)) / Math.pow(10, 2)"/>-->
                                     <t t-esc="credit_total"/>
                                 </strong>
                             </td>
                         </t>
                         <t t-else="">
-
                             <td class="mon_fld" style="">
                                 <strong>
                                     <t t-raw="Math.round(debit_total * Math.pow(10,currency[3] )) / Math.pow(10, currency[3])"/>
@@ -191,14 +172,11 @@
                                 </strong>
                             </td>
                         </t>
-
                     </tbody>
-
                 </table>
             </div>
         </div>
     </t>
-
 
     <t t-name="TrialFilterView">
         <div class="row" style="margin-right: 10px; margin-left: 10px;">
@@ -217,6 +195,7 @@
             <br></br>
             <div class="sub_container_right row" style="width:30%;height:3%;top:0px;position: relative;">
 
+                <!-- Date Range Filter -->
                 <div class="time_range" style="">
                     <a type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
                         <span class="fa fa-calendar" title="Dates" role="img" aria-label="Dates"></span>
@@ -226,11 +205,8 @@
                         <div class="form-group">
                             <label class="" for="date_from">Start Date :</label>
                             <div class="input-group date" id="date_from" data-target-input="nearest">
-                                <!--                                            <t t-set='date_formatted'><t t-options='{"widget": "date"}' t-esc="filter_data.date_from"/></t>-->
-                                <!--                                            <input type="text" name="date_from" class="form-control datetimepicker-input" t-att-value="date_formatted"  data-target="#date_from" t-att-name="prefix"/>-->
                                 <input type="text" name="date_from" class="form-control datetimepicker-input"
                                        data-target="#date_from" t-att-name="prefix"/>
-
                                 <div class="input-group-append" data-target="#date_from"
                                      data-bs-toggle="datetimepicker">
                                     <span class="input-group-text">
@@ -241,7 +217,6 @@
 
                             <label class="" for="date_to">End Date :</label>
                             <div class="input-group date" id="date_to" data-target-input="nearest">
-
                                 <input type="text" name="date_to" class="form-control datetimepicker-input"
                                        data-target="#date_to" t-att-name="prefix"/>
                                 <div class="input-group-append" data-target="#date_to" data-bs-toggle="datetimepicker">
@@ -250,39 +225,54 @@
                                     </span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
+                <!-- Journals Filter -->
                 <div class="journals_filter" style="">
                     <a type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
                         <span class="fa fa-book"></span>
                         Journals:
                     </a>
-                    <select class="dropdown-menu  journals" name="states[]" multiple="multiple">
+                    <select class="dropdown-menu journals" name="states[]" multiple="multiple">
                         <div role="separator" class="dropdown-divider"></div>
                         <t t-foreach="filter_data.journals_list" t-as="journal">
-
                             <t t-if="journal[0]=='divider'">
                                 <div role="separator" class="dropdown-divider"/>
-
                                 <option disabled="disabled" role="menuitem" t-attf-value="{{journal[0]}}">
                                     <t t-esc="journal[1]"/>
                                 </option>
                                 <div role="separator" class="dropdown-divider"/>
                             </t>
-
-
                             <t t-else="">
                                 <option t-attf-value="{{journal[0]}}">
                                     <t t-esc="journal[1]"/>
                                 </option>
                             </t>
-
                         </t>
                     </select>
                     <span id="journal_res"></span>
                 </div>
+
+                <!-- Analytic Accounts Filter -->
+                <div class="analytic_filter" style="">
+                    <a type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
+                        <span class="fa fa-cubes"></span>
+                        Analytic Accounts:
+                    </a>
+                    <select class="dropdown-menu analytic_accounts" name="analytic_accounts[]" multiple="multiple">
+                        <div role="separator" class="dropdown-divider"></div>
+                        <t t-foreach="filter_data.analytic_accounts_list" t-as="analytic">
+                            <option t-attf-value="{{analytic[0]}}">
+                                <t t-esc="analytic[1]"/>
+                            </option>
+                        </t>
+                    </select>
+                    <span id="analytic_account_res"></span>
+                </div>
+
+                <!-- Target Move Filter -->
                 <div class="search-Target-move" style="">
                     <a type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
                         <span class="fa fa-filter"></span>
@@ -295,6 +285,8 @@
                     </select>
                     <span id="post_res"></span>
                 </div>
+
+                <!-- Display Accounts Filter -->
                 <div class="search-display_account" style="">
                     <a type="button" class="dropdown-toggle" data-bs-toggle="dropdown">
                         <span class="fa fa-filter"></span>
@@ -308,20 +300,15 @@
                     </select>
                     <span id="display_account_res"></span>
                 </div>
+
+                <!-- Apply Filter Button -->
                 <div style="">
                     <button type="button" id="apply_filter" class="btn btn-primary"
                             style="top:0px;height:30px;color:white;background-color: #00A0AD;border-color: #00A0AD;">
                         Apply
                     </button>
-
                 </div>
-                <!--                    </div>-->
-
-
-                <!--                </div>-->
-
             </div>
         </div>
     </t>
-
 </templates>

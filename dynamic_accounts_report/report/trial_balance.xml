@@ -1,134 +1,222 @@
 <odoo>
-
     <template id="dynamic_accounts_report.trial_balance">
-<!--    <t t-call="web.html_container">-->
-<!--        <t t-foreach="docs" t-as="doc">-->
-            <t t-call="dynamic_accounts_report.trial_balance1" t-lang="request.env.user.lang"/>
-<!--        </t>-->
-<!--    </t>-->
-</template>
+        <t t-call="dynamic_accounts_report.trial_balance1" t-lang="request.env.user.lang"/>
+    </template>
 
     <template id="dynamic_accounts_report.trial_balance1">
         <t t-call="web.html_container">
             <t t-call="web.internal_layout">
                 <div class="page">
-                    <div class="oe_structure"/>
-                    <h3 style="text-align:centre;left:50%;"><span t-esc="Filters.get('company_name')"/>: Trial Balance
-                    </h3>
+                    <style>
+                        .report-header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            border-bottom: 2px solid #2c6ecb;
+                            padding-bottom: 15px;
+                        }
+                        .report-title {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #2c6ecb;
+                            margin-bottom: 5px;
+                        }
+                        .date-container {
+                            display: flex;
+                            justify-content: center;
+                            gap: 30px;
+                            margin-bottom: 15px;
+                        }
+                        .date-box {
+                            background-color: #f0f7ff;
+                            padding: 8px 15px;
+                            border-radius: 5px;
+                            font-weight: bold;
+                        }
+                        .filter-section {
+                            background-color: #f8f9fa;
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin-bottom: 20px;
+                        }
+                        .filter-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                            gap: 15px;
+                        }
+                        .filter-group {
+                            background-color: white;
+                            padding: 10px;
+                            border-radius: 5px;
+                            border: 1px solid #e0e0e0;
+                        }
+                        .filter-label {
+                            font-weight: bold;
+                            color: #444;
+                            margin-bottom: 5px;
+                            border-bottom: 1px solid #eee;
+                            padding-bottom: 3px;
+                        }
+                        .filter-value {
+                            font-size: 13px;
+                        }
+                        .table-reports {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 10px;
+                        }
+                        .table-reports th {
+                            background-color: #2c6ecb;
+                            color: white;
+                            padding: 12px 15px;
+                            text-align: left;
+                        }
+                        .table-reports td {
+                            padding: 10px 15px;
+                            border-bottom: 1px solid #eaeaea;
+                        }
+                        .text-right {
+                            text-align: right;
+                        }
+                        .text-left {
+                            text-align: left;
+                        }
+                        .total-row {
+                            font-weight: bold;
+                            background-color: #f2f7ff;
+                        }
+                    </style>
 
-                    <span t-if="Filters.get('date_from')">
-                    <strong> From:</strong>
-                    <t t-esc="Filters['date_from']"/>
-                    </span>
-
-
-
-                    <span t-if="Filters.get('date_to')">
-                    <strong>To:</strong>
-                    <t t-esc="Filters['date_to']"/>
-                    </span>
-
-
-                    <div>
-                        <div style="text-align:centre;left:50%;" class="row">
-
-                                <div class="col-3" style="">
-                                    <strong>Journals:</strong>
-                                    <t t-foreach="Filters['journals']" t-as="ps">
-                                        <li>
-                                            <t t-esc="ps"/>
-                                        </li>
-                                    </t>
-                                </div>
-
-                                <div class="col-3">
-                                    <strong>Target move:</strong>
-                                        <li>
-                                            <t t-esc="Filters['target_move']"/>
-                                        </li>
-                                </div>
+                    <div class="report-header">
+                        <div class="report-title">
+                            <span t-esc="Filters.get('company_name')"/>: Trial Balance
                         </div>
-
-
-                        <br></br>
-                        <table class="table table-sm table-reports">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:left;">Code</th>
-                                    <th colspan="5">Account</th>
-                                    <t t-if="Filters.get('date_from')">
-                                        <th class="mon_fld">Initial Debit</th>
-                                        <th class="mon_fld">Initial Credit</th>
-
-                                    </t>
-                                    <th class="text-right">Debit</th>
-                                    <th class="text-right">Credit</th>
-                                </tr>
-                            </thead>
-                            <t t-foreach="account_data" t-as="line">
-
-                                    <tr>
-
-                                        <td style="text-align:left;">
-                                            <span style="color: white;" t-esc="'..'"/>
-                                            <span t-esc="line['code']"/>
-                                        </td>
-                                        <td colspan="5">
-                                            <span style="color: white;" t-esc="'..'"/>
-                                            <span t-esc="line['name']"/>
-                                        </td>
-                                        <t t-if="Filters.get('date_from')">
-                                            <t t-if="line['Init_balance']">
-												<td class="mon_fld">
-													<t t-out="line['Init_balance']['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-												</td>
-												<td class="mon_fld">
-													<t t-out="line['Init_balance']['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-												</td>
-											</t>
-                                            <t t-else="">
-
-												<td class="mon_fld">
-												</td>
-												<td class="mon_fld">
-												</td>
-											</t>
-
-										</t>
-
-                                        <td class="text-right">
-                                            <span t-esc="line['debit']"
-                                                  t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-esc="line['credit']"
-                                                  t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                        </td>
-                                    </tr>
-                            </t>
-                            <td colspan="6" style="border-bottom: 1px solid ;" class="mon_fld"><strong>Total</strong></td>
+                        
+                        <div class="date-container">
                             <t t-if="Filters.get('date_from')">
-                                <td class="mon_fld" style="border-bottom: 1px solid ;"><strong></strong></td>
-                                <td class="mon_fld" style="border-bottom: 1px solid ;"><strong></strong></td>
+                                <div class="date-box">
+                                    <span>From: </span>
+                                    <span t-esc="Filters['date_from']"/>
+                                </div>
                             </t>
-
-							<td class="text-right" style="border-bottom: 1px solid ;"><strong><t t-esc="debit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></strong></td>
-							<td class="text-right" style="border-bottom: 1px solid;"><strong><t t-esc="debit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></strong></td>
-
-                        </table>
+                            <t t-if="Filters.get('date_to')">
+                                <div class="date-box">
+                                    <span>To: </span>
+                                    <span t-esc="Filters['date_to']"/>
+                                </div>
+                            </t>
+                        </div>
                     </div>
-                    <br></br>
+
+                    <div class="filter-section">
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <div class="filter-label">Journals</div>
+                                <div class="filter-value">
+                                    <t t-foreach="Filters['journals']" t-as="ps">
+                                        <div><t t-esc="ps"/></div>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <div class="filter-label">Analytic Accounts</div>
+                                <div class="filter-value">
+                                    <t t-foreach="Filters.get('analytic_accounts', ['All'])" t-as="aa">
+                                        <div><t t-esc="aa"/></div>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <div class="filter-label">Target Move</div>
+                                <div class="filter-value">
+                                    <t t-esc="Filters['target_move']"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table-reports">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Code</th>
+                                <th colspan="5" class="text-left">Account</th>
+                                <t t-if="Filters.get('date_from')">
+                                    <th class="text-right">Initial Debit</th>
+                                    <th class="text-right">Initial Credit</th>
+                                </t>
+                                <th class="text-right">Debit</th>
+                                <th class="text-right">Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="account_data" t-as="line">
+                                <tr>
+                                    <td class="text-left">
+                                        <span t-esc="line['code']"/>
+                                    </td>
+                                    <td colspan="5" class="text-left">
+                                        <span t-esc="line['name']"/>
+                                    </td>
+                                    <t t-if="Filters.get('date_from')">
+                                        <td class="text-right">
+                                            <t t-if="line['Init_balance']">
+                                                <span t-esc="line['Init_balance']['debit']"
+                                                      t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-esc="0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-if="line['Init_balance']">
+                                                <span t-esc="line['Init_balance']['credit']"
+                                                      t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-esc="0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                        </td>
+                                    </t>
+                                    <td class="text-right">
+                                        <span t-esc="line['debit']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="line['credit']"
+                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr class="total-row">
+                                <td colspan="6" class="text-left"><strong>Total</strong></td>
+                                <t t-if="Filters.get('date_from')">
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                </t>
+                                <td class="text-right"><strong>
+                                    <span t-esc="debit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </strong></td>
+                                <td class="text-right"><strong>
+                                    <span t-esc="credit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                </strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 30px; font-size: 11px; color: #777; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
+                        Generated on <span t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M')"/> | Dynamic Accounts Report
+                    </div>
                 </div>
             </t>
         </t>
     </template>
 
     <record id="action_print_trial_balance" model="ir.actions.report">
-            <field name="name">Trial Balance</field>
-            <field name="model">account.trial.balance</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">dynamic_accounts_report.trial_balance</field>
-            <field name="report_file">dynamic_accounts_report.trial_balance</field>
+        <field name="name">Trial Balance</field>
+        <field name="model">account.trial.balance</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dynamic_accounts_report.trial_balance</field>
+        <field name="report_file">dynamic_accounts_report.trial_balance</field>
     </record>
-
 </odoo>

@@ -21,7 +21,6 @@
 #############################################################################
 import time
 from odoo import fields, models, api, _
-
 import io
 import json
 from odoo.http import request
@@ -38,9 +37,12 @@ class TrialView(models.TransientModel):
     _name = 'account.trial.balance'
 
     journal_ids = fields.Many2many('account.journal',
-
-                                   string='Journals', required=True,
-                                   default=[])
+                                 string='Journals', required=True,
+                                 default=[])
+    analytic_account_ids = fields.Many2many(
+        'account.analytic.account',
+        string='Analytic Accounts'
+    )
     display_account = fields.Selection(
         [('all', 'All'), ('movement', 'With movements'),
          ('not_zero', 'With balance is not equal to 0')],
@@ -54,16 +56,16 @@ class TrialView(models.TransientModel):
             'display_account': r.display_account,
             'model': self,
             'journals': r.journal_ids,
+            'analytic_account_ids': r.analytic_account_ids,
             'target_move': r.target_move,
-
         }
         if r.date_from:
             data.update({
-                'date_from':r.date_from,
+                'date_from': r.date_from,
             })
         if r.date_to:
             data.update({
-                'date_to':r.date_to,
+                'date_to': r.date_to,
             })
 
         filters = self.get_filter(option)
@@ -88,6 +90,10 @@ class TrialView(models.TransientModel):
             filters['journals'] = self.env['account.journal'].browse(data.get('journal_ids')).mapped('code')
         else:
             filters['journals'] = ['All']
+        if data.get('analytic_account_ids'):
+            filters['analytic_accounts'] = self.env['account.analytic.account'].browse(data.get('analytic_account_ids')).mapped('name')
+        else:
+            filters['analytic_accounts'] = ['All']
         if data.get('target_move'):
             filters['target_move'] = data.get('target_move')
         if data.get('date_from'):
@@ -97,13 +103,13 @@ class TrialView(models.TransientModel):
 
         filters['company_id'] = ''
         filters['journals_list'] = data.get('journals_list')
+        filters['analytic_accounts_list'] = data.get('analytic_accounts_list')
         filters['company_name'] = data.get('company_name')
         filters['target_move'] = data.get('target_move').capitalize()
 
         return filters
 
     def get_current_company_value(self):
-
         cookies_cids = [int(r) for r in request.httprequest.cookies.get('cids').split(",")] \
             if request.httprequest.cookies.get('cids') \
             else [request.env.user.company_id.id]
@@ -122,7 +128,7 @@ class TrialView(models.TransientModel):
         company_id = self.env.companies.ids
         company_domain = [('company_id', 'in', company_id)]
         journal_ids = r.journal_ids if r.journal_ids else self.env['account.journal'].search(company_domain, order="company_id, name")
-
+        analytic_account_ids = r.analytic_account_ids if r.analytic_account_ids else self.env['account.analytic.account'].search([])
 
         journals = []
         o_company = False
@@ -134,13 +140,13 @@ class TrialView(models.TransientModel):
 
         filter_dict = {
             'journal_ids': r.journal_ids.ids,
+            'analytic_account_ids': r.analytic_account_ids.ids,
             'company_id': company_id,
             'date_from': r.date_from,
             'date_to': r.date_to,
             'target_move': r.target_move,
             'journals_list': journals,
-            # 'journals_list': [(j.id, j.name, j.code) for j in journals],
-
+            'analytic_accounts_list': [(a.id, a.name) for a in analytic_account_ids],
             'company_name': ', '.join(self.env.companies.mapped('name')),
         }
         filter_dict.update(default_filters)
@@ -150,10 +156,11 @@ class TrialView(models.TransientModel):
         docs = data['model']
         display_account = data['display_account']
         journals = data['journals']
+        analytic_account_ids = data.get('analytic_account_ids', False)
         accounts = self.env['account.account'].search([])
         if not accounts:
             raise UserError(_("No Accounts Found! Please Add One"))
-        account_res = self._get_accounts(accounts, display_account, data)
+        account_res = self._get_accounts(accounts, display_account, data, analytic_account_ids)
         debit_total = 0
         debit_total = sum(x['debit'] for x in account_res)
         credit_total = sum(x['credit'] for x in account_res)
@@ -178,12 +185,14 @@ class TrialView(models.TransientModel):
             vals.update({'target_move': vals.get('target_move').lower()})
         if vals.get('journal_ids'):
             vals.update({'journal_ids': [(6, 0, vals.get('journal_ids'))]})
+        if vals.get('analytic_account_ids'):
+            vals.update({'analytic_account_ids': [(6, 0, vals.get('analytic_account_ids'))]})
         if vals.get('journal_ids') == []:
             vals.update({'journal_ids': [(5,)]})
         res = super(TrialView, self).write(vals)
         return res
 
-    def _get_accounts(self, accounts, display_account, data):
+    def _get_accounts(self, accounts, display_account, data, analytic_account_ids=False):
         account_result = {}
         # Prepare sql query base on selected parameters from wizard
         tables, where_clause, where_params = self.env['account.move.line']._query_get()
@@ -205,16 +214,30 @@ class TrialView(models.TransientModel):
 
         if data['journals']:
             filters += ' AND jrnl.id IN %s' % str(tuple(data['journals'].ids) + tuple([0]))
+        
         tables += ' JOIN account_journal jrnl ON (account_move_line.journal_id=jrnl.id)'
+        
+        # Add analytic account filtering for Odoo 16 - CORRECTED JOIN
+        if analytic_account_ids:
+            tables += """
+                JOIN account_analytic_line aal ON (account_move_line.id = aal.move_line_id)
+                JOIN account_analytic_account aa ON (aal.account_id = aa.id)
+            """
+            filters += ' AND aa.id IN %s' % str(tuple(analytic_account_ids.ids) + tuple([0]))
+
         # compute the balance, debit and credit for the provided accounts
         request = (
-                    "SELECT account_id AS id, SUM(debit) AS debit, SUM(credit) AS credit, (SUM(debit) - SUM(credit)) AS balance" + \
-                    " FROM " + tables + " WHERE account_id IN %s " + filters + " GROUP BY account_id")
+            "SELECT account_move_line.account_id AS id, SUM(account_move_line.debit) AS debit, "
+            "SUM(account_move_line.credit) AS credit, "
+            "(SUM(account_move_line.debit) - SUM(account_move_line.credit)) AS balance" + 
+            " FROM " + tables + " WHERE account_move_line.account_id IN %s " + filters + " GROUP BY account_move_line.account_id"
+        )
         params = (tuple(accounts.ids),) + tuple(where_params)
         self.env.cr.execute(request, params)
         for row in self.env.cr.dictfetchall():
             account_result[row.pop('id')] = row
 
+        # Prepare the result set
         account_res = []
         for account in accounts:
             res = dict((fn, 0.0) for fn in ['credit', 'debit', 'balance'])
@@ -223,8 +246,7 @@ class TrialView(models.TransientModel):
             res['name'] = account.name
             res['id'] = account.id
             if data.get('date_from'):
-
-                res['Init_balance'] = self.get_init_bal(account, display_account, data)
+                res['Init_balance'] = self.get_init_bal(account, display_account, data, analytic_account_ids)
 
             if account.id in account_result:
                 res['debit'] = account_result[account.id].get('debit')
@@ -241,9 +263,8 @@ class TrialView(models.TransientModel):
                 account_res.append(res)
         return account_res
 
-    def get_init_bal(self, account, display_account, data):
+    def get_init_bal(self, account, display_account, data, analytic_account_ids=False):
         if data.get('date_from'):
-
             tables, where_clause, where_params = self.env[
                 'account.move.line']._query_get()
             tables = tables.replace('"', '')
@@ -262,12 +283,24 @@ class TrialView(models.TransientModel):
 
             if data['journals']:
                 filters += ' AND jrnl.id IN %s' % str(tuple(data['journals'].ids) + tuple([0]))
+            
             tables += ' JOIN account_journal jrnl ON (account_move_line.journal_id=jrnl.id)'
+            
+            # Add analytic account filtering for Odoo 16 - CORRECTED JOIN
+            if analytic_account_ids:
+                tables += """
+                    JOIN account_analytic_line aal ON (account_move_line.id = aal.move_line_id)
+                    JOIN account_analytic_account aa ON (aal.account_id = aa.id)
+                """
+                filters += ' AND aa.id IN %s' % str(tuple(analytic_account_ids.ids) + tuple([0]))
 
             # compute the balance, debit and credit for the provided accounts
             request = (
-                    "SELECT account_id AS id, SUM(debit) AS debit, SUM(credit) AS credit, (SUM(debit) - SUM(credit)) AS balance" + \
-                    " FROM " + tables + " WHERE account_id = %s" % account.id + filters + " GROUP BY account_id")
+                "SELECT account_move_line.account_id AS id, SUM(account_move_line.debit) AS debit, "
+                "SUM(account_move_line.credit) AS credit, "
+                "(SUM(account_move_line.debit) - SUM(account_move_line.credit)) AS balance" + 
+                " FROM " + tables + " WHERE account_move_line.account_id = %s" % account.id + filters + " GROUP BY account_move_line.account_id"
+            )
             params = tuple(where_params)
             self.env.cr.execute(request, params)
             for row in self.env.cr.dictfetchall():
@@ -313,7 +346,9 @@ class TrialView(models.TransientModel):
             sheet.merge_range('A4:B4', 'From: '+filters.get('date_from') , date_head)
         if filters.get('date_to'):
             sheet.merge_range('C4:D4', 'To: '+ filters.get('date_to'), date_head)
-        sheet.merge_range('A5:D6', 'Journals: ' + ', '.join([ lt or '' for lt in filters['journals'] ]) + '  Target Moves: '+ filters.get('target_move'), date_head)
+        sheet.merge_range('A5:D6', 'Journals: ' + ', '.join([ lt or '' for lt in filters['journals'] ]) + 
+                         '  Target Moves: '+ filters.get('target_move') +
+                         '  Analytic Accounts: ' + ', '.join([ lt or '' for lt in filters.get('analytic_accounts', ['All'])]), date_head)
         sheet.write('A7', 'Code', sub_heading)
         sheet.write('B7', 'Amount', sub_heading)
         if filters.get('date_from'):
@@ -336,11 +371,9 @@ class TrialView(models.TransientModel):
             sheet.set_column(10, 5, 15)
             sheet.set_column(11, 6, 15)
         else:
-
             sheet.set_column(8, 3, 15)
             sheet.set_column(9, 4, 15)
         for rec_data in report_data_main:
-
             row += 1
             sheet.write(row, col, rec_data['code'], txt)
             sheet.write(row, col + 1, rec_data['name'], txt)
@@ -354,7 +387,6 @@ class TrialView(models.TransientModel):
 
                 sheet.write(row, col + 4, rec_data['debit'], txt)
                 sheet.write(row, col + 5, rec_data['credit'], txt)
-
             else:
                 sheet.write(row, col + 2, rec_data['debit'], txt)
                 sheet.write(row, col + 3, rec_data['credit'], txt)
