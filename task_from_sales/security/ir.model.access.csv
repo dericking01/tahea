@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_boq_project,access.boq.project,model_boq_project,base.group_user,1,1,1,1
+access_boq_phase,access.boq.phase,model_boq_phase,base.group_user,1,1,1,1
+access_boq_line,access.boq.line,model_boq_line,base.group_user,1,1,1,1
