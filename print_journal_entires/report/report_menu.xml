@@ -33,6 +33,8 @@
                                 <tr>
                                     <td style="padding-left: 20px;"><strong>Journal:</strong></td>
                                     <td style="text-align: center;"> <span t-field="o.journal_id.name" /></td>
+                                    <td style="padding-left: 20px;"><strong>JV No:</strong></td>
+                                    <td><span t-field="o.name"/></td>
                                     <td style="padding-left: 20px;"><strong>Date:</strong></td>
                                     <td style="text-align: center;"><span t-field="o.date"/></td>
                                 </tr>
