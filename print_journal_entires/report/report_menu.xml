@@ -55,9 +55,9 @@
                             <table width="100%" style="border-collapse: collapse; font-size:13px;">
                                 <thead>
                                     <tr style="background-color: #f0f0f0;">
+                                        <th style="border: 1px solid #000; padding: 6px;">Code</th>
                                         <th style="border: 1px solid #000; padding: 6px;">Account</th>
                                         <th style="border: 1px solid #000; padding: 6px;">Partner</th>
-                                        <th style="border: 1px solid #000; padding: 6px;">Label</th>
                                         <th style="border: 1px solid #000; padding: 6px;">Analytic</th>
                                         <th style="border: 1px solid #000; padding: 6px; text-align:right;">Debit</th>
                                         <th style="border: 1px solid #000; padding: 6px; text-align:right;">Credit</th>
@@ -66,9 +66,10 @@
                                 <tbody>
                                     <t t-foreach="o.line_ids" t-as="line">
                                         <tr>
+                                            <td style="border: 1px solid #000; padding: 4px;"><span t-field="line.account_id.code"/></td>
                                             <td style="border: 1px solid #000; padding: 4px;"><span t-field="line.account_id.name"/></td>
                                             <td style="border: 1px solid #000; padding: 4px;"><span t-field="line.partner_id.name"/></td>
-                                            <td style="border: 1px solid #000; padding: 4px;"><span t-field="line.name"/></td>
+                
                                             <td style="border: 1px solid #000; padding: 4px;">
                                                 <t t-if="line.analytic_distribution">
                                                     <t t-foreach="line.analytic_distribution.items()" t-as="item">
