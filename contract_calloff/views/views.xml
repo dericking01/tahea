@@ -1,0 +1,109 @@
+<odoo>
+
+
+ <!-- Action: Contracts -->
+    <record id="action_contract_contract" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
+        <field name="res_model">contract.contract</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Action: Orders -->
+    <record id="action_contract_order" model="ir.actions.act_window">
+        <field name="name">Contract Orders</field>
+        <field name="res_model">contract.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Contract Form View -->
+    <record id="view_contract_contract_form" model="ir.ui.view">
+        <field name="name">contract.contract.form</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contract">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="title"/>
+                        <field name="contract_date"/>
+                    </group>
+                    <notebook>
+                        <page string="Orders">
+                            <field name="order_ids">
+                                <list editable="bottom">
+                                    <field name="title"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="status"/>
+                                    <field name="expired" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                  <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Contract Tree View -->
+    <record id="view_contract_contract_tree" model="ir.ui.view">
+        <field name="name">contract.contract.tree</field>
+        <field name="model">contract.contract</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="contract_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Contract Order Tree View -->
+    <record id="view_contract_order_tree" model="ir.ui.view">
+        <field name="name">contract.order.tree</field>
+        <field name="model">contract.order</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="contract_id"/>
+                <field name="title"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="status"/>
+                <field name="expired"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Contract Order Form View -->
+    <record id="view_contract_order_form" model="ir.ui.view">
+        <field name="name">contract.order.form</field>
+        <field name="model">contract.order</field>
+        <field name="arch" type="xml">
+            <form string="Contract Order">
+                <sheet>
+                    <group>
+                        <field name="contract_id"/>
+                        <field name="title"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="status"/>
+                        <field name="expired" readonly="1"/>
+                    </group>
+                </sheet>
+                  <chatter/>
+            </form>
+        </field>
+    </record>
+
+    
+
+   
+
+    <!-- Menu -->
+    <menuitem id="menu_contract_root" name="Contract Management" sequence="10"/>
+
+    <menuitem id="menu_contract_contract" name="Contracts" parent="menu_contract_root" action="action_contract_contract" sequence="1"/>
+    <menuitem id="menu_contract_order" name="Orders" parent="menu_contract_root" action="action_contract_order" sequence="2"/>
+</odoo>

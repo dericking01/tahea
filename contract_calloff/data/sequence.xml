@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Define the sequence -->
+        <record id="my_sequence" model="ir.sequence">
+            <field name="name">My Sequence</field>
+            <field name="code">custom.auction</field> <!-- Unique code for the sequence -->
+            <field name="prefix">AUCT/%(year)s/</field> <!-- Optional prefix -->
+            <field name="padding">4</field> <!-- Number of digits (e.g., 0001) -->
+            <field name="number_next">1</field> <!-- Starting number -->
+            <field name="number_increment">1</field> <!-- Increment step -->
+        </record>
+    </data>
+</odoo>
