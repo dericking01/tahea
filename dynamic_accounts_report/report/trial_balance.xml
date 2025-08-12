@@ -160,31 +160,31 @@
                                     </td>
                                     <t t-if="Filters.get('date_from')">
                                         <td class="text-right">
-                                            <t t-if="line['Init_balance']">
-                                                <span t-esc="line['Init_balance']['debit']"
-                                                      t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            <t t-if="line.get('Init_balance')">
+                                                <span t-esc="float(line['Init_balance'].get('debit', 0.0))"
+                                                    t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                             </t>
                                             <t t-else="">
-                                                <span t-esc="0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <span t-esc="0.0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                             </t>
                                         </td>
                                         <td class="text-right">
-                                            <t t-if="line['Init_balance']">
-                                                <span t-esc="line['Init_balance']['credit']"
-                                                      t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            <t t-if="line.get('Init_balance')">
+                                                <span t-esc="float(line['Init_balance'].get('credit', 0.0))"
+                                                    t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                             </t>
                                             <t t-else="">
-                                                <span t-esc="0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <span t-esc="0.0" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                             </t>
                                         </td>
                                     </t>
                                     <td class="text-right">
-                                        <span t-esc="line['debit']"
-                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                        <span t-esc="float(line.get('debit', 0.0))"
+                                            t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                     </td>
                                     <td class="text-right">
-                                        <span t-esc="line['credit']"
-                                              t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                        <span t-esc="float(line.get('credit', 0.0))"
+                                            t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                     </td>
                                 </tr>
                             </t>
@@ -195,10 +195,10 @@
                                     <td class="text-right"></td>
                                 </t>
                                 <td class="text-right"><strong>
-                                    <span t-esc="debit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    <span t-esc="float(debit_total or 0.0)" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                 </strong></td>
                                 <td class="text-right"><strong>
-                                    <span t-esc="credit_total" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    <span t-esc="float(credit_total or 0.0)" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                 </strong></td>
                             </tr>
                         </tbody>
