@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action for the wizard -->
+    <record id="action_payroll_report_wizard" model="ir.actions.act_window">
+        <field name="name">Payroll Excel Report</field>
+        <field name="res_model">payroll.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- View for the wizard form -->
+    <record id="view_payroll_report_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.report.wizard.form</field>
+        <field name="model">payroll.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Excel Report">
+                <sheet>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="print_report" string="Generate Excel Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Custom Payroll Excel Report Menu -->
+    <menuitem 
+        id="menu_payroll_excel_report" 
+        name="Payroll Excel Report" 
+        parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root" 
+        action="action_payroll_report_wizard" 
+        sequence="100"/>
+</odoo>

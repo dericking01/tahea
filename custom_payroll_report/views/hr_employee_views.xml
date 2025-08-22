@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Add identification fields to the Citizenship section -->
+            <xpath expr="//field[@name='passport_id']" position="after">
+                <field name="nida_number"/>
+                <field name="nssf_number"/>
+                <field name="tin_number"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
