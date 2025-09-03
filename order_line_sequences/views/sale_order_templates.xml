@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--        Inherited sale report sale order document-->
+    <template id="sales_report" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//table[hasclass('table')]//tr//th[@name='th_description']"
+               position="before">
+            <th name="th_sequence" class="text-start">SN</th>
+            <th name="th_image" class="text-start">Product Image</th>
+        </xpath>
+        <xpath expr="//tbody[hasclass('sale_tbody')]//tr//td[@name='td_name']"
+               position="before">
+            <td name="td_sequence">
+                <span t-esc="line.sequence_number"/>
+            </td>
+            <td name="td_image">
+              <img t-if="line.product_id.image_1920"
+         t-att-src="image_data_uri(line.product_id.image_1920)"
+         style="max-height:60px; max-width:60px;"/>
+            </td>
+        </xpath>
+    </template>
+</odoo>
