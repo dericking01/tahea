@@ -1,0 +1,64 @@
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h1 class="oe_slogan" style="color:black;font-size:30px;"><b style="color:olive;">Automated Product Internal References by Category</b></h1>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            This module allows you to define a unique sequence for each product category. </br>
+            This sequence will automatically populate the internal reference for products within the respective category.
+            <br>
+            <br>
+            The code is well-documented, making it easy to customize to your specific needs.
+            <br>
+            The module is available in both English and French.
+        </p><br/>
+    </div>
+</section>
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan"><b style="color:CRIMSON;">Activate Automatic Internal Reference Generation</b></h3>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+             You can enable this feature on the Inventory settings page.
+        </p>
+        <div class="oe_demo oe_screenshot">
+            <img src="inv_settings.png">
+        </div>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            Once activated, the internal reference field for products will become read-only.
+            When a new product is created, Odoo will automatically generate the internal reference based on the sequence defined for its category.
+        </p>
+        <div class="oe_demo oe_screenshot">
+            <img src="product.png"/>
+            <img src="category.png">
+        </div>
+        <h3 class="oe_slogan"><b style="color:CRIMSON;">How It Works: An Example</b></h3>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            Here's an example of how your product categories might be structured.
+        </p>
+        <div class="oe_demo oe_screenshot">
+            <img src="product_categories_arborescence.png">
+        </div>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+           You don't need to set a sequence for every category. Odoo will search from the bottom up, applying the sequence of the parent category if a specific category doesn’t have one.
+        </p>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            Below is the result for the internal references of products.
+        </p>
+        <div class="oe_demo oe_screenshot">
+            <img src="product_references.png">
+        </div>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            You can configure your own sequences by navigating to Settings > Technical > Sequences & Identifiers > Sequences.<br/>
+            Developer mode must be activated to access this menu.
+        </p>
+        <div class="oe_demo oe_screenshot">
+            <img src="sequence.png">
+        </div>
+    </div>
+</section>
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan"><b style="color:CRIMSON;">Do you want to test this module?</b></h3>
+        <p class="oe_mt32"  style="color:black;font-size:20px;">
+            Request access to a demo system by contacting us at: contact@thefishconsulting.be.
+        </p>
+    </div>
+</section>
