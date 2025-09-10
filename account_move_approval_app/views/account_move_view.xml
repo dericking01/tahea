@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Account Move Form Inheritance -->
+    <record id="view_move_form_inherit_01" model="ir.ui.view">
+        <field name="name">account.move.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_post']" position="before">
+                <button name="button_submit_move" type="object"
+                    string="Submit"
+                    attrs="{'invisible': ['|',('move_type', '!=', 'entry'), ('state', '!=', 'draft')]}"
+                    class="btn-primary"/>
+                <button name="button_approve_move" type="object"
+                    string="Approve"
+                    groups="account_move_approval_app.group_finance_manager"
+                    states="submited"
+                    class="btn-primary"/>
+                <button name="button_validate_move" type="object"
+                    states="approved" string="Validate"
+                    groups="account_move_approval_app.group_director"
+                    class="btn-primary"/>
+            </xpath>
+            <xpath expr="//button[@name='action_post']" position="replace">
+                <button name="action_post" string="Post" class="oe_highlight"
+                    type="object" groups="account.group_account_invoice"
+                    attrs="{'invisible': ['|',('state', '!=', 'draft'), ('move_type', '=', 'entry')]}"/>
+                <button name="action_post" string="Post" class="oe_highlight"
+                    type="object" groups="account.group_account_invoice"
+                    attrs="{'invisible': [('state', '!=', 'validate')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="approved_by" invisible="1"/>
+                <field name="validated_by" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Account Payment Form Inheritance - Odoo 16 Compatible -->
+    <record id="inherit_view_account_payment_form" model="ir.ui.view">
+        <field name="name">account.payment.form</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <!-- For Odoo 16, we'll use the payment_type field as anchor point -->
+            <xpath expr="//field[@name='payment_type']" position="after">
+                <field name="invoice_id" invisible="1"/>
+                <field name="analytic_account_id" invisible="1"/>
+                <field name="analytic_tag_ids" widget="many2many_tags" invisible="1"/>
+                <field name="effective_date"/>
+                <field name="bank_reference"/>
+                <field name="cheque_reference"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
