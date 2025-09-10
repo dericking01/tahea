@@ -1,0 +1,113 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_automatic_internal_ref
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-20 08:30+0000\n"
+"PO-Revision-Date: 2024-08-20 10:46+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_BE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.4.3\n"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model.fields,field_description:product_automatic_internal_ref.field_res_config_settings__activate_automatic_product_ref
+msgid "Activate Automatic Product Internal Reference"
+msgstr "Activer la génération automatique de la référence interne des articles"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model.fields,field_description:product_automatic_internal_ref.field_product_category__automatic_ref_activated
+#: model:ir.model.fields,field_description:product_automatic_internal_ref.field_product_product__automatic_ref_activated
+#: model:ir.model.fields,field_description:product_automatic_internal_ref.field_product_template__automatic_ref_activated
+msgid "Automatic Reference Activated"
+msgstr "Référence Automatique Activé"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model,name:product_automatic_internal_ref.model_res_config_settings
+msgid "Config Settings"
+msgstr "Paramètres de configuration"
+
+#. module: product_automatic_internal_ref
+#: model_terms:ir.ui.view,arch_db:product_automatic_internal_ref.res_config_settings_view_form
+msgid "Create Internal References for Unreferenced Products"
+msgstr "Créer les références internes pour les articles qui n'en possèdent pas une"
+
+#. module: product_automatic_internal_ref
+#: model_terms:ir.ui.view,arch_db:product_automatic_internal_ref.res_config_settings_view_form
+msgid "During the creation of a new product, Odoo will automatically populate its internal reference."
+msgstr "A la création d'un nouvel article, Odoo va générer automatiquement sa référence interne."
+
+#. module: product_automatic_internal_ref
+#: model:ir.model.fields,field_description:product_automatic_internal_ref.field_product_category__internal_ref_sequence_id
+msgid "Internal Reference Sequence"
+msgstr "Séquence pour la Référence Interne"
+
+#. module: product_automatic_internal_ref
+#. odoo-python
+#: code:addons/product_automatic_internal_ref/models/product_category.py:0
+#, python-format
+msgid "Please set a sequence on this product's category or on one of its parent categories."
+msgstr "Svp définissez une séquence sur la catégorie de cet article ou sur l'une de ses catégories parents."
+
+#. module: product_automatic_internal_ref
+#: model:ir.model,name:product_automatic_internal_ref.model_product_template
+msgid "Product"
+msgstr "Produit"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model,name:product_automatic_internal_ref.model_product_category
+msgid "Product Category"
+msgstr "Catégorie de produits"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model,name:product_automatic_internal_ref.model_product_product
+msgid "Product Variant"
+msgstr "Variante de produit"
+
+#. module: product_automatic_internal_ref
+#: model_terms:ir.ui.view,arch_db:product_automatic_internal_ref.product_category_form_view
+msgid "Sequence"
+msgstr "Séquence"
+
+#. module: product_automatic_internal_ref
+#. odoo-python
+#: code:addons/product_automatic_internal_ref/models/product_product.py:0
+#: code:addons/product_automatic_internal_ref/models/product_template.py:0
+#, python-format
+msgid "Sorry, you cannot modify the Internal Reference of a Product."
+msgstr "Désolé, vous ne pouvez pas modifier la référence interne d'un article."
+
+#. module: product_automatic_internal_ref
+#. odoo-python
+#: code:addons/product_automatic_internal_ref/models/product_product.py:0
+#: code:addons/product_automatic_internal_ref/models/product_template.py:0
+#, python-format
+msgid "Sorry, you cannot set an Internal Reference. Odoo set it by himself!"
+msgstr "Désolé, vous ne pouvez pas définir la référence interne vous même. Odoo en créera une lui même!"
+
+#. module: product_automatic_internal_ref
+#. odoo-python
+#: code:addons/product_automatic_internal_ref/models/product_product.py:0
+#: code:addons/product_automatic_internal_ref/models/product_template.py:0
+#, python-format
+msgid "These product templates: %s, %s have the same default code"
+msgstr "Ces articles: %s, %s ont la même référence interne"
+
+#. module: product_automatic_internal_ref
+#: model:ir.model.fields,help:product_automatic_internal_ref.field_res_config_settings__activate_automatic_product_ref
+msgid ""
+"When this parameter is activated, the internal reference of products will become read-only.\n"
+"During the creation of a new product, Odoo will automatically populate its internal reference.\n"
+"You can configure an Odoo sequence for product categories, allowing each category to have a specific sequence."
+msgstr ""
+"Quand ce paramètre est activé, le champ référence interne des articles devient read-only.\n"
+"A la création d'un nouvel article Odoo va générer lui même automatiquement sa référence interne.\n"
+"Vous devez configurer une séquence sur la catégorie des articles. Chaque catégorie peut avoir sa propre "
+"séquence."
