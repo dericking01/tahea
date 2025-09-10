@@ -11,7 +11,7 @@
                         type="object"
                         string="Create Vendor Bill"
                         class="btn-primary"
-                        invisible="request_status != 'approved'"
+                        attrs="{'invisible': [('request_status', '!=', 'approved')]}"
                         groups="account.group_account_manager"/>
             </xpath>
 
