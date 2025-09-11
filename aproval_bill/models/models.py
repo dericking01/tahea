@@ -7,7 +7,7 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     bill_id = fields.Many2one('account.move', string='Vendor Bill', readonly=True)
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', required=True)
 
     def action_create_vendor_bill(self):
         self.ensure_one()
