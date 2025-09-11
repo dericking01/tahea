@@ -7,7 +7,7 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     bill_id = fields.Many2one('account.move', string='Vendor Bill', readonly=True)
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', required=True )
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', required=True)
 
     def action_create_vendor_bill(self):
         self.ensure_one()
@@ -19,15 +19,10 @@ class ApprovalRequest(models.Model):
                 "You cannot create another one."
             )
 
-        # Get the requestor (user)
-        requestor = self.request_owner_id
-        if not requestor:
-            raise UserError("This approval request has no requestor assigned.")
-
-        # Ensure requestor has a partner (vendor)
-        vendor = requestor.partner_id
+        # ✅ Get Vendor directly from partner_id (contact)
+        vendor = self.partner_id
         if not vendor:
-            raise UserError("The requestor is not linked to a vendor (partner). Please set it in the user settings.")
+            raise UserError("This approval request has no Contact (Vendor) assigned.")
 
         # ✅ Ensure analytic account is selected before creating a bill
         if not self.analytic_account_id:
