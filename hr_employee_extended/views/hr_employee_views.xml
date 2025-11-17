@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View: Add fields to employee form -->
+    <record id="view_employee_form_extended" model="ir.ui.view">
+        <field name="name">hr.employee.form.extended</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Add after bank account field in private contact section -->
+            <xpath expr="//page[@name='personal_information']//group[1]//field[@name='bank_account_id']" position="after">
+                <field name="tin_number"/>
+                <field name="nssf_number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View: Add fields to employee list -->
+    <record id="view_employee_tree_extended" model="ir.ui.view">
+        <field name="name">hr.employee.tree.extended</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="tin_number" optional="show"/>
+                <field name="nssf_number" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Filter View: Add search filters -->
+    <record id="view_employee_filter_extended" model="ir.ui.view">
+        <field name="name">hr.employee.filter.extended</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <!-- Add filters after an existing filter or the search element -->
+            <xpath expr="//search//filter[last()]" position="after">
+                <filter string="TIN Number" name="tin_number"/>
+                <filter string="NSSF Number" name="nssf_number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="my_view_hr_contract_form_inherit" model="ir.ui.view">
+            <field name="name">my.view.hr.contract.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='hr_responsible_id']" position="after">
+                    <field name="nhif_2"/>
+                    <field name="heslb"/>
+                    <field name="paye"/>
+                </xpath>
+            </field>
+</record>
+</odoo>
