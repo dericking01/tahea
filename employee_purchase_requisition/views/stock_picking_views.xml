@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Adding field in the stock picking form view -->
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.view.form.inherit.employee.purchase.requisition</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id"
+               ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']"
+                   position="after">
+                <field name="requisition_order"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_picking_form_in_transit" model="ir.ui.view">
+        <field name="name">stock.picking.form.in.transit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Mark In-Transit button in header -->
+            <header position="inside">
+                <button name="action_mark_in_transit"
+                        string="Mark In-Transit"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'assigned'"
+                        />
+            </header>
+
+            <xpath expr="//button[@name='button_validate']" position="replace">
+                <!-- Remove original button -->
+                <span></span>
+            </xpath>
+
+
+
+        </field>
+    </record>
+</odoo>

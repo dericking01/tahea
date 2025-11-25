@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Adding a field in the purchase order form view -->
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.order.view.form.inherit.employee.purchase.requisition</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id"
+               ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="requisition_order"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add requisition_order field to Purchase Order list view -->
+    <record id="purchase_order_tree_inherit_requisition" model="ir.ui.view">
+        <field name="name">purchase.order.view.tree.inherit.employee.purchase.requisition</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add requisition_order after partner_id column -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="requisition_order"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
