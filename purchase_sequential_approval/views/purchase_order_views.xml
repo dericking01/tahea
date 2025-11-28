@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Purchase Order Form for Sequential Approval -->
+    <record id="view_purchase_order_form_inherit_approval" model="ir.ui.view">
+        <field name="name">purchase.order.form.approval.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+
+            <xpath expr="//header//button[@name='button_confirm']" position="replace"/>
+            <!-- Approval Fields Group -->
+            <xpath expr="//sheet" position="inside">
+                <group name="approval_group" string="Approval">
+                    <!-- <field name="approval_state" readonly="1"/> -->
+                    <field name="approved_ops_id" readonly="1"/>
+                    <field name="approval_date_ops" readonly="1"/>
+                    <field name="approved_controller_id" readonly="1"/>
+                    <field name="approval_date_controller" readonly="1"/>
+                    <field name="approved_finance_id" readonly="1"/>
+                    <field name="approval_date_finance" readonly="1"/>
+                </group>
+            </xpath>
+
+            <!-- Approval Buttons in Header -->
+           <xpath expr="//header" position="inside">
+                <!-- Submit for Approval -->
+                <button name="action_submit_for_approval"
+                        type="object"
+                        string="Submit for Approval"
+                        class="oe_highlight"
+                        invisible="state != 'draft'"/>
+
+                <!-- Approve by Ops Manager -->
+                <button name="action_approve_ops"
+                        type="object"
+                        string="Approve (Ops)"
+                        class="oe_highlight"
+                        invisible="state != 'submitted'"
+                        groups="purchase_sequential_approval.group_ops_manager"/>
+
+                <!-- Approve by Chief Controller -->
+                <button name="action_approve_controller"
+                        type="object"
+                        string="Approve (Controller)"
+                        class="oe_highlight"
+                        invisible="state != 'ops_approved'"
+                        groups="purchase_sequential_approval.group_chief_controller"/>
+
+                <!-- Approve by Finance -->
+                <button name="action_approve_finance"
+                        type="object"
+                        string="Approve (Finance)"
+                        class="oe_highlight"
+                        invisible="state != 'controller_approved'"
+                        groups="purchase_sequential_approval.group_finance_manager"/>
+
+                <!-- Reject -->
+                <button name="action_reject"
+                        type="object"
+                        string="Reject"
+                        class="oe_highlight"
+                        invisible="state != [('controller_approved','ops_approved','finance_approved')]"
+                        groups="purchase_sequential_approval.group_ops_manager,purchase_sequential_approval.group_chief_controller,purchase_sequential_approval.group_finance_manager"/>
+
+
+                <!-- Confirm Purchase Order -->
+                <button name="button_confirm"
+                        type="object"
+                        string="Confirm Order"
+                        class="oe_highlight"
+                        invisible="state != 'finance_approved'"
+                        groups="purchase.group_purchase_manager"
+                        context="{'validate_analytic': True}"/>
+
+
+            </xpath>
+
+                       
+                <!-- Update Statusbar -->
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">
+                    draft,submitted,ops_approved,controller_approved,finance_approved,purchase,done
+                </attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

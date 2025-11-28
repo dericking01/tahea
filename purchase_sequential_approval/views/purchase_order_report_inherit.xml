@@ -1,0 +1,51 @@
+<odoo>
+    <template id="report_purchaseorder_document_inherit_approval"
+              inherit_id="purchase.report_purchaseorder_document">
+
+        <xpath expr="//div[@class='page']" position="after">
+
+            <h3 class="mt32">Approval Summary</h3>
+
+            <table class="table table-sm table-bordered mt8">
+                <tbody>
+
+                    <!-- Created -->
+                  <tr>
+                            <td><strong>Created By</strong></td>
+                            <td><span t-esc="o.create_uid.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.create_date" widget="datetime"/></td>
+                        </tr>
+
+                        <!-- Ops Approval -->
+                        <tr t-if="o.approved_ops_id">
+                            <td><strong>Ops Manager Approved By</strong></td>
+                            <td><span t-esc="o.approved_ops_id.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.approval_date_ops" widget="datetime"/></td>
+                        </tr>
+
+                        <!-- Controller Approval -->
+                        <tr t-if="o.approved_controller_id">
+                            <td><strong>Controller Approved By</strong></td>
+                            <td><span t-esc="o.approved_controller_id.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.approval_date_controller" widget="datetime"/></td>
+                        </tr>
+
+                        <!-- Finance Approval -->
+                        <tr t-if="o.approved_finance_id">
+                            <td><strong>Finance Approved By</strong></td>
+                            <td><span t-esc="o.approved_finance_id.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.approval_date_finance" widget="datetime"/></td>
+                        </tr>
+
+
+                </tbody>
+            </table>
+
+        </xpath>
+
+    </template>
+</odoo>
