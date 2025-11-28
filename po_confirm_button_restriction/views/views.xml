@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="po_confirm_button_restriction.list">
+      <field name="name">po_confirm_button_restriction list</field>
+      <field name="model">po_confirm_button_restriction.po_confirm_button_restriction</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="po_confirm_button_restriction.action_window">
+      <field name="name">po_confirm_button_restriction window</field>
+      <field name="res_model">po_confirm_button_restriction.po_confirm_button_restriction</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="po_confirm_button_restriction.action_server">
+      <field name="name">po_confirm_button_restriction server</field>
+      <field name="model_id" ref="model_po_confirm_button_restriction_po_confirm_button_restriction"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="po_confirm_button_restriction" id="po_confirm_button_restriction.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="po_confirm_button_restriction.menu_1" parent="po_confirm_button_restriction.menu_root"/>
+    <menuitem name="Menu 2" id="po_confirm_button_restriction.menu_2" parent="po_confirm_button_restriction.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="po_confirm_button_restriction.menu_1_list" parent="po_confirm_button_restriction.menu_1"
+              action="po_confirm_button_restriction.action_window"/>
+    <menuitem name="Server to list" id="po_confirm_button_restriction" parent="po_confirm_button_restriction.menu_2"
+              action="po_confirm_button_restriction.action_server"/>
+-->
+  </data>
+</odoo>
