@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <!-- Target the button with id="bid_confirm" (sent state button) -->
                 <button id="bid_confirm" position="attributes">
-                    <attribute name="invisible">state != 'sent'</attribute>
+                    <attribute name="invisible">state not in ('sent', 'finance_approved')</attribute>
                 </button>
                 
                 <!-- Target the button with id="draft_confirm" (draft state button) and hide it completely -->
