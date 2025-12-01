@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_qty_onhand_sales_qty_onhand,sales_qty_onhand.sales_qty_onhand,model_sales_qty_onhand_sales_qty_onhand,base.group_user,1,1,1,1
