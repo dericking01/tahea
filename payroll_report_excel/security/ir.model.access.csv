@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_payroll_report,payroll.report.wiz,model_payroll_report_wiz,,1,1,1,1
-access_hr_payroll_report_excel,payroll.report.excel,model_payroll_report_excel,,1,1,1,1
