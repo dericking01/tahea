@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_report_payroll_manager" model="res.groups">
+            <field name="name">Payroll Manager</field>
+           
+  </record>
+</odoo>
