@@ -56,7 +56,7 @@
 - Docker & Docker Compose
 - Odoo 18 Enterprise License
 - 4GB RAM minimum, 8GB recommended
-- PostgreSQL 15
+- PostgreSQL 17
 
 ### Installation
 
