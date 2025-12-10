@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Override partner form view to mark fields as required -->
+        <record id="view_partner_form_inherit_mandatory_address" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.mandatory.address</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Make street required for vendors -->
+                <xpath expr="//field[@name='street']" position="attributes">
+                    <attribute name="attrs">{'required': [('supplier_rank', '>', 0), ('company_type', '=', 'company')]}</attribute>
+                </xpath>
+                
+                <!-- Make city required for vendors -->
+                <xpath expr="//field[@name='city']" position="attributes">
+                    <attribute name="attrs">{'required': [('supplier_rank', '>', 0), ('company_type', '=', 'company')]}</attribute>
+                </xpath>
+                
+                <!-- Make country required for vendors -->
+                <xpath expr="//field[@name='country_id']" position="attributes">
+                    <attribute name="attrs">{'required': [('supplier_rank', '>', 0), ('company_type', '=', 'company')]}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
