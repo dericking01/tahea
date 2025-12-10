@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Odoo-18.0-%23734BA9?style=for-the-badge&logo=odoo&logoColor=white" alt="Odoo 18">
   <img src="https://img.shields.io/badge/Enterprise-Custom_Modules-%230A66C2?style=for-the-badge" alt="Enterprise">
-  <img src="https://img.shields.io/badge/PostgreSQL-15-%23336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 15">
+  <img src="https://img.shields.io/badge/PostgreSQL-17-%23336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL 15">
   <img src="https://img.shields.io/badge/Docker-Compose-%232496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose">
   <img src="https://img.shields.io/badge/License-MIT-%23007EC7?style=for-the-badge" alt="License MIT">
 </p>
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/5b3e80f0-771e-44e8-9799-51da3018b54b" alt="Odoo Modules Banner" width="800">
+  <img src="https://www.odoo-bs.com/web/image/387011-fd48a8cd/odoo%2018%20blog%20neu%20%281%29.jpg" alt="Odoo Modules Banner" width="800">
 </p>
 
 ## 📦 Modules Overview
