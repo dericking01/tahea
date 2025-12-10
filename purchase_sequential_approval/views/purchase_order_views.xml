@@ -34,15 +34,15 @@
                 <!-- Approve by Ops Manager -->
                 <button name="action_approve_ops"
                         type="object"
-                        string="Approve (Ops)"
+                        string="Approve (PM)"
                         class="oe_highlight"
                         invisible="state != 'submitted'"
                         groups="purchase_sequential_approval.group_ops_manager"/>
 
-                <!-- Approve by Chief Controller -->
+                <!-- Approve by Supply Chain Manager -->
                 <button name="action_approve_controller"
                         type="object"
-                        string="Approve (Controller)"
+                        string="Approve (Supply Chain Manager)"
                         class="oe_highlight"
                         invisible="state != 'ops_approved'"
                         groups="purchase_sequential_approval.group_chief_controller"/>

@@ -8,23 +8,23 @@ class PurchaseOrder(models.Model):
     state = fields.Selection(
         selection_add=[
             ('submitted', 'Submitted for Approval'),
-            ('ops_approved', 'Ops Approved'),
-            ('controller_approved', 'Controller Approved'),
+            ('ops_approved', 'PM Approved'),
+            ('controller_approved', 'Supply Chain Manager Approved'),
             ('finance_approved', 'Finance Approved')
         ],
         tracking=True
     )
 
     # Approval tracking fields
-    approved_ops_id = fields.Many2one('res.users', string="Ops Approved By", readonly=True)
-    approval_date_ops = fields.Datetime(string="Ops Approval Date", readonly=True)
-    approved_controller_id = fields.Many2one('res.users', string="Controller Approved By", readonly=True)
-    approval_date_controller = fields.Datetime(string="Controller Approval Date", readonly=True)
+    approved_ops_id = fields.Many2one('res.users', string="PM Approved By", readonly=True)
+    approval_date_ops = fields.Datetime(string="PM Approval Date", readonly=True)
+    approved_controller_id = fields.Many2one('res.users', string="Supply Chain Manager Approved By", readonly=True)
+    approval_date_controller = fields.Datetime(string="Supply Chain Manager Approval Date", readonly=True)
     approved_finance_id = fields.Many2one('res.users', string="Finance Approved By", readonly=True)
     approval_date_finance = fields.Datetime(string="Finance Approval Date", readonly=True)
 
 
-    def copy(self, default=None):
+    def copy(self, default=None): 
         default = dict(default or {})
         # Clear approval tracking fields when duplicating
         default.update({

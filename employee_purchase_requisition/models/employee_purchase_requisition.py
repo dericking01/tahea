@@ -102,6 +102,8 @@ class PurchaseRequisition(models.Model):
                               ('received', 'Received'),
                               ('cancelled', 'Cancelled')], default='new',
                              copy=False, tracking=True)
+    location = fields.Char(string='Location', help='Location of the site')
+
 
     @api.model
     def create(self, vals):
@@ -132,9 +134,9 @@ class PurchaseRequisition(models.Model):
 
     def action_department_approval(self):
         """Approval from department"""
-        for rec in self.requisition_order_ids:
-            if rec.requisition_type == 'purchase_order' and not rec.partner_id:
-                raise ValidationError('Select a vendor')
+        # for rec in self.requisition_order_ids:
+        #     if rec.requisition_type == 'purchase_order' and not rec.partner_id:
+        #         raise ValidationError('Select a vendor')
         self.write({'state': 'waiting_head_approval'})
         self.manager_id = self.env.uid
         self.department_approval_date = fields.Date.today()
@@ -156,6 +158,10 @@ class PurchaseRequisition(models.Model):
         self.write({'state': 'cancelled'})
         self.rejected_user_id = self.env.uid
         self.reject_date = fields.Date.today()
+
+    def action_reset_to_draft(self):
+        """Reset to draft state"""
+        self.write({'state': 'new'})
 
     def action_create_purchase_order(self):
         """Create purchase order and internal transfer"""
@@ -233,3 +239,19 @@ class PurchaseRequisition(models.Model):
             'employee_purchase_requisition.'
             'action_report_purchase_requisition').report_action(
             self, data=data))
+
+    def copy(self, default=None):
+        """Function to reset fields while duplicating purchase requisition"""
+        default = dict(default or {})
+        default.update({
+            'name': 'New',
+            'state': 'new',
+            'manager_id': False,
+            'requisition_head_id': False,
+            'rejected_user_id': False,
+            'confirmed_date': False,
+            'department_approval_date': False,
+            'approval_date': False,
+            'reject_date': False,
+            'confirm_id': False,})
+        return super(PurchaseRequisition, self).copy(default)
