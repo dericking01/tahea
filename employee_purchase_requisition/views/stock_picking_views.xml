@@ -25,16 +25,20 @@
                         string="Mark In-Transit"
                         type="object"
                         class="oe_highlight"
-                        invisible="state != 'assigned'"
+                        invisible="state != 'assigned' or picking_type_code != 'internal'"
                         />
             </header>
 
-            <xpath expr="//button[@name='button_validate']" position="replace">
-                <!-- Remove original button -->
-                <span></span>
-            </xpath>
-
-
+        <xpath expr="//header/button[@name='button_validate'][@class='o_btn_validate']" position="replace">
+            <!-- Empty - removes the button completely -->
+        </xpath>
+        
+        <!-- Modify the first validate button to show only in 'in_transit' state -->
+        <xpath expr="//header/button[@name='button_validate'][@class='oe_highlight']" position="attributes">
+            <attribute name="invisible">state != 'in_transit'</attribute>
+            <!-- Optionally change the string if needed -->
+            <attribute name="string">Validate In-Transit</attribute>
+        </xpath>
 
         </field>
     </record>
