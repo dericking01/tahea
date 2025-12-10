@@ -33,11 +33,21 @@
             <!-- Empty - removes the button completely -->
         </xpath>
         
-        <!-- Modify the first validate button to show only in 'in_transit' state -->
+        <!-- Modify the first validate button to show in multiple conditions -->
         <xpath expr="//header/button[@name='button_validate'][@class='oe_highlight']" position="attributes">
-            <attribute name="invisible">state != 'in_transit'</attribute>
-            <!-- Optionally change the string if needed -->
-            <attribute name="string">Validate In-Transit</attribute>
+            <attribute name="invisible">
+                not (
+                    (picking_type_code == 'internal' and state == 'in_transit') or
+                    (picking_type_code == 'incoming' and state == 'assigned') or
+                    (picking_type_code == 'outgoing' and state == 'assigned')
+                )
+            </attribute>
+            <!-- Optionally change the string based on picking type -->
+            <attribute name="string">
+                Validate
+                <t t-if="picking_type_code == 'internal'">In-Transit</t>
+                <t t-if="picking_type_code in ['incoming', 'outgoing']">Delivery</t>
+            </attribute>
         </xpath>
 
         </field>

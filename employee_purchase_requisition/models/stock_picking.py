@@ -33,8 +33,8 @@ class Picking(models.Model):
 
     def button_validate(self):
         for rec in self:
-            if rec.state != 'in_transit':
-                raise UserError("You can only validate a picking in the In-Transit state.")
+            if rec.state not in ('in_transit', 'assigned'):
+                raise UserError("You can only validate a picking in the In-Transit or Assigned state.")
         return super().button_validate()
 
 

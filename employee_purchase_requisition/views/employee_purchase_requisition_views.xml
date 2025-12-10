@@ -63,6 +63,11 @@
                             string="Received"
                             type="object"
                             groups="employee_purchase_requisition.employee_requisition_manager"/>
+                    <button name="action_reset_to_draft" class="oe_highlight"
+                            invisible="state != 'cancelled'"
+                            string="Reset to Draft"
+                            type="object"
+                            help="Reset Purchase Requisition to Draft"/>                            
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -93,6 +98,7 @@
                             <field name="employee_id" readonly="state not in ['new']"/>
                             <field name="dept_id"/>
                             <field name="user_id" readonly="state not in ['new']"/>
+                            <field name="location"/>
                         </group>
                         <group>
                             <field name="requisition_date" readonly="state not in ['new']"/>

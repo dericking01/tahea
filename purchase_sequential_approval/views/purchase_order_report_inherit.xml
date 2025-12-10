@@ -19,7 +19,7 @@
 
                         <!-- Ops Approval -->
                         <tr t-if="o.approved_ops_id">
-                            <td><strong>Ops Manager Approved By</strong></td>
+                            <td><strong>Purchase Manager Approved By</strong></td>
                             <td><span t-esc="o.approved_ops_id.name"/></td>
                             <td><strong>Date</strong></td>
                             <td><span t-field="o.approval_date_ops" widget="datetime"/></td>
@@ -27,7 +27,7 @@
 
                         <!-- Controller Approval -->
                         <tr t-if="o.approved_controller_id">
-                            <td><strong>Controller Approved By</strong></td>
+                            <td><strong>Supply Chain Manager Approved By</strong></td>
                             <td><span t-esc="o.approved_controller_id.name"/></td>
                             <td><strong>Date</strong></td>
                             <td><span t-field="o.approval_date_controller" widget="datetime"/></td>
