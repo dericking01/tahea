@@ -62,8 +62,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/odoo18-enterprise-modules.git
-cd odoo18-enterprise-modules
+git clone [https://github.com/dericking01/tahea.git]
+cd tahea
 
 # Copy environment configuration
 cp .env.example .env
