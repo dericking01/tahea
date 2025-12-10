@@ -19,6 +19,8 @@
   <img src="https://github.com/user-attachments/assets/5b3e80f0-771e-44e8-9799-51da3018b54b" alt="Odoo Modules Banner" width="800">
 </p>
 
+---
+
 ## 📦 Modules Overview
 
 ### 🏢 **Core Business Modules**
@@ -47,16 +49,20 @@
 | Module | Description | Status | Version |
 |--------|-------------|--------|---------|
 | **`omnichannel_retail`** | Unified inventory across online/offline | ✅ Production | v2.3.0 |
-| **`loyalty_pro**** | Tiered rewards, gamification, personalized offers | ✅ Production | v1.9.0 |
+| **`loyalty_pro`** | Tiered rewards, gamification, personalized offers | ✅ Production | v1.9.0 |
 | **`subscription_management`** | Recurring billing, proration, dunning | ✅ Production | v2.0.0 |
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
 - Odoo 18 Enterprise License
-- 4GB RAM minimum, 8GB recommended
+- 4GB RAM minimum (8GB recommended)
 - PostgreSQL 15
+
+---
 
 ### Installation
 
@@ -67,11 +73,12 @@ cd odoo18-enterprise-modules
 
 # Copy environment configuration
 cp .env.example .env
-# Edit .env file with your settings
+
+# Edit configuration
 nano .env
 
 # Start the stack
 docker-compose up -d
 
-# Initialize modules (first time setup)
+# Initialize modules (first time)
 ./scripts/init_modules.sh
