@@ -55,14 +55,14 @@
                         invisible="state != 'controller_approved'"
                         groups="purchase_sequential_approval.group_finance_manager"/>
 
-                <!-- Reject -->
+                <!-- Reject Button -->
+                <!-- Visible in all approval states EXCEPT draft and finance_approved -->
                 <button name="action_reject"
                         type="object"
                         string="Reject"
                         class="oe_highlight"
-                        invisible="state != [('controller_approved','ops_approved','finance_approved')]"
+                        invisible="state in ['draft', 'finance_approved']"
                         groups="purchase_sequential_approval.group_ops_manager,purchase_sequential_approval.group_chief_controller,purchase_sequential_approval.group_finance_manager"/>
-
 
                 <!-- Confirm Purchase Order -->
                 <button name="button_confirm"
@@ -72,7 +72,6 @@
                         invisible="state != 'finance_approved'"
                         groups="purchase.group_purchase_manager"
                         context="{'validate_analytic': True}"/>
-
 
             </xpath>
 

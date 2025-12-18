@@ -105,3 +105,8 @@ class PurchaseOrder(models.Model):
             else:
                 raise UserError(_('Order must be in draft or finance approved state to confirm.'))
         return True
+
+    def button_reject(self):
+        for order in self:
+            order.action_reject()
+        return True
