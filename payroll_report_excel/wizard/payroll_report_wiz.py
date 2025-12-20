@@ -80,7 +80,6 @@ class PayrollReportExcelWiz(models.TransientModel):
             payslip_ids = self.env['hr.payslip'].search([
                 ('date_from', '=', self.from_date),
                 ('date_to', '=', self.date_end),
-                ('state', '=', 'verify')
             ])
             colm = 6
 
