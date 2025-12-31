@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+
+
+
+
+<t t-name="pos_kitchen_receipt.kitchenReceipt">
+    <div class="pos-receipt m-0 p-0">
+        <style>
+            @media print {
+                .page-break  {  page-break-before: always; }
+            }   
+            .page-break {   
+                    width: 300px;
+                    background-color: white;
+                    margin: 20px;
+                    padding: 15px;
+                    font-size: 16px;
+                    padding-bottom: 30px;
+                    border-radius: 3px;
+                    overflow: hidden;
+            }
+           
+        </style>
+        <t t-set="rec_i" t-value="0"/>
+         <t t-foreach="props.data" t-as="rep" t-key="rec_i">
+            <t t-set="rec_i" t-value="rec_i+1"/>
+            <p class="page-break">
+            <div class="pos-receipt m-0 p-0">
+                <t t-set="changes" t-value="rep.changes"/>
+                <t t-set="changedlines" t-value="rep.changedlines"/>
+                <t t-set="operational_title" t-value="rep.operational_title"/>
+                <t t-set="fullReceipt" t-value="rep.fullReceipt"/>
+
+
+
+            <!-- Receipt Header -->
+            <div class="receipt-header text-center">
+                <div class="pos-receipt-title">
+                    <t t-if="changes.diningModeUpdate">
+                        <t t-if="changes.takeaway">Dine In -&gt; Take Out</t>
+                        <t t-else="">Take Out -&gt; Dine In</t>
+                    </t>
+                    <t t-else="">
+                        <t t-if="changes.takeaway">Take Out</t>
+                        <t t-else="">Dine In</t>
+                    </t>
+                </div>
+                <div style="font-size: 78%;">
+                    <span><t t-esc="changes.config_name"/> : <t t-esc="changes.time"/></span><br/>
+                    <span>By: <t t-esc="changes.employee_name"/></span>
+                </div>
+                <span class="my-4" style="font-size: 120%;">
+                    <t t-if="changes.table_name">Table <strong><t t-esc="changes.table_name"/></strong></t>
+                    <t t-if="changes.tracking_number" class="fw-light my-3"> # <strong><t t-esc="changes.tracking_number"/></strong></t>
+                </span>
+            </div>
+            <hr style="border: none; border-top: 4px dashed black;"/>
+
+            <!-- Receipt Body -->
+            <div class="pos-receipt-body pb-5" >
+                <!-- Operational Title -->
+                <t t-if="operational_title">
+                    <div class="pos-receipt-title text-center" t-esc="operational_title" />
+                </t>
+                <!-- Order Lines -->
+                        <t t-set="rec_j" t-value="0"/>
+
+                <div t-foreach="changedlines" t-as="line" t-key="rec_j" style="font-size: 120%;">
+                        <t t-set="rec_j" t-value="rec_j+1"/>
+
+                    <div t-attf-class="orderline #{line.isCombo ? 'mx-5 px-2' : 'mx-1'}">
+                        <div class="d-flex medium">
+                            <span class="me-3" t-esc="line.quantity"/> <span class="product-name" t-esc="line.display_name"/>
+                        </div>
+                        <div t-if="line.attribute_value_ids?.length" class="mx-5" style="font-size: 91%;">
+                            <t t-foreach="line.attribute_value_ids" t-as="attribute" t-key="attribute.id">
+                                <p class="p-0 m-0">
+                                    - <t t-esc="attribute.name" /><br/>
+                                </p>
+                            </t>
+                        </div>
+                        <div t-if="line.note" class="fst-italic" style="font-size: 91%;">
+                            <t t-esc="line.note.split('\n').join(', ')"/><br/>
+                        </div>
+                    </div>
+                </div>
+                <!-- General Note -->
+                <!-- if no orderline change that means general note change to handle with less arguments -->
+                <t t-if="(!changedlines.length or fullReceipt) and changes.order_note.length">
+                    <div class="mt-5 fst-italic" style="font-size: 109%;">
+                        <t t-if="changes.order_note">
+                            <t t-esc="changes.order_note.split('\n').join(', ')"/><br/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </p>
+    </t>
+</div>
+</t>
+    
+    <t t-name="pos_kitchen_receipt.KitchenReceiptScreenWidget">
+        <div class="receipt-screen screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="top-content d-flex align-items-center p-2 border-bottom text-center">
+                    <div class="top-content-center flex-grow-1">
+                        <h2 class="mb-0 text-start">Kitchen Receipt Printing</h2>
+                    </div>
+                    <button class="button next highlight btn btn-lg btn-outline-primary" t-on-click="confirm">
+                        <span>Ok</span>
+                        <i class="fa fa-angle-double-right ms-2"></i>
+                    </button>
+                </div>
+                <div class="centered-content mx-auto mt-3 border-start border-end text-center overflow-x-hidden overflow-y-auto">
+                    <div class="button print btn btn-lg btn-primary" t-on-click="printReceipt">
+                        <i class="fa fa-print" t-ref="order-print-receipt-button"></i>
+                        <span> </span>
+                        <span>Print</span>
+                    </div>
+                    <div class="pos-receipt-container text-center" t-ref="order-receipt">
+                        <style>
+                            @media print {
+                                .page-break  {  page-break-before: always; }
+                            }   
+                            .page-break {   
+                                    width: 300px;
+                                    background-color: white;
+                                    margin: 20px;
+                                    padding: 15px;
+                                    font-size: 16px;
+                                    padding-bottom: 30px;
+                                    border-radius: 3px;
+                                    overflow: hidden;
+                            }
+                           
+                        </style>
+                        <t t-set="rec_i" t-value="0"/>
+                        <t t-if="props.data">
+                         <t t-foreach="props.data" t-as="rep" t-key="rec_i">
+                            <t t-set="rec_i" t-value="rec_i+1"/>
+                            <div class="pos-receipt m-0 p-0">
+                                <t t-set="changes" t-value="rep.changes"/>
+                                <t t-set="changedlines" t-value="rep.changedlines"/>
+                                <t t-set="operational_title" t-value="rep.operational_title"/>
+                                <t t-set="fullReceipt" t-value="rep.fullReceipt"/>
+
+
+
+            <!-- Receipt Header -->
+            <div class="receipt-header text-center">
+                <div class="pos-receipt-title">
+                    <t t-if="changes.diningModeUpdate">
+                        <t t-if="changes.takeaway">Dine In -&gt; Take Out</t>
+                        <t t-else="">Take Out -&gt; Dine In</t>
+                    </t>
+                    <t t-else="">
+                        <t t-if="changes.takeaway">Take Out</t>
+                        <t t-else="">Dine In</t>
+                    </t>
+                </div>
+                <div style="font-size: 78%;">
+                    <span><t t-esc="changes.config_name"/> : <t t-esc="changes.time"/></span><br/>
+                    <span>By: <t t-esc="changes.employee_name"/></span>
+                </div>
+                <span class="my-4" style="font-size: 120%;">
+                    <t t-if="changes.table_name">Table <strong><t t-esc="changes.table_name"/></strong></t>
+                    <t t-if="changes.tracking_number" class="fw-light my-3"> # <strong><t t-esc="changes.tracking_number"/></strong></t>
+                </span>
+            </div>
+            <hr style="border: none; border-top: 4px dashed black;"/>
+
+            <!-- Receipt Body -->
+            <div class="pos-receipt-body pb-5" >
+                <!-- Operational Title -->
+                <t t-if="operational_title">
+                    <div class="pos-receipt-title text-center" t-esc="operational_title" />
+                </t>
+                <!-- Order Lines -->
+                        <t t-set="rec_j" t-value="0"/>
+
+                <div t-foreach="changedlines" t-as="line" t-key="rec_j" style="font-size: 120%;">
+                        <t t-set="rec_j" t-value="rec_j+1"/>
+
+                    <div t-attf-class="orderline #{line.isCombo ? 'mx-5 px-2' : 'mx-1'}">
+                        <div class="d-flex medium">
+                            <span class="me-3" t-esc="line.quantity"/> <span class="product-name" t-esc="line.display_name"/>
+                        </div>
+                        <div t-if="line.attribute_value_ids?.length" class="mx-5" style="font-size: 91%;">
+                            <t t-foreach="line.attribute_value_ids" t-as="attribute" t-key="attribute.id">
+                                <p class="p-0 m-0">
+                                    - <t t-esc="attribute.name" /><br/>
+                                </p>
+                            </t>
+                        </div>
+                        <div t-if="line.note" class="fst-italic" style="font-size: 91%;">
+                            <t t-esc="line.note.split('\n').join(', ')"/><br/>
+                        </div>
+                    </div>
+                </div>
+                <!-- General Note -->
+                <!-- if no orderline change that means general note change to handle with less arguments -->
+                <t t-if="(!changedlines.length or fullReceipt) and changes.order_note.length">
+                    <div class="mt-5 fst-italic" style="font-size: 109%;">
+                        <t t-if="changes.order_note">
+                            <t t-esc="changes.order_note.split('\n').join(', ')"/><br/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </div>
+                         </t>
+                     </t>
+                </div>
+                </div>
+            </div>
+        </div>
+    </t>
+  
+
+</templates>
