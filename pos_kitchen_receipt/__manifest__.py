@@ -2,7 +2,7 @@
 
 {
     'name': 'POS Kitchen Receipt',
-    'version': '1.0',
+    'version': '1.01',
     'category': 'Point of Sale',
     'sequence': 6,
     'author': 'Webveer',
