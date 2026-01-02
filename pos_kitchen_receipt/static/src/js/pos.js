@@ -100,10 +100,15 @@ patch(ActionpadWidget.prototype, {
         // const result = await printer.printReceipt(receipt);
         // return result.successful;
     },
-
-   async printChanges2(order, orderChange) {
+    async printChanges2(order, orderChange) {
+        // let isPrinted = false;
+        var receipt = [];
         const unsuccedPrints = [];
-        orderChange.new.sort((a, b) => {
+        const isPartOfCombo = (line) =>
+            line.isCombo || this.models["product.product"].get(line.product_id).type == "combo";
+        const comboChanges = orderChange.new.filter(isPartOfCombo);
+        const normalChanges = orderChange.new.filter((line) => !isPartOfCombo(line));
+        normalChanges.sort((a, b) => {
             const sequenceA = a.pos_categ_sequence;
             const sequenceB = b.pos_categ_sequence;
             if (sequenceA === 0 && sequenceB === 0) {
@@ -112,15 +117,14 @@ patch(ActionpadWidget.prototype, {
 
             return sequenceA - sequenceB;
         });
+        orderChange.new = [...comboChanges, ...normalChanges];
 
-        var receipt = [];
         for (const printer of this.unwatched.printers) {
             const changes = this._getPrintingCategoriesChanges(
                 printer.config.product_categories_ids,
                 orderChange
             );
-
-            const anyChangesToPrint = Object.values(changes).some((change) => change.length);
+            const anyChangesToPrint = changes.new.length;
             const diningModeUpdate = orderChange.modeUpdate;
             if (diningModeUpdate || anyChangesToPrint) {
                 const printed = await this.printReceipts2(
@@ -131,33 +135,25 @@ patch(ActionpadWidget.prototype, {
                     true,
                     diningModeUpdate
                 );
-            receipt.push(printed);
-
-
-            } else {
-                // Print all receipts related to line changes
-                const toPrintArray = this.preparePrintingData(order, changes);
-                for (const [key, value] of Object.entries(toPrintArray)) {
-                    const printed = await this.printReceipts2(order, printer, key, value, false);
-                    // if (!printed) {
-                    //     unsuccedPrints.push(key);
-                    // }
-            receipt.push(printed);
-
-                }
-                // Print Order Note if changed
-                // if (orderChange.generalNote) {
-                //     const printed = await this.printReceipts(order, printer, "Message", []);
-                //     if (!printed) {
-                //         unsuccedPrints.push("General Message");
-                //     }
-                // }
+                changes.new = [];
+                receipt.push(printed);
             }
+
+            // Print all receipts related to line changes
+            const toPrintArray = this.preparePrintingData(order, changes);
+            for (const [key, value] of Object.entries(toPrintArray)) {
+                const printed = await this.printReceipts2(order, printer, key, value, false);
+                 receipt.push(printed);
+
+            }
+            // Print Order Note if changed
+            // if (orderChange.generalNote && anyChangesToPrint) {
+            //     const printed = await this.printReceipts(order, printer, "Message", []);
+            //     receipt.push(printed);
+            // }
         }
         var order = this.get_order();
         order.receipt_val = receipt;
-
-
         // printing errors
         // if (unsuccedPrints.length) {
         //     const failedReceipts = unsuccedPrints.join(", ");
@@ -166,7 +162,10 @@ patch(ActionpadWidget.prototype, {
         //         body: _t("Failed in printing %s changes of the order", failedReceipts),
         //     });
         // }
+
+        // return isPrinted;
     }
+
 });
 
 export class KitchenReceiptScreenWidget extends ReceiptScreen {
