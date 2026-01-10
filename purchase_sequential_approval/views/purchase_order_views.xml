@@ -34,7 +34,7 @@
                 <!-- Approve by Ops Manager -->
                 <button name="action_approve_ops"
                         type="object"
-                        string="Approve (PM)"
+                        string="Approve (OPM)"
                         class="oe_highlight"
                         invisible="state != 'submitted'"
                         groups="purchase_sequential_approval.group_ops_manager"/>
@@ -42,7 +42,7 @@
                 <!-- Approve by Supply Chain Manager -->
                 <button name="action_approve_controller"
                         type="object"
-                        string="Approve (Supply Chain Manager)"
+                        string="Approve (Chief Controller Manager)"
                         class="oe_highlight"
                         invisible="state != 'ops_approved'"
                         groups="purchase_sequential_approval.group_chief_controller"/>
@@ -50,7 +50,7 @@
                 <!-- Approve by Finance -->
                 <button name="action_approve_finance"
                         type="object"
-                        string="Approve (Finance)"
+                        string="Approve (Finance Manager)"
                         class="oe_highlight"
                         invisible="state != 'controller_approved'"
                         groups="purchase_sequential_approval.group_finance_manager"/>
