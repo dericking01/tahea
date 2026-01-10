@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="group_ops_manager" model="res.groups">
-        <field name="name">Operations / PM Manager</field>
+        <field name="name">Operations / OPM Manager</field>
     </record>
 
     <record id="group_chief_controller" model="res.groups">
-        <field name="name">Controlling / Supply Chain Manager</field>
+        <field name="name">Controlling / Chief Controller Manager</field>
     </record>
 
     <record id="group_finance_manager" model="res.groups">
