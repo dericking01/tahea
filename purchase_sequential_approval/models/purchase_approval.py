@@ -8,18 +8,18 @@ class PurchaseOrder(models.Model):
     state = fields.Selection(
         selection_add=[
             ('submitted', 'Submitted for Approval'),
-            ('ops_approved', 'PM Approved'),
-            ('controller_approved', 'Supply Chain Manager Approved'),
+            ('ops_approved', 'OPM Approved'),
+            ('controller_approved', 'Chief Controller Approved'),
             ('finance_approved', 'Finance Approved')
         ],
         tracking=True
     )
 
     # Approval tracking fields
-    approved_ops_id = fields.Many2one('res.users', string="PM Approved By", readonly=True)
-    approval_date_ops = fields.Datetime(string="PM Approval Date", readonly=True)
-    approved_controller_id = fields.Many2one('res.users', string="Supply Chain Manager Approved By", readonly=True)
-    approval_date_controller = fields.Datetime(string="Supply Chain Manager Approval Date", readonly=True)
+    approved_ops_id = fields.Many2one('res.users', string="OPM Approved By", readonly=True)
+    approval_date_ops = fields.Datetime(string="OPM Approval Date", readonly=True)
+    approved_controller_id = fields.Many2one('res.users', string="Chief Controller Approved By", readonly=True)
+    approval_date_controller = fields.Datetime(string="Chief Controller Approval Date", readonly=True)
     approved_finance_id = fields.Many2one('res.users', string="Finance Approved By", readonly=True)
     approval_date_finance = fields.Datetime(string="Finance Approval Date", readonly=True)
 
@@ -73,13 +73,13 @@ class PurchaseOrder(models.Model):
         group_xmlid = 'purchase_sequential_approval.group_finance_manager'
         for order in self:
             if order.state != 'controller_approved':
-                raise UserError(_('Order must be approved by Controller first.'))
+                raise UserError(_('Order must be approved by Chief Controller first.'))
             if not self.env.user.has_group(group_xmlid):
                 raise UserError(_('You are not authorized to approve as Finance Manager.'))
             order.approved_finance_id = self.env.user
             order.approval_date_finance = fields.Datetime.now()
             order.state = 'finance_approved'
-            order.message_post(body=_('Approved by Finance: %s') % self.env.user.name)
+            order.message_post(body=_('Approved by Finance Manager: %s') % self.env.user.name)
 
     def action_reject(self, reason=None):
         allowed_groups = [
