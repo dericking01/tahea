@@ -17,6 +17,10 @@
                     <field name="approval_date_ops" readonly="1"/>
                     <field name="approved_controller_id" readonly="1"/>
                     <field name="approval_date_controller" readonly="1"/>
+                    <field name="approved_ops_manager_id" readonly="1"/>
+                    <field name="approval_date_ops_manager" readonly="1"/>
+                    <field name="approved_internal_control_id" readonly="1"/>
+                    <field name="approval_date_internal_control" readonly="1"/>
                     <field name="approved_finance_id" readonly="1"/>
                     <field name="approval_date_finance" readonly="1"/>
                 </group>
@@ -34,7 +38,7 @@
                 <!-- Approve by Ops Manager -->
                 <button name="action_approve_ops"
                         type="object"
-                        string="Approve (OPM)"
+                        string="Approve (PM)"
                         class="oe_highlight"
                         invisible="state != 'submitted'"
                         groups="purchase_sequential_approval.group_ops_manager"/>
@@ -42,17 +46,33 @@
                 <!-- Approve by Supply Chain Manager -->
                 <button name="action_approve_controller"
                         type="object"
-                        string="Approve (Chief Controller Manager)"
+                        string="Approve (Supply Chain Manager)"
                         class="oe_highlight"
                         invisible="state != 'ops_approved'"
                         groups="purchase_sequential_approval.group_chief_controller"/>
+
+                <!-- Approve by Operations Manager -->
+                <button name="action_approve_ops_manager"
+                        type="object"
+                        string="Approve (Operations Manager)"
+                        class="oe_highlight"
+                        invisible="state != 'controller_approved'"
+                        groups="purchase_sequential_approval.group_operations_manager"/>
+
+                <!-- Approve by Internal Control Manager -->
+                <button name="action_approve_internal_control"
+                        type="object"
+                        string="Approve (Internal Control Manager)"
+                        class="oe_highlight"
+                        invisible="state != 'ops_manager_approved'"
+                        groups="purchase_sequential_approval.group_internal_control_manager"/>
 
                 <!-- Approve by Finance -->
                 <button name="action_approve_finance"
                         type="object"
                         string="Approve (Finance Manager)"
                         class="oe_highlight"
-                        invisible="state != 'controller_approved'"
+                        invisible="state != 'internal_control_approved'"
                         groups="purchase_sequential_approval.group_finance_manager"/>
 
                 <!-- Reject Button -->
@@ -62,7 +82,7 @@
                         string="Reject"
                         class="oe_highlight"
                         invisible="state in ['draft', 'finance_approved']"
-                        groups="purchase_sequential_approval.group_ops_manager,purchase_sequential_approval.group_chief_controller,purchase_sequential_approval.group_finance_manager"/>
+                        groups="purchase_sequential_approval.group_ops_manager,purchase_sequential_approval.group_chief_controller,purchase_sequential_approval.group_operations_manager,purchase_sequential_approval.group_internal_control_manager,purchase_sequential_approval.group_finance_manager"/>
 
                 <!-- Confirm Purchase Order -->
                 <button name="button_confirm"
@@ -79,7 +99,7 @@
                 <!-- Update Statusbar -->
             <xpath expr="//field[@name='state']" position="attributes">
                 <attribute name="statusbar_visible">
-                    draft,submitted,ops_approved,controller_approved,finance_approved,purchase,done
+                    draft,submitted,ops_approved,controller_approved,ops_manager_approved,internal_control_approved,finance_approved,purchase,done
                 </attribute>
             </xpath>
 
