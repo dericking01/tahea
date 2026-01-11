@@ -8,20 +8,26 @@ class PurchaseOrder(models.Model):
     state = fields.Selection(
         selection_add=[
             ('submitted', 'Submitted for Approval'),
-            ('ops_approved', 'OPM Approved'),
-            ('controller_approved', 'Chief Controller Approved'),
-            ('finance_approved', 'Finance Approved')
+            ('ops_approved', 'Procurement Manager Approved'),
+            ('controller_approved', 'Supply Chain Manager Approved'),
+            ('ops_manager_approved', 'Operations Manager Approved'),
+            ('internal_control_approved', 'Internal Control Manager Approved'),
+            ('finance_approved', 'Finance Manager Approved')
         ],
         tracking=True
     )
 
     # Approval tracking fields
-    approved_ops_id = fields.Many2one('res.users', string="OPM Approved By", readonly=True)
-    approval_date_ops = fields.Datetime(string="OPM Approval Date", readonly=True)
-    approved_controller_id = fields.Many2one('res.users', string="Chief Controller Approved By", readonly=True)
-    approval_date_controller = fields.Datetime(string="Chief Controller Approval Date", readonly=True)
-    approved_finance_id = fields.Many2one('res.users', string="Finance Approved By", readonly=True)
-    approval_date_finance = fields.Datetime(string="Finance Approval Date", readonly=True)
+    approved_ops_id = fields.Many2one('res.users', string="Procurement Manager Approved By", readonly=True)
+    approval_date_ops = fields.Datetime(string="Procurement Manager Approval Date", readonly=True)
+    approved_controller_id = fields.Many2one('res.users', string="Supply Chain Manager Approved By", readonly=True)
+    approval_date_controller = fields.Datetime(string="Supply Chain Manager Approval Date", readonly=True)
+    approved_ops_manager_id = fields.Many2one('res.users', string="Operations Manager Approved By", readonly=True)
+    approval_date_ops_manager = fields.Datetime(string="Operations Manager Approval Date", readonly=True)
+    approved_internal_control_id = fields.Many2one('res.users', string="Internal Control Manager Approved By", readonly=True)
+    approval_date_internal_control = fields.Datetime(string="Internal Control Manager Approval Date", readonly=True)
+    approved_finance_id = fields.Many2one('res.users', string="Finance Manager Approved By", readonly=True)
+    approval_date_finance = fields.Datetime(string="Finance Manager Approval Date", readonly=True)
 
 
     def copy(self, default=None): 
@@ -32,6 +38,10 @@ class PurchaseOrder(models.Model):
             'approval_date_ops': False,
             'approved_controller_id': False,
             'approval_date_controller': False,
+            'approved_ops_manager_id': False,
+            'approval_date_ops_manager': False,
+            'approved_internal_control_id': False,
+            'approval_date_internal_control': False,
             'approved_finance_id': False,
             'approval_date_finance': False,
         })
@@ -63,17 +73,41 @@ class PurchaseOrder(models.Model):
             if order.state != 'ops_approved':
                 raise UserError(_('Order must be approved by Operations first.'))
             if not self.env.user.has_group(group_xmlid):
-                raise UserError(_('You are not authorized to approve as Chief Controller.'))
+                raise UserError(_('You are not authorized to approve as Supply Chain Manager.'))
             order.approved_controller_id = self.env.user
             order.approval_date_controller = fields.Datetime.now()
             order.state = 'controller_approved'
             order.message_post(body=_('Approved by Controller: %s') % self.env.user.name)
 
+    def action_approve_ops_manager(self):
+        group_xmlid = 'purchase_sequential_approval.group_operations_manager'
+        for order in self:
+            if order.state != 'controller_approved':
+                raise UserError(_('Order must be approved by Supply Chain Manager first.'))
+            if not self.env.user.has_group(group_xmlid):
+                raise UserError(_('You are not authorized to approve as Operations Manager.'))
+            order.approved_ops_manager_id = self.env.user
+            order.approval_date_ops_manager = fields.Datetime.now()
+            order.state = 'ops_manager_approved'
+            order.message_post(body=_('Approved by Operations Manager: %s') % self.env.user.name)
+
+    def action_approve_internal_control(self):
+        group_xmlid = 'purchase_sequential_approval.group_internal_control_manager'
+        for order in self:
+            if order.state != 'ops_manager_approved':
+                raise UserError(_('Order must be approved by Operations Manager first.'))
+            if not self.env.user.has_group(group_xmlid):
+                raise UserError(_('You are not authorized to approve as Internal Control Manager.'))
+            order.approved_internal_control_id = self.env.user
+            order.approval_date_internal_control = fields.Datetime.now()
+            order.state = 'internal_control_approved'
+            order.message_post(body=_('Approved by Internal Control Manager: %s') % self.env.user.name)
+
     def action_approve_finance(self):
         group_xmlid = 'purchase_sequential_approval.group_finance_manager'
         for order in self:
-            if order.state != 'controller_approved':
-                raise UserError(_('Order must be approved by Chief Controller first.'))
+            if order.state != 'internal_control_approved':
+                raise UserError(_('Order must be approved by Internal Control Manager first.'))
             if not self.env.user.has_group(group_xmlid):
                 raise UserError(_('You are not authorized to approve as Finance Manager.'))
             order.approved_finance_id = self.env.user
@@ -85,6 +119,8 @@ class PurchaseOrder(models.Model):
         allowed_groups = [
             'purchase_sequential_approval.group_ops_manager',
             'purchase_sequential_approval.group_chief_controller',
+            'purchase_sequential_approval.group_operations_manager',
+            'purchase_sequential_approval.group_internal_control_manager',
             'purchase_sequential_approval.group_finance_manager',
         ]
         for order in self:

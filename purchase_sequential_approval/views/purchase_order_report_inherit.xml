@@ -19,7 +19,7 @@
 
                         <!-- Ops Approval -->
                         <tr t-if="o.approved_ops_id">
-                            <td><strong>Operation Manager Approved By</strong></td>
+                            <td><strong>Procurement Manager Approved By</strong></td>
                             <td><span t-esc="o.approved_ops_id.name"/></td>
                             <td><strong>Date</strong></td>
                             <td><span t-field="o.approval_date_ops" widget="datetime"/></td>
@@ -27,10 +27,26 @@
 
                         <!-- Controller Approval -->
                         <tr t-if="o.approved_controller_id">
-                            <td><strong>Chief Controller Approved By</strong></td>
+                            <td><strong>Supply Chain Manager Approved By</strong></td>
                             <td><span t-esc="o.approved_controller_id.name"/></td>
                             <td><strong>Date</strong></td>
                             <td><span t-field="o.approval_date_controller" widget="datetime"/></td>
+                        </tr>
+
+                        <!-- Operations Manager Approval -->
+                        <tr t-if="o.approved_ops_manager_id">
+                            <td><strong>Operations Manager Approved By</strong></td>
+                            <td><span t-esc="o.approved_ops_manager_id.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.approval_date_ops_manager" widget="datetime"/></td>
+                        </tr>
+
+                        <!-- Internal Control Approval -->
+                        <tr t-if="o.approved_internal_control_id">
+                            <td><strong>Internal Control Manager Approved By</strong></td>
+                            <td><span t-esc="o.approved_internal_control_id.name"/></td>
+                            <td><strong>Date</strong></td>
+                            <td><span t-field="o.approval_date_internal_control" widget="datetime"/></td>
                         </tr>
 
                         <!-- Finance Approval -->
