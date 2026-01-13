@@ -1,0 +1,315 @@
+<odoo>
+    <record id="stock_inventory_pdf_report_report" model="ir.actions.report">
+        <field name="name">Inventory Valuation Report</field>
+        <field name="model">inventory.valuation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">eg_inventory_valuation_report.stock_inventory_pdf_report</field>
+        <field name="report_file">eg_inventory_valuation_report.stock_inventory_pdf_report</field>
+        <field name="attachment">False</field>
+    </record>
+
+    <template id="stock_inventory_pdf_report">
+        <t t-call="web.html_container">
+            <div class="page">
+                <div style="position: absolute; left: 20px; top: -10px; text-align: left;">
+                    <p>
+                        <t t-esc="company_name"/>
+                        <br/>
+                        <t t-esc="company_street"/>
+                        <br/>
+                        <t t-esc="company_city"/>
+                        <br/>
+                        <t t-esc="company_zip"/>
+                        <br/>
+                        <t t-esc="company_country"/>
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2>Inventory Valuation Report</h2>
+                    <p>
+                        <strong>Report Duration:</strong>
+                        From
+                        <t t-esc="start_date"/>
+                        to
+                        <t t-esc="end_date"/>
+                    </p>
+                </div>
+
+                <t t-foreach="warehouses" t-as="warehouse">
+                    <div class="page">
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <h3>Warehouse:
+                                <t t-esc="warehouse['warehouse_name']"/>
+                            </h3>
+                        </div>
+
+                        <table class="table table-bordered"
+                               style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Cost Method</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Beginning Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Beginning Value</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Received Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Received Value</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Sale Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Sale Value</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Internal Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Internal Value</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Adjustment Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Adjustment Value</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Ending Qty</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Ending Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="filter_by == 'product'">
+                                    <t t-foreach="warehouse['products']" t-as="line">
+                                        <tr>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['name']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                               <t t-esc="line['costing_method']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['beginning_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['beginning_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['received_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['received_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['sales_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['sales_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['internal_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['internal_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['adjustment_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['adjustment_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['ending_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="line['ending_value']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center;"
+                                            colspan="1">
+                                            <strong>Total</strong>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['beginning_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['beginning_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['received_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['received_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['sales_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['sales_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['internal_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['internal_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['adjustment_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['adjustment_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['ending_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['ending_value']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-elif="filter_by == 'category'">
+                                    <t t-foreach="warehouse['products']" t-as="category">
+                                        <tr>
+                                            <td colspan="13"
+                                                style="background-color: #f2f2f2; font-weight: bold; text-align: center;">
+                                                <t t-esc="category['category_name']"/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="category['products']" t-as="line">
+                                            <tr>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['name']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['costing_method']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['beginning_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['beginning_value']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['received_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['received_value']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['sales_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['sales_value']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['internal_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['internal_value']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['adjustment_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['adjustment_value']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['ending_qty']"/>
+                                                </td>
+                                                <td style="border: 1px solid #000; padding: 8px;">
+                                                    <t t-esc="line['ending_value']"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr style="background-color: #f2f2f2;">
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: center;"
+                                                colspan="1">
+                                                <strong>Category Total</strong>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['beginning_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['beginning_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['received_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['received_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['sales_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['sales_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['internal_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['internal_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['adjustment_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['adjustment_value']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['ending_qty']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 8px;">
+                                                <t t-esc="category['category_totals']['ending_value']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr style="background-color: #f2f2f2;">
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center;"
+                                            colspan="1">
+                                            <strong>Total</strong>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['beginning_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['beginning_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['received_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['received_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['sales_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['sales_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['internal_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['internal_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['adjustment_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['adjustment_value']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['ending_qty']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 8px;">
+                                            <t t-esc="warehouse['totals']['ending_value']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="page-break-before: always;"></div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>
