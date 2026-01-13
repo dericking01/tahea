@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sbl_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">sbl.res.config.settings.view.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <block id="pos_payment_section" position="inside">
+                <setting string="Enable POS Payment" help="Enable customer payment &amp; invoice registration from POS.">
+                    <field name="sbl_enable_pos_payment"/>
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

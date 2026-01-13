@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sensible_pos_payment_invoice.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//t[@t-if='props.showRemainingButtons']//div[hasclass('control-buttons')]" position="inside">
+            <button class="o_pricelist_button btn btn-secondary btn-lg py-5" t-on-click="() => this.pos.selectPaymentPartner()" t-if="pos.config.sbl_enable_pos_payment">
+                <i class="fa fa-money me-2" role="img" aria-label="Payment" title="Payment" />
+                <span>Payment</span>
+            </button>
+            <button class="o_pricelist_button btn btn-secondary btn-lg py-5" t-on-click="() => this.pos.selectInvoices()" t-if="pos.config.sbl_enable_pos_payment">
+                <i class="fa fa-university me-2" role="img" aria-label="Payment" title="Payment" />
+                <span>Invoices</span>
+            </button>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sbl_view_pos_account_payment_register_form" model="ir.ui.view">
+        <field name="name">sbl.pos.account.payment.register.form</field>
+        <field name="model">account.payment</field>
+        <field name="priority">999</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="name">
+                        <field name="partner_id"/>
+                        <field name="journal_id"/>
+                        <field name="memo"/>
+                        <label for="amount"/>
+                        <div name="amount_div" class="o_row">
+                            <field name="amount" readonly="state != 'draft'" on_change="1"/>
+                            <field name="currency_id" options="{'no_create': True, 'no_open': True}" invisible="1"/>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sbl_pos_account_payment_register_action" model="ir.actions.act_window">
+        <field name="name">Register Customer Payment</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="sbl_view_pos_account_payment_register_form"/>
+    </record>
+</odoo>

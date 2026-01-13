@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sensible_pos_payment.PaymentReceipt">
+        <div class="sbl_pos_receipt w-100 border border-dark">
+            <PaymentReceiptHeader t-if="props.data" data="props.data" />
+            
+            <div class="sbl_pos_receipt_body">
+                <!-- Payment Details Title -->
+                <div class="py-2 px-3 border-bottom border-dark">
+                    <h5 class="sbl_pos_receipt_title text-center fw-bold mb-0 text-uppercase text-dark">
+                        PAYMENT RECEIPT
+                    </h5>
+                </div>
+                
+                <!-- Payment Information -->
+                <div class="p-3">
+                    <table class="table table-borderless w-100 mb-0">
+                        <tbody>
+                            <!-- Reference -->
+                            <tr>
+                                <td class="py-2 fw-bold text-dark" style="width: 40%;">REF:</td>
+                                <td class="py-2 text-end text-dark" t-out="props.payment.display_name"/>
+                            </tr>
+                            
+                            <!-- Memo -->
+                            <tr t-if="props.payment.memo">
+                                <td class="py-2 fw-bold text-dark">MEMO:</td>
+                                <td class="py-2 text-end text-dark" t-out="props.payment.memo"/>
+                            </tr>
+                            
+                            <!-- Customer -->
+                            <tr t-if="props.payment.partner_id">
+                                <td class="py-2 fw-bold text-dark">CUSTOMER:</td>
+                                <td class="py-2 text-end text-dark" t-out="props.payment.partner_id[1]"/>
+                            </tr>
+                            
+                            <!-- Invoice Number (if payment from invoice) -->
+                            <tr t-if="props.payment.invoice">
+                                <td class="py-2 fw-bold text-dark">INVOICE:</td>
+                                <td class="py-2 text-end text-dark" t-out="props.payment.invoice.number"/>
+                            </tr>
+                            
+                            <!-- Invoice Date (if payment from invoice) -->
+                            <tr t-if="props.payment.invoice and props.payment.invoice.date">
+                                <td class="py-2 fw-bold text-dark">INV. DATE:</td>
+                                <td class="py-2 text-end text-dark" t-out="props.payment.invoice.date"/>
+                            </tr>
+                            
+                            <!-- Amount (Highlighted) -->
+                            <tr>
+                                <td class="py-3 fw-bold text-dark fs-5"><strong>AMOUNT:</strong></td>
+                                <td class="py-3 text-end fw-bold text-dark fs-4">
+                                    <strong t-out="props.formatCurrency(props.payment.amount, props.payment.currency)"/>
+                                </td>
+                            </tr>
+                            
+                            <!-- Payment Method -->
+                            <tr t-if="props.payment.journal_id">
+                                <td class="py-2 fw-bold text-dark">PAYMENT METHOD:</td>
+                                <td class="py-2 text-end text-dark text-uppercase" t-out="props.payment.journal_id[1]"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Footer -->
+                <div class="border-top border-dark text-center py-2">
+                    <div class="mb-1">
+                        <strong>Date: </strong><span t-esc="new Date().toLocaleDateString()"/>
+                        <span class="mx-3">|</span>
+                        <strong>Time: </strong><span t-esc="new Date().toLocaleTimeString()"/>
+                    </div>
+                    <div class="border-top border-dark pt-2 mt-2">
+                        <div class="fw-bold text-uppercase">THANK YOU FOR YOUR PAYMENT!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
