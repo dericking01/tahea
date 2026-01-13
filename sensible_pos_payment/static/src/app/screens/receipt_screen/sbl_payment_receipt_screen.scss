@@ -1,0 +1,124 @@
+.sbl_pos_receipt_container {
+    direction: ltr;
+
+    .sbl_order_container {
+        padding: 0;
+        pointer-events: none;
+
+        .sbl_orderline:hover {
+            background: none;
+        }
+    }
+    
+    // Printer-friendly receipt styling
+    .sbl_pos_receipt {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.4;
+        max-width: 100%;
+        
+        .sbl_receipt_header {
+            .sbl_pos_receipt_logo {
+                filter: contrast(1.2) brightness(0.9);
+            }
+            
+            .sbl_company_name {
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+        }
+        
+        .sbl_pos_receipt_title {
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+        
+        table {
+            font-size: 12px;
+            
+            td {
+                padding: 8px 4px !important;
+                vertical-align: middle;
+            }
+            
+            // Amount row emphasis
+            tr[style*="border-width: 2px"] {
+                td {
+                    padding: 12px 4px !important;
+                    font-weight: bold !important;
+                    font-size: 14px;
+                }
+            }
+        }
+        
+        // Border styles for better print visibility
+        .border-dark {
+            border-color: #000 !important;
+            border-width: 1px !important;
+        }
+        
+        // Print-specific styling
+        @media print {
+            font-size: 11px;
+            
+            .sbl_company_name {
+                font-size: 14px;
+            }
+            
+            .sbl_pos_receipt_title {
+                font-size: 12px;
+            }
+            
+            table td {
+                padding: 6px 2px !important;
+            }
+        }
+    }
+}
+
+@page {
+    padding: 15px;
+}
+
+.sbl_pos_receipt_print {
+    .sbl_pos_receipt {
+        margin: 0 !important;
+        border: none !important;
+        font-size: 12px !important;
+        width: 100% !important;
+    }
+}
+
+@media print {
+    .sbl_pos_receipt {
+        contain: paint;
+        background-color: transparent;
+    }
+    .render-container .sbl_pos_receipt * {
+        background-color: transparent !important;
+        color: black !important;
+    }
+    .render-container .sbl_pos_receipt {
+        margin: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        border: none !important;
+        font-size: 14px !important;
+        width: 266px !important;
+    }
+    .render-container {
+        position: absolute !important;
+        top: 10px;
+        left: 10px;
+    }
+    .o-main-components-container  {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+    }
+    body > *:not(.o-main-components-container),
+    .o-main-components-container > *:not(.render-container-parent),
+    .render-container-parent > *:not(.render-container) {
+        display: none !important;
+    }
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sensible_pos_payment.PaymentReceiptHeader">
+        <div class="sbl_receipt_header w-100 text-center py-2 mb-2 border-bottom border-dark">
+            <div class="d-flex flex-column align-items-center">
+                <img t-attf-src="/web/image?model=res.company&amp;id={{props.data.company.id}}&amp;field=logo" 
+                     alt="Company Logo" 
+                     class="sbl_pos_receipt_logo img-fluid mb-2" 
+                     style="max-height: 60px; max-width: 180px;"/>
+                
+                <div class="sbl_pos_receipt_contact text-center">
+                    <h4 t-if="props.data.company.name" 
+                        class="sbl_company_name fw-bold mb-2 text-uppercase text-dark" 
+                        t-esc="props.data.company.name" />
+                    
+                    <div class="sbl_contact_info small text-dark">
+                        <div t-if="props.data.company.phone" class="mb-1">
+                            <strong>Tel: </strong><span t-esc="props.data.company.phone" />
+                        </div>
+                        <div t-if="props.data.company.email" class="mb-1">
+                            <strong>Email: </strong><span t-esc="props.data.company.email" />
+                        </div>
+                        <div t-if="props.data.company.website" class="mb-1">
+                            <strong>Web: </strong><span t-esc="props.data.company.website" />
+                        </div>
+                    </div>
+                    
+                    <div t-if="props.data.header" 
+                         class="sbl_header_info mt-2 small text-dark" 
+                         style="white-space:pre-line" 
+                         t-esc="props.data.header" />
+                    
+                    <div t-if="props.data.cashier" class="sbl_cashier_info mt-2 pt-2 border-top border-dark">
+                        <div class="text-center">
+                            <strong>Served by: </strong><span t-esc="props.data.cashier" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sbl_pos_account_payment_register_user,sbl.pos.account.payment.register.user,model_account_payment,base.group_user,1,1,1,1
+access_sbl_pos_account_payment_register_admin,sbl.pos.account.payment.register.admin,model_account_payment,base.group_system,1,1,1,1

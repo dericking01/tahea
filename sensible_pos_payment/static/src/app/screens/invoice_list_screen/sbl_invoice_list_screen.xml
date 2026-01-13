@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="sensible_pos_payment.InvoiceListScreen">
+        <Dialog bodyClass="'invoice-list overflow-y-auto'" contentClass="'h-100'">
+            <t t-set-slot="header">
+                <h2 class="mb-0 mr-2">Select Invoice</h2>
+                <Input 
+                    tModel="[state, 'searchQuery']"
+                    class="'ms-auto'"
+                    placeholder.translate="Search invoices..."
+                    icon="{type: 'fa', value: 'fa-search'}"
+                    debounceMillis="100"
+                />
+            </t>
+            
+            <div class="invoice-list">
+                <t t-if="state.loading">
+                    <div class="loading">
+                        <i class="fa fa-spinner fa-spin"></i>
+                        <span>Loading invoices...</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="invoice-items">
+                        <t t-foreach="filteredInvoices" t-as="invoice" t-key="invoice.id">
+                            <div class="invoice-item" t-on-click="() => this.onSelectInvoice(invoice)">
+                                <div class="invoice-header">
+                                    <span class="invoice-name"><t t-esc="invoice.name"/></span>
+                                    <span class="invoice-amount">
+                                        <t t-esc="invoice.currency_id[1]"/> <t t-esc="invoice.amount_residual"/>
+                                    </span>
+                                </div>
+                                <div class="invoice-details">
+                                    <span class="customer-name"><t t-esc="invoice.partner_id[1]"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+            
+            <t t-set-slot="footer">
+                <button class="btn btn-secondary btn-lg lh-lg" t-on-click="() => this.props.close()">
+                    Cancel
+                </button>
+            </t>
+        </Dialog>
+    </t>
+</templates> 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="sensible_pos_payment.PaymentReceiptScreen">
+        <div class="receipt-screen screen h-100 bg-100">
+            <div class="screen-content d-flex flex-column h-100">
+                <div class="default-view d-flex flex-lg-row flex-column overflow-hidden flex-grow-1">
+                    <div class="actions d-flex flex-column justify-content-between flex-lg-grow-1 flex-grow-0 flex-shrink-1 flex-basis-0 border-end">
+                        <div class="o_payment_successful d-flex flex-column w-100 w-xxl-75 p-3 pt-xxl-5 mx-auto">
+                            <div class="d-flex flex-column align-items-center p-1 p-lg-3 border border-success rounded-3 bg-success-subtle text-success fs-3">
+                                <i t-if="!ui.isSmall" class="fa fa-fw fa-2x fa-check-circle"/>
+                                <span class="fs-3 fw-bolder">Payment Created Successfully</span>
+                            </div>
+                            <hr />
+                            <div class="receipt-options d-flex flex-column gap-2">
+                                <div class="d-flex gap-1">
+                                    <button class="button print btn btn-lg btn-secondary w-100 py-3" t-on-click="() => doFullPrint.call()">
+                                        <i t-attf-class="fa {{doFullPrint.status === 'loading' ? 'fa-fw fa-spin fa-circle-o-notch' : 'fa-print'}} me-1" />Print Payment Receipt
+                                    </button>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex">
+                                        <input type="text" class="flex-grow-1 border p-3 bg-view pe-5 border-end-0 rounded-start-2 position-relative send-receipt-email-input" t-attf-placeholder="e.g. john.doe@mail.com" t-model="state.email" />
+                                        <div>
+                                            <button t-att-style="`width: ${this.ui.isSmall ? '4rem' : '8rem'}`" class="btn btn-primary btn-lg lh-lg rounded-start-0 h-100" t-att-disabled="!isValidEmail" t-on-click="() => this.actionSendReceiptOnEmail()">
+                                                <i t-attf-class="fa {{sendReceipt.status === 'loading' and sendReceipt.lastArgs?.[0]?.name === 'Email' ? 'fa-fw fa-spin fa-circle-o-notch' : 'fa-paper-plane'}}" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <button class="button continue btn btn-lg btn-primary w-100 py-3" t-on-click="() => this.continueToProductScreen()">
+                                        <i class="fa fa-arrow-left me-1" /> Back
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sbl_pos_receipt_container d-flex flex-grow-1 flex-lg-grow-0 w-100 w-lg-50 user-select-none justify-content-center bg-200 text-center overflow-hidden">
+                        <div t-att-class="{ 'w-50': !ui.isSmall }" class="d-inline-block m-2 m-lg-3 p-3 border rounded bg-view text-start overflow-y-auto">
+                            <div t-if="!state.companyData" class="d-flex justify-content-center align-items-center h-100">
+                                <div class="text-muted">
+                                    <i class="fa fa-spin fa-spinner me-2"></i>Loading receipt...
+                                </div>
+                            </div>
+                            <PaymentReceipt t-if="state.companyData" data="state.companyData" formatCurrency="env.utils.formatCurrency" payment="props.payment"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
