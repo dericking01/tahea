@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_inventory_valuation_report_form" model="ir.ui.view">
+        <field name="name">inventory.valuation.report.form</field>
+        <field name="model">inventory.valuation.report</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Valuation Report">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="warehouse_ids" widget='many2many_tags'/>
+                        </group>
+                        <group>
+                            <field name="group_by_category"/>
+                            <field name="filter_by" invisible="group_by_category != True" widget="radio"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_xls_report" string="Export XLS" type="object" class="btn-primary"/>
+                    <button name="action_pdf_report" string="Export PDF" type="object" class="btn-primary"/>
+                    <button name="action_cancel" string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_inventory_valuation_report" model="ir.actions.act_window">
+        <field name="res_model">inventory.valuation.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_inventory_valuation_report_form"/>
+        <field name="target">new</field>
+    </record>
+    <menuitem name="Inventory Valuation Report" id="import_inventory_valuation_report_wizard"
+              action="action_inventory_valuation_report"
+              parent="stock.menu_warehouse_report"/>
+</odoo>
