@@ -16,6 +16,9 @@
                             <field name="warehouse_ids" widget='many2many_tags'/>
                         </group>
                         <group>
+                            <field name="location_ids" widget='many2many_tags'/>
+                        </group>
+                        <group>
                             <field name="group_by_category"/>
                             <field name="filter_by" invisible="group_by_category != True" widget="radio"/>
                         </group>

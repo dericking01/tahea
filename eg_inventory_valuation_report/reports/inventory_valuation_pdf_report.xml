@@ -39,7 +39,7 @@
                 <t t-foreach="warehouses" t-as="warehouse">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 40px;">
-                            <h3>Warehouse:
+                            <h3>Stock Location:
                                 <t t-esc="warehouse['warehouse_name']"/>
                             </h3>
                         </div>
