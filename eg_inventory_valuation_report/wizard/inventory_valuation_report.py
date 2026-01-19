@@ -23,8 +23,20 @@ class InventoryValuationReport(models.TransientModel):
         ('product', 'Product'),
         ('category', 'Category')
     ], string='Filter By', default='product')
+    
+    # New filter type to choose between warehouses and locations
+    filter_type = fields.Selection([
+        ('warehouse', 'Warehouses'),
+        ('location', 'Specific Locations'),
+        ('both', 'Both Warehouses and Locations')
+    ], string='Filter Type', default='warehouse')
+    
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    location_ids = fields.Many2many('stock.location', string='Locations')
+    location_ids = fields.Many2many(
+        'stock.location', 
+        string='Locations',
+        domain="[('usage', 'in', ['internal', 'inventory'])]"
+    )
     company_id = fields.Many2one('res.company', string='Company')
 
     @api.constrains('start_date', 'end_date')
@@ -35,8 +47,49 @@ class InventoryValuationReport(models.TransientModel):
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
+        """Reset warehouses and locations when company changes"""
         self.warehouse_ids = False
         self.location_ids = False
+    
+    @api.onchange('filter_type')
+    def _onchange_filter_type(self):
+        """Clear irrelevant fields based on filter type selection"""
+        if self.filter_type == 'warehouse':
+            self.location_ids = False
+        elif self.filter_type == 'location':
+            self.warehouse_ids = False
+
+    def _get_all_report_targets(self):
+        """
+        Get all warehouses and locations to generate reports for
+        Returns a list of dictionaries with type, name, id, and object
+        """
+        targets = []
+        
+        # Add warehouses if selected or filter_type includes warehouses
+        if self.filter_type in ['warehouse', 'both']:
+            warehouse_ids = self.warehouse_ids or self.env['stock.warehouse'].search([])
+            for warehouse in warehouse_ids:
+                targets.append({
+                    'type': 'warehouse',
+                    'name': warehouse.name,
+                    'id': warehouse.id,
+                    'object': warehouse
+                })
+        
+        # Add locations if selected or filter_type includes locations
+        if self.filter_type in ['location', 'both']:
+            location_ids = self.location_ids or False
+            if location_ids:
+                for location in location_ids:
+                    targets.append({
+                        'type': 'location',
+                        'name': location.complete_name,
+                        'id': location.id,
+                        'object': location
+                    })
+        
+        return targets
 
     def action_pdf_report(self):
         report_data = {
@@ -48,31 +101,26 @@ class InventoryValuationReport(models.TransientModel):
             'company_zip': self.env.user.company_id.zip,
             'company_country': self.env.user.company_id.country_id.name if self.env.user.company_id.country_id else '',
             'filter_by': self.filter_by,
-            'warehouses': [],
+            'filter_type': self.filter_type,
+            'targets': [],
         }
-        report_data['warehouses'] = []
-        warehouse_ids = self.warehouse_ids or self.env['stock.warehouse'].search([])
-        location_ids = self.location_ids
         
-        for warehouse_id in warehouse_ids:
-            products, totals = self._get_product_data(warehouse_id, location_ids)
-            warehouse_data = {
-                'warehouse_name': warehouse_id.name,
+        # Get all targets (warehouses and locations)
+        targets = self._get_all_report_targets()
+        
+        for target in targets:
+            if target['type'] == 'warehouse':
+                products, totals = self._get_product_data(target['object'], None)
+            else:  # location
+                products, totals = self._get_product_data_for_location(target['object'])
+            
+            target_data = {
+                'type': target['type'],
+                'name': target['name'],
                 'products': products,
                 'totals': totals
             }
-            report_data['warehouses'].append(warehouse_data)
-        
-        # Handle locations if specified
-        if location_ids:
-            for location_id in location_ids:
-                products, totals = self._get_product_data_for_location(location_id)
-                warehouse_data = {
-                    'warehouse_name': location_id.name,
-                    'products': products,
-                    'totals': totals
-                }
-                report_data['warehouses'].append(warehouse_data)
+            report_data['targets'].append(target_data)
         
         report_action = self.env.ref('eg_inventory_valuation_report.stock_inventory_pdf_report_report')
         return report_action.report_action(self, data=report_data)
@@ -80,12 +128,25 @@ class InventoryValuationReport(models.TransientModel):
     def action_xls_report(self):
         output = BytesIO()
         workbook = xlwt.Workbook()
-        warehouse_ids = self.warehouse_ids or self.env['stock.warehouse'].search([])
-        location_ids = self.location_ids
         
-        for warehouse_id in warehouse_ids:
-            products, totals = self._get_product_data(warehouse_id, location_ids)
-            sheet = workbook.add_sheet(f"Inventory Valuation Report - {warehouse_id.name}")
+        # Get all targets (warehouses and locations)
+        targets = self._get_all_report_targets()
+        
+        for target in targets:
+            if target['type'] == 'warehouse':
+                products, totals = self._get_product_data(target['object'], None)
+            else:  # location
+                products, totals = self._get_product_data_for_location(target['object'])
+            
+            # Create sheet name
+            sheet_name = f"Inventory Valuation - {target['name']}"
+            # Limit sheet name to 31 characters (Excel limitation)
+            if len(sheet_name) > 31:
+                sheet_name = sheet_name[:28] + "..."
+            
+            sheet = workbook.add_sheet(sheet_name)
+            
+            # Set column widths
             sheet.col(0).width = int(33 * 260)
             sheet.col(1).width = int(20 * 260)
             sheet.col(2).width = int(17 * 260)
@@ -101,12 +162,14 @@ class InventoryValuationReport(models.TransientModel):
             sheet.col(12).width = int(17 * 260)
             sheet.col(13).width = int(17 * 260)
 
+            # Set row heights
             sheet.row(0).height = 150 * 4
             sheet.row(1).height = 150 * 3
             sheet.row(2).height = 150 * 3
             for i in range(3, 10):
                 sheet.row(i).height = 150 * 2
 
+            # Define styles
             header_style = xlwt.easyxf(
                 'font:height 500,bold True;pattern: pattern solid, fore_colour ice_blue ;align: horiz center; borders: top_color black, bottom_color black, right_color black, left_color black, '
                 'left thin, right thin, top thin, bottom thin;'
@@ -125,12 +188,14 @@ class InventoryValuationReport(models.TransientModel):
                 'top thin, bottom thin;'
             )
 
-            sheet.write_merge(0, 0, 0, 13, f"Stock Inventory Valuation Report - {warehouse_id.name}", header_style)
+            # Write headers
+            sheet.write_merge(0, 0, 0, 13, f"Stock Inventory Valuation Report - {target['name']}", header_style)
             sheet.write_merge(1, 1, 0, 13,
-                              f"Company:{self.company_id.name}",
+                              f"Company: {self.company_id.name if self.company_id else self.env.user.company_id.name}",
                               chanes_style)
             sheet.write_merge(2, 2, 0, 13, f"{self.start_date} To {self.end_date}", chanes_style)
 
+            # Write column headers
             sheet.write(3, 0, 'Products', chanes_style)
             sheet.write_merge(3, 3, 1, 1, 'Costing Methods', chanes_style)
             sheet.write_merge(3, 3, 2, 3, 'Beginning', chanes_style)
@@ -152,8 +217,9 @@ class InventoryValuationReport(models.TransientModel):
             sheet.write_merge(4, 4, 12, 12, 'Qty', text_style)
             sheet.write_merge(4, 4, 13, 13, 'Value', text_style)
 
+            # Write product data
             row = 5
-            warehouse_totals = {
+            target_totals = {
                 'beginning_qty': 0,
                 'beginning_value': 0,
                 'received_qty': 0,
@@ -170,248 +236,90 @@ class InventoryValuationReport(models.TransientModel):
 
             for product_data in products:
                 if self.filter_by == 'category' and 'category_name' in product_data:
+                    # Write category header
                     sheet.write(row, 0, product_data['category_name'], total_style)
                     row += 1
+                    
+                    # Write products in category
                     for product in product_data['products']:
                         sheet.write(row, 0, product['name'])
                         sheet.write(row, 1, product.get('costing_method', ''))
-                        sheet.write(row, 2, product.get('beginning_qty'))
-                        sheet.write(row, 3, product.get('beginning_value'))
-                        sheet.write(row, 4, product.get('received_qty'))
-                        sheet.write(row, 5, product.get('received_value'))
-                        sheet.write(row, 6, product.get('sales_qty'))
-                        sheet.write(row, 7, product.get('sales_value'))
-                        sheet.write(row, 8, product.get('internal_qty'))
-                        sheet.write(row, 9, product.get('internal_value'))
-                        sheet.write(row, 10, product.get('adjustment_qty'))
-                        sheet.write(row, 11, product.get('adjustment_value'))
-                        sheet.write(row, 12, product.get('ending_qty'))
-                        sheet.write(row, 13, product.get('ending_value'))
+                        sheet.write(row, 2, product.get('beginning_qty', 0))
+                        sheet.write(row, 3, product.get('beginning_value', 0))
+                        sheet.write(row, 4, product.get('received_qty', 0))
+                        sheet.write(row, 5, product.get('received_value', 0))
+                        sheet.write(row, 6, product.get('sales_qty', 0))
+                        sheet.write(row, 7, product.get('sales_value', 0))
+                        sheet.write(row, 8, product.get('internal_qty', 0))
+                        sheet.write(row, 9, product.get('internal_value', 0))
+                        sheet.write(row, 10, product.get('adjustment_qty', 0))
+                        sheet.write(row, 11, product.get('adjustment_value', 0))
+                        sheet.write(row, 12, product.get('ending_qty', 0))
+                        sheet.write(row, 13, product.get('ending_value', 0))
 
-                        warehouse_totals['beginning_qty'] += product['beginning_qty']
-                        warehouse_totals['beginning_value'] += product['beginning_value']
-                        warehouse_totals['received_qty'] += product['received_qty']
-                        warehouse_totals['received_value'] += product['received_value']
-                        warehouse_totals['sales_qty'] += product['sales_qty']
-                        warehouse_totals['sales_value'] += product['sales_value']
-                        warehouse_totals['internal_qty'] += product['internal_qty']
-                        warehouse_totals['internal_value'] += product['internal_value']
-                        warehouse_totals['adjustment_qty'] += product['adjustment_qty']
-                        warehouse_totals['adjustment_value'] += product['adjustment_value']
-                        warehouse_totals['ending_qty'] += product['ending_qty']
-                        warehouse_totals['ending_value'] += product['ending_value']
+                        # Update totals
+                        target_totals['beginning_qty'] += product.get('beginning_qty', 0)
+                        target_totals['beginning_value'] += product.get('beginning_value', 0)
+                        target_totals['received_qty'] += product.get('received_qty', 0)
+                        target_totals['received_value'] += product.get('received_value', 0)
+                        target_totals['sales_qty'] += product.get('sales_qty', 0)
+                        target_totals['sales_value'] += product.get('sales_value', 0)
+                        target_totals['internal_qty'] += product.get('internal_qty', 0)
+                        target_totals['internal_value'] += product.get('internal_value', 0)
+                        target_totals['adjustment_qty'] += product.get('adjustment_qty', 0)
+                        target_totals['adjustment_value'] += product.get('adjustment_value', 0)
+                        target_totals['ending_qty'] += product.get('ending_qty', 0)
+                        target_totals['ending_value'] += product.get('ending_value', 0)
 
                         row += 1
+                        
                 elif self.filter_by == 'product':
+                    # Write individual product
                     sheet.write(row, 0, product_data['name'])
                     sheet.write(row, 1, product_data.get('costing_method', ''))
-                    sheet.write(row, 2, product_data.get('beginning_qty'))
-                    sheet.write(row, 3, product_data.get('beginning_value'))
-                    sheet.write(row, 4, product_data.get('received_qty'))
-                    sheet.write(row, 5, product_data.get('received_value'))
-                    sheet.write(row, 6, product_data.get('sales_qty'))
-                    sheet.write(row, 7, product_data.get('sales_value'))
-                    sheet.write(row, 8, product_data.get('internal_qty'))
-                    sheet.write(row, 9, product_data.get('internal_value'))
-                    sheet.write(row, 10, product_data.get('adjustment_qty'))
-                    sheet.write(row, 11, product_data.get('adjustment_value'))
-                    sheet.write(row, 12, product_data.get('ending_qty'))
-                    sheet.write(row, 13, product_data.get('ending_value'))
+                    sheet.write(row, 2, product_data.get('beginning_qty', 0))
+                    sheet.write(row, 3, product_data.get('beginning_value', 0))
+                    sheet.write(row, 4, product_data.get('received_qty', 0))
+                    sheet.write(row, 5, product_data.get('received_value', 0))
+                    sheet.write(row, 6, product_data.get('sales_qty', 0))
+                    sheet.write(row, 7, product_data.get('sales_value', 0))
+                    sheet.write(row, 8, product_data.get('internal_qty', 0))
+                    sheet.write(row, 9, product_data.get('internal_value', 0))
+                    sheet.write(row, 10, product_data.get('adjustment_qty', 0))
+                    sheet.write(row, 11, product_data.get('adjustment_value', 0))
+                    sheet.write(row, 12, product_data.get('ending_qty', 0))
+                    sheet.write(row, 13, product_data.get('ending_value', 0))
 
-                    warehouse_totals['beginning_qty'] += product_data['beginning_qty']
-                    warehouse_totals['beginning_value'] += product_data['beginning_value']
-                    warehouse_totals['received_qty'] += product_data['received_qty']
-                    warehouse_totals['received_value'] += product_data['received_value']
-                    warehouse_totals['sales_qty'] += product_data['sales_qty']
-                    warehouse_totals['sales_value'] += product_data['sales_value']
-                    warehouse_totals['internal_qty'] += product_data['internal_qty']
-                    warehouse_totals['internal_value'] += product_data['internal_value']
-                    warehouse_totals['adjustment_qty'] += product_data['adjustment_qty']
-                    warehouse_totals['adjustment_value'] += product_data['adjustment_value']
-                    warehouse_totals['ending_qty'] += product_data['ending_qty']
-                    warehouse_totals['ending_value'] += product_data['ending_value']
+                    # Update totals
+                    target_totals['beginning_qty'] += product_data.get('beginning_qty', 0)
+                    target_totals['beginning_value'] += product_data.get('beginning_value', 0)
+                    target_totals['received_qty'] += product_data.get('received_qty', 0)
+                    target_totals['received_value'] += product_data.get('received_value', 0)
+                    target_totals['sales_qty'] += product_data.get('sales_qty', 0)
+                    target_totals['sales_value'] += product_data.get('sales_value', 0)
+                    target_totals['internal_qty'] += product_data.get('internal_qty', 0)
+                    target_totals['internal_value'] += product_data.get('internal_value', 0)
+                    target_totals['adjustment_qty'] += product_data.get('adjustment_qty', 0)
+                    target_totals['adjustment_value'] += product_data.get('adjustment_value', 0)
+                    target_totals['ending_qty'] += product_data.get('ending_qty', 0)
+                    target_totals['ending_value'] += product_data.get('ending_value', 0)
 
                     row += 1
 
+            # Write totals row
             sheet.write(row, 0, 'Total', total_style)
-            sheet.write(row, 2, warehouse_totals['beginning_qty'])
-            sheet.write(row, 3, warehouse_totals['beginning_value'])
-            sheet.write(row, 4, warehouse_totals['received_qty'])
-            sheet.write(row, 5, warehouse_totals['received_value'])
-            sheet.write(row, 6, warehouse_totals['sales_qty'])
-            sheet.write(row, 7, warehouse_totals['sales_value'])
-            sheet.write(row, 8, warehouse_totals['internal_qty'])
-            sheet.write(row, 9, warehouse_totals['internal_value'])
-            sheet.write(row, 10, warehouse_totals['adjustment_qty'])
-            sheet.write(row, 11, warehouse_totals['adjustment_value'])
-            sheet.write(row, 12, warehouse_totals['ending_qty'])
-            sheet.write(row, 13, warehouse_totals['ending_value'])
-        
-        # Process locations if specified
-        if location_ids:
-            for location_id in location_ids:
-                products, totals = self._get_product_data_for_location(location_id)
-                sheet = workbook.add_sheet(f"Inventory Valuation Report - {location_id.name}")
-                sheet.col(0).width = int(33 * 260)
-                sheet.col(1).width = int(20 * 260)
-                sheet.col(2).width = int(17 * 260)
-                sheet.col(3).width = int(15 * 260)
-                sheet.col(4).width = int(10 * 260)
-                sheet.col(5).width = int(10 * 260)
-                sheet.col(6).width = int(10 * 260)
-                sheet.col(7).width = int(10 * 260)
-                sheet.col(8).width = int(21 * 260)
-                sheet.col(9).width = int(15 * 260)
-                sheet.col(10).width = int(16 * 260)
-                sheet.col(11).width = int(17 * 260)
-                sheet.col(12).width = int(17 * 260)
-                sheet.col(13).width = int(17 * 260)
-
-                sheet.row(0).height = 150 * 4
-                sheet.row(1).height = 150 * 3
-                sheet.row(2).height = 150 * 3
-                for i in range(3, 10):
-                    sheet.row(i).height = 150 * 2
-
-                header_style = xlwt.easyxf(
-                    'font:height 500,bold True;pattern: pattern solid, fore_colour ice_blue ;align: horiz center; borders: top_color black, bottom_color black, right_color black, left_color black, '
-                    'left thin, right thin, top thin, bottom thin;'
-                )
-                chanes_style = xlwt.easyxf(
-                    'font:height 270,bold True;pattern: pattern solid, fore_colour white ;align: horiz center; borders: top_color black, bottom_color black, right_color black, left_color black, '
-                    'left thin, right thin, top thin, bottom thin;'
-                )
-                total_style = xlwt.easyxf(
-                    'font:height 230,bold True;pattern: pattern solid, fore_colour ice_blue ;align: horiz center; borders: top_color black, bottom_color black, right_color black, left_color black, '
-                    'left thin, right thin, top thin, bottom thin;'
-                )
-                text_style = xlwt.easyxf(
-                    'font:bold True;pattern: pattern solid, fore_colour white ;align: horiz center; '
-                    'borders: top_color black, bottom_color black, right_color black, left_color black, left thin, right thin, '
-                    'top thin, bottom thin;'
-                )
-
-                sheet.write_merge(0, 0, 0, 13, f"Stock Inventory Valuation Report - {location_id.name}", header_style)
-                sheet.write_merge(1, 1, 0, 13,
-                                  f"Company:{self.company_id.name}",
-                                  chanes_style)
-                sheet.write_merge(2, 2, 0, 13, f"{self.start_date} To {self.end_date}", chanes_style)
-
-                sheet.write(3, 0, 'Products', chanes_style)
-                sheet.write_merge(3, 3, 1, 1, 'Costing Methods', chanes_style)
-                sheet.write_merge(3, 3, 2, 3, 'Beginning', chanes_style)
-                sheet.write_merge(4, 4, 2, 2, 'Qty', text_style)
-                sheet.write_merge(4, 4, 3, 3, 'Value', text_style)
-                sheet.write_merge(3, 3, 4, 5, 'Received', chanes_style)
-                sheet.write_merge(4, 4, 4, 4, 'Qty', text_style)
-                sheet.write_merge(4, 4, 5, 5, 'Value', text_style)
-                sheet.write_merge(3, 3, 6, 7, 'Sales', chanes_style)
-                sheet.write_merge(4, 4, 6, 6, 'Qty', text_style)
-                sheet.write_merge(4, 4, 7, 7, 'Value', text_style)
-                sheet.write_merge(3, 3, 8, 9, 'Internal', chanes_style)
-                sheet.write_merge(4, 4, 8, 8, 'Qty', text_style)
-                sheet.write_merge(4, 4, 9, 9, 'Value', text_style)
-                sheet.write_merge(3, 3, 10, 11, 'Adjustment', chanes_style)
-                sheet.write_merge(4, 4, 10, 10, 'Qty', text_style)
-                sheet.write_merge(4, 4, 11, 11, 'Value', text_style)
-                sheet.write_merge(3, 3, 12, 13, 'Ending', chanes_style)
-                sheet.write_merge(4, 4, 12, 12, 'Qty', text_style)
-                sheet.write_merge(4, 4, 13, 13, 'Value', text_style)
-
-                row = 5
-                location_totals = {
-                    'beginning_qty': 0,
-                    'beginning_value': 0,
-                    'received_qty': 0,
-                    'received_value': 0,
-                    'sales_qty': 0,
-                    'sales_value': 0,
-                    'internal_qty': 0,
-                    'internal_value': 0,
-                    'adjustment_qty': 0,
-                    'adjustment_value': 0,
-                    'ending_qty': 0,
-                    'ending_value': 0,
-                }
-
-                for product_data in products:
-                    if self.filter_by == 'category' and 'category_name' in product_data:
-                        sheet.write(row, 0, product_data['category_name'], total_style)
-                        row += 1
-                        for product in product_data['products']:
-                            sheet.write(row, 0, product['name'])
-                            sheet.write(row, 1, product.get('costing_method', ''))
-                            sheet.write(row, 2, product.get('beginning_qty'))
-                            sheet.write(row, 3, product.get('beginning_value'))
-                            sheet.write(row, 4, product.get('received_qty'))
-                            sheet.write(row, 5, product.get('received_value'))
-                            sheet.write(row, 6, product.get('sales_qty'))
-                            sheet.write(row, 7, product.get('sales_value'))
-                            sheet.write(row, 8, product.get('internal_qty'))
-                            sheet.write(row, 9, product.get('internal_value'))
-                            sheet.write(row, 10, product.get('adjustment_qty'))
-                            sheet.write(row, 11, product.get('adjustment_value'))
-                            sheet.write(row, 12, product.get('ending_qty'))
-                            sheet.write(row, 13, product.get('ending_value'))
-
-                            location_totals['beginning_qty'] += product['beginning_qty']
-                            location_totals['beginning_value'] += product['beginning_value']
-                            location_totals['received_qty'] += product['received_qty']
-                            location_totals['received_value'] += product['received_value']
-                            location_totals['sales_qty'] += product['sales_qty']
-                            location_totals['sales_value'] += product['sales_value']
-                            location_totals['internal_qty'] += product['internal_qty']
-                            location_totals['internal_value'] += product['internal_value']
-                            location_totals['adjustment_qty'] += product['adjustment_qty']
-                            location_totals['adjustment_value'] += product['adjustment_value']
-                            location_totals['ending_qty'] += product['ending_qty']
-                            location_totals['ending_value'] += product['ending_value']
-
-                            row += 1
-                    elif self.filter_by == 'product':
-                        sheet.write(row, 0, product_data['name'])
-                        sheet.write(row, 1, product_data.get('costing_method', ''))
-                        sheet.write(row, 2, product_data.get('beginning_qty'))
-                        sheet.write(row, 3, product_data.get('beginning_value'))
-                        sheet.write(row, 4, product_data.get('received_qty'))
-                        sheet.write(row, 5, product_data.get('received_value'))
-                        sheet.write(row, 6, product_data.get('sales_qty'))
-                        sheet.write(row, 7, product_data.get('sales_value'))
-                        sheet.write(row, 8, product_data.get('internal_qty'))
-                        sheet.write(row, 9, product_data.get('internal_value'))
-                        sheet.write(row, 10, product_data.get('adjustment_qty'))
-                        sheet.write(row, 11, product_data.get('adjustment_value'))
-                        sheet.write(row, 12, product_data.get('ending_qty'))
-                        sheet.write(row, 13, product_data.get('ending_value'))
-
-                        location_totals['beginning_qty'] += product_data['beginning_qty']
-                        location_totals['beginning_value'] += product_data['beginning_value']
-                        location_totals['received_qty'] += product_data['received_qty']
-                        location_totals['received_value'] += product_data['received_value']
-                        location_totals['sales_qty'] += product_data['sales_qty']
-                        location_totals['sales_value'] += product_data['sales_value']
-                        location_totals['internal_qty'] += product_data['internal_qty']
-                        location_totals['internal_value'] += product_data['internal_value']
-                        location_totals['adjustment_qty'] += product_data['adjustment_qty']
-                        location_totals['adjustment_value'] += product_data['adjustment_value']
-                        location_totals['ending_qty'] += product_data['ending_qty']
-                        location_totals['ending_value'] += product_data['ending_value']
-
-                        row += 1
-
-                sheet.write(row, 0, 'Total', total_style)
-                sheet.write(row, 2, location_totals['beginning_qty'])
-                sheet.write(row, 3, location_totals['beginning_value'])
-                sheet.write(row, 4, location_totals['received_qty'])
-                sheet.write(row, 5, location_totals['received_value'])
-                sheet.write(row, 6, location_totals['sales_qty'])
-                sheet.write(row, 7, location_totals['sales_value'])
-                sheet.write(row, 8, location_totals['internal_qty'])
-                sheet.write(row, 9, location_totals['internal_value'])
-                sheet.write(row, 10, location_totals['adjustment_qty'])
-                sheet.write(row, 11, location_totals['adjustment_value'])
-                sheet.write(row, 12, location_totals['ending_qty'])
-                sheet.write(row, 13, location_totals['ending_value'])
+            sheet.write(row, 2, target_totals['beginning_qty'])
+            sheet.write(row, 3, target_totals['beginning_value'])
+            sheet.write(row, 4, target_totals['received_qty'])
+            sheet.write(row, 5, target_totals['received_value'])
+            sheet.write(row, 6, target_totals['sales_qty'])
+            sheet.write(row, 7, target_totals['sales_value'])
+            sheet.write(row, 8, target_totals['internal_qty'])
+            sheet.write(row, 9, target_totals['internal_value'])
+            sheet.write(row, 10, target_totals['adjustment_qty'])
+            sheet.write(row, 11, target_totals['adjustment_value'])
+            sheet.write(row, 12, target_totals['ending_qty'])
+            sheet.write(row, 13, target_totals['ending_value'])
 
         workbook.save(output)
         file_data = base64.b64encode(output.getvalue())
@@ -653,6 +561,7 @@ class InventoryValuationReport(models.TransientModel):
                     'category_totals': category_totals,
                 })
                 self.update_totals(totals, category_totals)
+                
     def _get_product_data_for_location(self, location_id):
         products = []
         totals = {

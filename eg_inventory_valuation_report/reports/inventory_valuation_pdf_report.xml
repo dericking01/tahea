@@ -10,6 +10,9 @@
 
     <template id="stock_inventory_pdf_report">
         <t t-call="web.html_container">
+            <t t-set="doc_ids" t-value="[o.id for o in docs]"/>
+            <t t-set="doc_model" t-value="'inventory.valuation.report'"/>
+            
             <div class="page">
                 <div style="position: absolute; left: 20px; top: -10px; text-align: left;">
                     <p>
@@ -34,13 +37,19 @@
                         to
                         <t t-esc="end_date"/>
                     </p>
+                    <p>
+                        <strong>Filter Type:</strong>
+                        <t t-esc="filter_type.title()"/>
+                    </p>
                 </div>
 
-                <t t-foreach="warehouses" t-as="warehouse">
+                <t t-foreach="targets" t-as="target">
                     <div class="page">
                         <div style="text-align: center; margin-bottom: 40px;">
-                            <h3>Stock Location:
-                                <t t-esc="warehouse['warehouse_name']"/>
+                            <h3>
+                                <t t-if="target['type'] == 'warehouse'">Warehouse:</t>
+                                <t t-elif="target['type'] == 'location'">Location:</t>
+                                <t t-esc="target['name']"/>
                             </h3>
                         </div>
 
@@ -66,49 +75,49 @@
                             </thead>
                             <tbody>
                                 <t t-if="filter_by == 'product'">
-                                    <t t-foreach="warehouse['products']" t-as="line">
+                                    <t t-foreach="target['products']" t-as="line">
                                         <tr>
                                             <td style="border: 1px solid #000; padding: 8px;">
                                                 <t t-esc="line['name']"/>
                                             </td>
                                             <td style="border: 1px solid #000; padding: 8px;">
-                                               <t t-esc="line['costing_method']"/>
+                                               <t t-esc="line.get('costing_method', '')"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['beginning_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('beginning_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['beginning_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('beginning_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['received_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('received_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['received_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('received_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['sales_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('sales_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['sales_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('sales_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['internal_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('internal_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['internal_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('internal_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['adjustment_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('adjustment_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['adjustment_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('adjustment_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['ending_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(line.get('ending_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="line['ending_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(line.get('ending_value', 0))"/>
                                             </td>
                                         </tr>
                                     </t>
@@ -120,48 +129,48 @@
                                         <td style="border: 1px solid #000; padding: 8px;">
 
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['beginning_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('beginning_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['beginning_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('beginning_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['received_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('received_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['received_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('received_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['sales_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('sales_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['sales_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('sales_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['internal_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('internal_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['internal_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('internal_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['adjustment_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('adjustment_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['adjustment_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('adjustment_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['ending_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('ending_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['ending_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('ending_value', 0))"/>
                                         </td>
                                     </tr>
                                 </t>
                                 <t t-elif="filter_by == 'category'">
-                                    <t t-foreach="warehouse['products']" t-as="category">
+                                    <t t-foreach="target['products']" t-as="category">
                                         <tr>
-                                            <td colspan="13"
+                                            <td colspan="14"
                                                 style="background-color: #f2f2f2; font-weight: bold; text-align: center;">
                                                 <t t-esc="category['category_name']"/>
                                             </td>
@@ -172,43 +181,43 @@
                                                     <t t-esc="line['name']"/>
                                                 </td>
                                                 <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['costing_method']"/>
+                                                    <t t-esc="line.get('costing_method', '')"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['beginning_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('beginning_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['beginning_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('beginning_value', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['received_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('received_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['received_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('received_value', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['sales_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('sales_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['sales_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('sales_value', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['internal_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('internal_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['internal_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('internal_value', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['adjustment_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('adjustment_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['adjustment_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('adjustment_value', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['ending_qty']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:.2f}'.format(line.get('ending_qty', 0))"/>
                                                 </td>
-                                                <td style="border: 1px solid #000; padding: 8px;">
-                                                    <t t-esc="line['ending_value']"/>
+                                                <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                    <t t-esc="'{:,.2f}'.format(line.get('ending_value', 0))"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -220,41 +229,41 @@
                                             <td style="border: 1px solid #000; padding: 8px;">
 
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['beginning_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('beginning_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['beginning_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('beginning_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['received_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('received_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['received_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('received_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['sales_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('sales_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['sales_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('sales_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['internal_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('internal_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['internal_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('internal_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['adjustment_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('adjustment_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['adjustment_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('adjustment_value', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['ending_qty']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:.2f}'.format(category['category_totals'].get('ending_qty', 0))"/>
                                             </td>
-                                            <td style="border: 1px solid #000; padding: 8px;">
-                                                <t t-esc="category['category_totals']['ending_value']"/>
+                                            <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(category['category_totals'].get('ending_value', 0))"/>
                                             </td>
                                         </tr>
                                     </t>
@@ -266,48 +275,50 @@
                                         <td style="border: 1px solid #000; padding: 8px;">
 
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['beginning_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('beginning_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['beginning_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('beginning_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['received_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('received_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['received_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('received_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['sales_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('sales_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['sales_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('sales_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['internal_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('internal_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['internal_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('internal_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['adjustment_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('adjustment_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['adjustment_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('adjustment_value', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['ending_qty']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:.2f}'.format(target['totals'].get('ending_qty', 0))"/>
                                         </td>
-                                        <td style="border: 1px solid #000; padding: 8px;">
-                                            <t t-esc="warehouse['totals']['ending_value']"/>
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(target['totals'].get('ending_value', 0))"/>
                                         </td>
                                     </tr>
                                 </t>
                             </tbody>
                         </table>
                     </div>
-                    <div style="page-break-before: always;"></div>
+                    <t t-if="not target_last">
+                        <div style="page-break-before: always;"></div>
+                    </t>
                 </t>
             </div>
         </t>
