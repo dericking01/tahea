@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================= -->
+    <!-- Sale Order -->
+    <!-- ========================= -->
+    <record id="view_sale_order_no_create_product" model="ir.ui.view">
+        <field name="name">sale.order.no.create.product</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="attributes" groups="!restrict_product_creation.group_product_create">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Purchase Order -->
+    <!-- ========================= -->
+    <record id="view_purchase_order_no_create_product" model="ir.ui.view">
+        <field name="name">purchase.order.no.create.product</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="attributes" groups="!restrict_product_creation.group_product_create">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- Stock Picking (Delivery / Receipt) -->
+    <!-- ========================= -->
+    <record id="view_stock_picking_no_create_product" model="ir.ui.view">
+        <field name="name">stock.picking.no.create.product</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids_without_package']//field[@name='product_id']" position="attributes" groups="!restrict_product_creation.group_product_create">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
