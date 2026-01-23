@@ -1,66 +1,42 @@
 <odoo>
     <record id="view_inventory_valuation_report_form" model="ir.ui.view">
-        <field name="name">inventory.valuation.report.form</field>
-        <field name="model">inventory.valuation.report</field>
-        <field name="arch" type="xml">
-            <form string="Inventory Valuation Report">
-                <sheet>
+    <field name="name">inventory.valuation.report.form</field>
+    <field name="model">inventory.valuation.report</field>
+    <field name="arch" type="xml">
+        <form string="Inventory Valuation Report" version="16.0">
+            <sheet>
+                <group>
                     <group>
-                        <group>
-                            <field name="start_date" required="1"/>
-                        </group>
-                        <group>
-                            <field name="end_date" required="1"/>
-                        </group>
-                        <group>
-                            <field name="company_id"/>
-                        </group>
+                        <field name="start_date" class="o_datepicker"/>
+                        <field name="end_date" class="o_datepicker"/>
                     </group>
-                    
                     <group>
-                        <group>
-                            <field name="group_by_category"/>
-                            <field name="filter_by" invisible="not group_by_category" widget="radio"/>
-                        </group>
+                        <field name="location_ids" widget="many2many_tags" options="{'no_create': True}" placeholder="Select Locations"/>
                     </group>
-                    
-                    <group string="Filter Locations">
-                        <group>
-                            <!-- Filter Type Selection -->
-                            <field name="filter_type" widget="radio"/>
-                            
-                            <!-- Warehouses Field (visible when filter_type is warehouse or both) -->
-                            <field name="warehouse_ids" 
-                                   widget="many2many_tags"
-                                   invisible="filter_type == 'location'"
-                                   context="{'search_default_my_warehouses': True}"
-                                   options="{'no_create': True}"/>
-                            
-                            <!-- Locations Field (visible when filter_type is location or both) -->
-                            <field name="location_ids" 
-                                   widget="many2many_tags"
-                                   invisible="filter_type == 'warehouse'"
-                                   options="{'no_create': True}"/>
-                        </group>
+                    <group>
+                        <field name="filter_by" widget="radio"/>
                     </group>
-                </sheet>
-                <footer>
-                    <button name="action_xls_report" string="Export XLS" type="object" class="btn-primary"/>
-                    <button name="action_pdf_report" string="Export PDF" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
-    
+                    <group>
+                        <field name="company_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+            </sheet>
+            <footer>
+                <button name="action_export_xls" type="object" string="Export XLS" class="btn btn-primary"/>
+                <!-- <button name="action_print_pdf" type="object" string="Export PDF" class="btn btn-primary"/> -->
+                <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+
     <record id="action_inventory_valuation_report" model="ir.actions.act_window">
-        <field name="name">Inventory Valuation Report</field>
         <field name="res_model">inventory.valuation.report</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_inventory_valuation_report_form"/>
         <field name="target">new</field>
     </record>
-    
     <menuitem name="Inventory Valuation Report" id="import_inventory_valuation_report_wizard"
               action="action_inventory_valuation_report"
               parent="stock.menu_warehouse_report"/>
