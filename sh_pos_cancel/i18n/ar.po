@@ -1,0 +1,114 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sh_pos_cancel
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-27 11:13+0000\n"
+"PO-Revision-Date: 2021-01-27 11:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+
+#. module: sh_pos_cancel
+#: model_terms:ir.ui.view,arch_db:sh_pos_cancel.sh_pos_order_inherit_form_view
+msgid "Cancel"
+msgstr "يلغي"
+
+#. module: sh_pos_cancel
+#: model:ir.actions.server,name:sh_pos_cancel.sh_pos_cancel_delete_multi_action
+msgid "Cancel & Delete"
+msgstr "إلغاء وحذف"
+
+#. module: sh_pos_cancel
+#: model:ir.actions.server,name:sh_pos_cancel.sh_pos_cancel_draft_multi_action
+msgid "Cancel & Reset Draft"
+msgstr "إلغاء وإعادة تعيين مشروع"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company__pos_cancel_delivery
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings__pos_cancel_delivery
+msgid "Cancel Delivery Order"
+msgstr "إلغاء ترتيب التسليم"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company__pos_cancel_invoice
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings__pos_cancel_invoice
+msgid "Cancel Invoice"
+msgstr "إلغاء الفاتورة"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields.selection,name:sh_pos_cancel.selection__res_company__pos_operation_type__cancel_delete
+msgid "Cancel and Delete"
+msgstr "إلغاء وحذف"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields.selection,name:sh_pos_cancel.selection__res_company__pos_operation_type__cancel_draft
+msgid "Cancel and Reset to Draft"
+msgstr "إلغاء وإعادة التعيين إلى المسودة"
+
+#. module: sh_pos_cancel
+#: model:ir.model,name:sh_pos_cancel.model_res_company
+msgid "Companies"
+msgstr "شركات"
+
+#. module: sh_pos_cancel
+#: model:ir.model,name:sh_pos_cancel.model_res_config_settings
+msgid "Config Settings"
+msgstr "إعدادات التكوين"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_pos_order__display_name
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company__display_name
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_stock_picking__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_pos_order__id
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company__id
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings__id
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_stock_picking__id
+msgid "ID"
+msgstr "هوية شخصية"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_pos_order____last_update
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company____last_update
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_stock_picking____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل في"
+
+#. module: sh_pos_cancel
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_company__pos_operation_type
+#: model:ir.model.fields,field_description:sh_pos_cancel.field_res_config_settings__pos_operation_type
+msgid "Opration Type"
+msgstr "نوع Opration"
+
+#. module: sh_pos_cancel
+#: model:res.groups,name:sh_pos_cancel.group_sh_pos_cancel
+msgid "POS Cancel Feature"
+msgstr "POS إلغاء ميزة"
+
+#. module: sh_pos_cancel
+#: model_terms:ir.ui.view,arch_db:sh_pos_cancel.sh_pos_config_cancel_form_inherit
+msgid "POS Order Cancel Configuration"
+msgstr "طلب طلب إلغاء التكوين"
+
+#. module: sh_pos_cancel
+#: model:ir.model,name:sh_pos_cancel.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "أوامر نقطة البيع"
+
+#. module: sh_pos_cancel
+#: model:ir.model,name:sh_pos_cancel.model_stock_picking
+msgid "Transfer"
+msgstr "تحويل"
