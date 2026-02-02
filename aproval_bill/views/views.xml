@@ -1,20 +1,57 @@
 <odoo>
+    <record id="view_approval_request_tree_inherit_bill_status" model="ir.ui.view">
+        <field name="name">approval.request.tree.inherit.bill.status</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert Payment Status column -->
+            <xpath expr="//list" position="inside">
+                <field name="bill_payment_state"
+                       string="Bill Status"
+                       widget="badge"
+                       decoration-success="bill_payment_state == 'paid'"
+                       decoration-warning="bill_payment_state == 'partial'"
+                       decoration-info="bill_payment_state == 'in_payment'"
+                       decoration-danger="bill_payment_state == 'not_paid'"/>
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="view_approval_request_form_inherit" model="ir.ui.view">
         <field name="name">approval.request.form.inherit.bill</field>
         <field name="model">approval.request</field>
         <field name="inherit_id" ref="approvals.approval_request_view_form"/>
         <field name="arch" type="xml">
-            
-            <!-- Button in header, visible only when approved -->
+
+            <!-- ============================================== -->
+            <!-- HEADER BUTTONS -->
+            <!-- ============================================== -->
             <xpath expr="//header" position="inside">
+                <!-- Vendor Bill Button -->
                 <button name="action_create_vendor_bill"
                         type="object"
                         string="Create Vendor Bill"
                         class="btn-primary"
-                        invisible="request_status != 'approved'"/>
+                        invisible="request_status != 'approved'"
+                        groups="account.group_account_manager"/>
             </xpath>
 
-            <!-- Show linked bill -->
+            <!-- ============================================== -->
+            <!-- ANALYTIC ACCOUNT TAB -->
+            <!-- ============================================== -->
+            <xpath expr="//sheet/notebook/page[@name='approvers']" position="before">
+                <page string="Project">
+                    <group>
+                        <field name="analytic_account_id"/>
+                    </group>
+                </page>
+            </xpath>
+
+            <!-- ============================================== -->
+            <!-- VENDOR BILL TAB -->
+            <!-- ============================================== -->
             <xpath expr="//sheet/notebook/page[@name='approvers']" position="after">
                 <page string="Vendor Bill">
                     <group>
