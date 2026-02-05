@@ -58,6 +58,13 @@ class ApprovalRequest(models.Model):
                 "You cannot create another one."
             )
 
+        vendor = self.request_owner_id.partner_id
+        if not vendor:
+            raise UserError(
+                f"A vendor bill has already been created for this approval request: {self.bill_id.name}. "
+                "You cannot create another one."
+            )
+
         vendor = self.partner_id
         if not vendor:
             raise UserError(
