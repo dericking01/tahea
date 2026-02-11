@@ -1,0 +1,8 @@
+<odoo>
+    <!-- Group for License Managers -->
+    <record id="group_license_manager" model="res.groups">
+        <field name="name">License Manager</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="implied_ids" eval="[]"/>
+    </record>
+</odoo>

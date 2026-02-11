@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="license_expiry_manager.list">
+      <field name="name">license_expiry_manager list</field>
+      <field name="model">license_expiry_manager.license_expiry_manager</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="license_expiry_manager.action_window">
+      <field name="name">license_expiry_manager window</field>
+      <field name="res_model">license_expiry_manager.license_expiry_manager</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="license_expiry_manager.action_server">
+      <field name="name">license_expiry_manager server</field>
+      <field name="model_id" ref="model_license_expiry_manager_license_expiry_manager"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="license_expiry_manager" id="license_expiry_manager.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="license_expiry_manager.menu_1" parent="license_expiry_manager.menu_root"/>
+    <menuitem name="Menu 2" id="license_expiry_manager.menu_2" parent="license_expiry_manager.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="license_expiry_manager.menu_1_list" parent="license_expiry_manager.menu_1"
+              action="license_expiry_manager.action_window"/>
+    <menuitem name="Server to list" id="license_expiry_manager" parent="license_expiry_manager.menu_2"
+              action="license_expiry_manager.action_server"/>
+-->
+  </data>
+</odoo>
