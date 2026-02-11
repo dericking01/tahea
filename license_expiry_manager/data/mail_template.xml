@@ -1,0 +1,26 @@
+<odoo>
+    <record id="email_template_license_expiry" model="mail.template">
+        <field name="name">License Expiry Reminder</field>
+        <field name="model_id" ref="model_license_subscription"/>
+        <field name="subject">⚠️ ${object.name} is Expiring Soon</field>
+        <field name="email_from">${(user.email or '')}</field>
+        <field name="email_to">${object.responsible_id.email}</field>
+        <field name="body_html">
+            <![CDATA[
+            <p>Hello ${object.responsible_id.name},</p>
+
+            <p>This is a reminder that the following item is about to expire:</p>
+
+            <ul>
+                <li><b>Name:</b> ${object.name}</li>
+                <li><b>Type:</b> ${object.type}</li>
+                <li><b>Expiry Date:</b> ${object.expiry_date}</li>
+            </ul>
+
+            <p>Please take action for renewal.</p>
+
+            <p>Odoo System</p>
+            ]]>
+        </field>
+    </record>
+</odoo>
