@@ -20,7 +20,8 @@ class ApprovalRequest(models.Model):
 
     analytic_account_id = fields.Many2one(
         'account.analytic.account',
-        string='Analytic Account'
+        string='Analytic Account',
+        required=True
     )
 
     bill_payment_state = fields.Selection(
