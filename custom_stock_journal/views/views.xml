@@ -1,12 +1,12 @@
 <odoo>
+
     <record id="view_picking_form_inherit_manual_journal" model="ir.ui.view">
         <field name="name">stock.picking.form.manual.journal.18</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
 
-            <!-- Button in header, hidden if not done or not outgoing -->
-              <!-- Button in header, hidden if not done or not outgoing -->
+            <!-- Button in header -->
             <xpath expr="//header" position="inside">
                 <button name="action_create_manual_stock_journal"
                         type="object"
@@ -16,7 +16,12 @@
                         groups="stock.group_stock_manager"/>
             </xpath>
 
-            <!-- Display created journal entry reference in form -->
+            <!-- Add Analytic Account -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="analytic_distribution" widget="analytic_distribution"/>
+            </xpath>
+
+            <!--Show created Journal Entry-->
             <xpath expr="//sheet/notebook/page[@name='operations']" position="inside">
                 <group>
                     <field name="manual_stock_journal_id" readonly="1"/>
@@ -25,4 +30,5 @@
 
         </field>
     </record>
+
 </odoo>

@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 from odoo.exceptions import UserError
 
 
@@ -12,14 +12,24 @@ class StockPicking(models.Model):
         copy=False
     )
 
+    analytic_distribution = fields.Json(
+        string='Analytic Distribution',
+        required=True
+    )
+
+    analytic_precision = fields.Integer(
+        string="Analytic Precision",
+        default=2
+    )
+
     def action_create_manual_stock_journal(self):
         self.ensure_one()
 
-        # 🚫 Prevent double creation
+        # Prevent duplicate creation
         if self.manual_stock_journal_id:
             raise UserError("COGS has already been created for this Delivery Order.")
 
-        # Only for deliveries
+        # Only for Delivery Orders
         if self.picking_type_id.code != 'outgoing':
             raise UserError("This action is only applicable to Delivery Orders.")
 
@@ -27,13 +37,17 @@ class StockPicking(models.Model):
         if self.state != 'done':
             raise UserError("Please validate the Delivery Order first.")
 
-        # Get General Journal
+        if not self.analytic_distribution:
+            raise UserError("Please set Analytic Distribution before creating the journal entry.")
+
+        # Find General Journal
         journal = self.env['account.journal'].search(
             [('type', '=', 'general')],
             limit=1
         )
+
         if not journal:
-            raise UserError("No general journal found. Please create one first.")
+            raise UserError("No General Journal found. Please create one.")
 
         move_lines_vals = []
 
@@ -49,28 +63,31 @@ class StockPicking(models.Model):
                 raise UserError(
                     f"Stock Valuation Account missing for category: {categ.name}"
                 )
+
             if not expense_acct:
                 raise UserError(
                     f"Expense Account missing for category: {categ.name}"
                 )
 
-            # Move Lines (Odoo 18 uses line.quantity)
+            # Loop move lines
             for line in move.move_line_ids:
                 qty = line.quantity
+
                 if qty <= 0:
                     continue
 
                 value = qty * product.standard_price
 
-                # DEBIT: Expense
+                # Debit Expense (COGS)
                 move_lines_vals.append((0, 0, {
                     'name': f"Expense - {product.display_name}",
                     'account_id': expense_acct.id,
                     'debit': value,
                     'credit': 0,
+                    'analytic_distribution': self.analytic_distribution,
                 }))
 
-                # CREDIT: Stock Valuation
+                # Credit Stock Valuation
                 move_lines_vals.append((0, 0, {
                     'name': f"Stock Valuation - {product.display_name}",
                     'account_id': stock_valuation_acct.id,
@@ -89,13 +106,13 @@ class StockPicking(models.Model):
             'line_ids': move_lines_vals,
         })
 
-        # Post it
+        # Post the entry
         account_move.action_post()
 
-        # Link journal entry to delivery
+        # Link Journal Entry to Delivery Order
         self.manual_stock_journal_id = account_move.id
 
-        # Open JE form
+        # Open Journal Entry
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
