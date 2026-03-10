@@ -14,7 +14,7 @@ class StockPicking(models.Model):
 
     analytic_distribution = fields.Json(
         string='Analytic Distribution',
-        required=True
+        required=False
     )
 
     analytic_precision = fields.Integer(
@@ -37,8 +37,8 @@ class StockPicking(models.Model):
         if self.state != 'done':
             raise UserError("Please validate the Delivery Order first.")
 
-        if not self.analytic_distribution:
-            raise UserError("Please set Analytic Distribution before creating the journal entry.")
+        # if not self.analytic_distribution:
+        #     raise UserError("Please set Analytic Distribution before creating the journal entry.")
 
         # Find General Journal
         journal = self.env['account.journal'].search(
