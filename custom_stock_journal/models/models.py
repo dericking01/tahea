@@ -23,11 +23,11 @@ class StockPicking(models.Model):
     )
 
     def action_create_manual_stock_journal(self):
-        self.ensure_one()
+        # self.ensure_one()
 
         # Prevent duplicate creation
-        if self.manual_stock_journal_id:
-            raise UserError("COGS has already been created for this Delivery Order.")
+        # if self.manual_stock_journal_id:
+        #     raise UserError("COGS has already been created for this Delivery Order.")
 
         # Only for Delivery Orders
         if self.picking_type_id.code != 'outgoing':
@@ -97,11 +97,17 @@ class StockPicking(models.Model):
 
         if not move_lines_vals:
             raise UserError("No quantities found to create journal entry.")
+        
+        if not move_lines_vals:
+            raise UserError("No quantities found to create journal entry.")
+        
+        # Use delivery order's effective date for accounting date
+        accounting_date = self.date_done
 
         # Create Journal Entry
         account_move = self.env['account.move'].create({
             'journal_id': journal.id,
-            'date': fields.Date.context_today(self),
+            'date': accounting_date,
             'ref': f"Delivery Order: {self.name}",
             'line_ids': move_lines_vals,
         })
