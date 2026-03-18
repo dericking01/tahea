@@ -23,11 +23,11 @@ class StockPicking(models.Model):
     )
 
     def action_create_manual_stock_journal(self):
-        # self.ensure_one()
+        self.ensure_one()
 
         # Prevent duplicate creation
-        # if self.manual_stock_journal_id:
-            # raise UserError("COGS has already been created for this Delivery Order.")
+        if self.manual_stock_journal_id:
+            raise UserError("COGS has already been created for this Delivery Order.")
 
         # Only for Delivery Orders
         if self.picking_type_id.code != 'outgoing':
