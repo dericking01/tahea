@@ -1,0 +1,91 @@
+<odoo>
+    <data>
+
+    <template id="report_delivery_document_custom_footer" inherit_id="stock.report_delivery_document">
+      <xpath expr="//div[contains(@class, 'page')][last()]" position="inside">
+            <div class="footer">
+                <div class="oe_structure"/>
+                <div class="row" style="border: 1px solid black; border-radius:15px; width:100%; padding: 5px;">
+                    <div class="col-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <h2 style="text-transform:capitalize; font-size :13px; padding:0px; margin:0;">
+                                        <b>
+                                            <span>For and On Behalf of:</span><br/>
+                                            <strong t-attf-style="color: #729945;" t-field="o.company_id.partner_id"/>
+                                        </b>
+                                    </h2>
+                                    <br/><br/>
+                                    <span t-attf-style="color: #000000;">Signature:...........................................................................................</span><br/><br/>
+                                    <span t-attf-style="color: #000000;">Name:................................................................................................</span><br/><br/>
+                                    <span t-attf-style="color: #000000;">Date:................................................................................................</span><br/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <h2 style="text-transform:capitalize; font-size :13px; padding:0px; margin:0;">
+                                        <b>
+                                            <span>For and On Behalf of:</span><br/>
+                                            <span t-attf-style="color: #7CAF41;" t-field="o.partner_id"/>
+                                        </b>
+                                    </h2>
+                                    <br/><br/>
+                                    <span t-attf-style="color: #000000;">Signature:..........................................................................................</span><br/><br/>
+                                    <span t-attf-style="color: #000000;">Name:................................................................................................</span><br/><br/>
+                                    <span t-attf-style="color: #000000;">Date:................................................................................................</span><br/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <div class="text-center" style="border-top: 2px solid #7CAF41; font-size:11px;">
+                    <ul class="list-inline mb4">
+                        <li aria-hidden="true">
+                            <center>
+                                <div class="text-muted">
+                                    Page: <span class="page"/> / <span class="topage"/>
+                                </div>
+                            </center>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+     <template id="report_invoice_document_custom_footer" inherit_id="account.report_invoice_document">
+      <xpath expr="//div[contains(@class, 'page')]" position="inside">
+            <div class="footer">
+                <div class="oe_structure"/>
+                <div class="row" style="border: 1px solid black; border-radius:15px; width:100%; padding: 5px;">
+                    <div class="col-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <span t-attf-style="color: #000000;">customer Name:................................................................</span><br/><br/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <span t-attf-style="color: #000000;">Signature:............................................................................</span><br/><br/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    </data>
+</odoo>

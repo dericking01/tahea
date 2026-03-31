@@ -5,5 +5,6 @@
     'depends': ['stock', 'account'],
     'data': [
         'views/views.xml',
+        'views/stock_picking_report.xml',
     ],
 }
