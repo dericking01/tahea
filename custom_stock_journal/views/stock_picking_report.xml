@@ -69,6 +69,7 @@
             </div>
         </xpath>
 
+    <template id="report_invoice_document_custom_footer" inherit_id="account.report_invoice_document">
       <xpath expr="//div[contains(@class, 'page')]" position="inside">
             <div class="footer">
                 <div class="oe_structure"/>
