@@ -59,16 +59,15 @@
         </xpath>
     </template>
 
-    <template id="report_invoice_document_custom_reference" inherit_id="account.report_invoice_document">
-        <xpath expr="//div[@name='source_id']" position="after">
+
+     <template id="report_invoice_document_custom_footer" inherit_id="account.report_invoice_document">
+
+       <xpath expr="//div[@name='source_id']" position="after">
             <div t-if="o.x_studio_reference" class="col-auto mw-100 mb-2">
                 <strong>Reference:</strong>
                 <p t-field="o.x_studio_reference" class="m-0"/>
             </div>
         </xpath>
-    </template>
-
-     <template id="report_invoice_document_custom_footer" inherit_id="account.report_invoice_document">
 
       <xpath expr="//div[contains(@class, 'page')]" position="inside">
             <div class="footer">
