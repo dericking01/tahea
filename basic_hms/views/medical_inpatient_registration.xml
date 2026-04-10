@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="medical_inpatient_registration_form_view" model="ir.ui.view">
+            <field name="name">medical.inpatient.registration.form.view</field>
+            <field name="model">medical.inpatient.registration</field>
+            <field name="arch" type="xml">
+                <form string="Inpatient Registration Information">
+                    <header>
+                        <button name="registration_confirm"
+                            states="free" string="Confirm Registration" class="oe_highlight"
+                             type="object" />
+                        <button name="registration_cancel"
+                            states="confirmed" class="oe_highlight" string="Cancel Registration"
+                            type="object" />
+                        <button name="registration_admission"
+                            states="confirmed" class="oe_highlight" string="Patient Admission"
+                             type="object" />
+                        <button name="patient_discharge" states="hospitalized" class="oe_highlight"
+                            string="Discharge Patient"
+                            type="object" />
+                        <field name="state" widget="statusbar"
+                            statusbar_visible="free,confirmed,cancelled,hospitalized"
+                            readonly="1" />
+                    </header>
+                    <sheet>
+                        <group string="Administrative Data">
+                            <group>
+                                <field name="name" required="1" />
+                                <field name="patient_id" options="{'no_create_edit': True,'no_create': True}" required="1" />
+
+                                <field name="hospitalization_date"
+                                    required="1" />
+                                <field name="discharge_date"
+                                    required="0" />
+                                <field name="bed_no"/>
+                                <field name="room_no"/>
+                                <field name="no_day"/>
+                            </group>
+                            <group>
+                                <field name="attending_physician_id" />
+                                <field name="operating_physician_id" />
+                                <field name="admission_type"
+                                    required="1" />
+                                <field name="medical_pathology_id" />
+                                <field name="icu" />
+                            </group>
+                        </group>
+                        <group>
+                            <field name="info" />
+                        </group>
+                        <!-- <group colspan="4" col="4">
+                                    <field name="bed_transfers_ids"
+                                        colspan="4">
+                                        <tree editable="bottom">
+                                            <field name="date" />
+                                            <field name="bed_from" />
+                                            <field name="bed_to" />
+                                            <field name="reason" />
+                                        </tree>
+                                    </field>
+                                </group> -->
+                        <group string="Care Plan">
+                            <field name="nursing_plan" />
+                            <field name="discharge_plan" />
+                        </group>
+                        <notebook>
+                          <page string="Item Usage">
+                            <field name="item_line_ids">
+                              <tree editable="bottom">
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="qty"/>
+                              </tree>
+                              <form>
+                                 <group>
+                                   <field name="product_id"/>
+                                   <field name="name"/>
+                                   <field name="qty"/>
+                                 </group>
+                              </form>
+
+                            </field>
+                          </page>
+                          <page string="Medication Log">
+                            <field name="log_line_ids">
+                              <tree editable="bottom">
+                                <field name="freuency_route"/>
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="doctor_id"/>
+                              </tree>
+                              <form>
+                                 <group>
+                                   <field name="freuency_route"/>
+                                   <field name="date"/>
+                                   <field name="name"/>
+                                   <field name="doctor_id"/>
+                                 </group>
+                              </form>
+
+                            </field>
+                          </page>
+                          <page string="Surgical Info">
+                            <field name="note"/>
+                          </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                 	 	<field name="message_follower_ids" widget="mail_followers"/>
+                         <field name="message_ids" widget="mail_thread"/>
+                     </div>
+                </form>
+
+            </field>
+        </record>
+
+        <record id="medical_inpatient_registration_tree_view" model="ir.ui.view">
+            <field name="name">medical.inpatient.registration.tree.view</field>
+            <field name="model">medical.inpatient.registration</field>
+            <field name="arch" type="xml">
+                <tree
+                    string="Inpatient Registration Info">
+                    <field name="name" />
+                    <field name="patient_id" />
+                    <field name="hospitalization_date" />
+                    <field name="discharge_date" />
+                    <field name="admission_type" />
+                    <field name="state" />
+                </tree>
+
+            </field>
+        </record>
+
+        <record id="action_medical_inpatient_registration" model="ir.actions.act_window">
+            <field name="name">Patient Hospitalization</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">medical.inpatient.registration</field>
+            <field name="binding_view_types">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <menuitem id="menu_ss_hospitalization_administration"
+            parent="menu_inpatient_administration" action="action_medical_inpatient_registration"
+            sequence="0" />
+
+</odoo>

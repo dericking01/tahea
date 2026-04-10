@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_report_appraisal_custom" model="ir.actions.report">
+            <field name="name">Appraisal Result Report</field>
+            <field name="model">survey.user_input</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">appraisal_cust.report_appraisalorder</field>
+            <field name="report_file">appraisal_cust.report_appraisalorder</field>
+            <field name="print_report_name">'Appraisal-%s' % (object.id)</field>
+            <field name="binding_model_id" ref="model_survey_user_input"/>
+            <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_appraisalorder">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                  <div class="page">
+                        <t t-set="survey" t-value="doc.survey_id"/>
+                        <t t-set="answer" t-value="doc if survey.scoring_type != 'scoring_without_answers' else doc.browse()"/>
+                        <t t-set="questions_to_display" t-value="doc._get_print_questions()"/>
+                        <t t-set="count" t-value="0"/>
+                        <div class="text-center">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                        <h2>Survey Form: <span t-field="doc.survey_id"/></h2>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 col-lg-6 col-md-6">
+                                <table class="table">
+                                    <tr>
+                                        <th>Employee Name:</th>
+                                        <td><span t-field="doc.partner_id"/></td>
+                                    </tr>
+                                    <tr>
+                                      <th>Appraisal Period:</th>
+                                          <td>
+                                            <span t-field="doc.appraisal_period"/>
+                                          </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Department:</th>
+                                        <td><span t-field="doc.survey_id.department_id"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Appraiser:</th>
+                                        <td><span t-field="doc.appraiser_user"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6 col-lg-6 col-md-6 float-right">
+                                <table class="table">
+                                  <tr>
+                                      <th>Score %:</th>
+                                      <td><span t-field="doc.scoring_percentage"/></td>
+                                  </tr>
+                                  <tr>
+                                      <th>Score Status:</th>
+                                      <td><span t-field="doc.appraisal_period"/></td>
+                                  </tr>
+                                </table>
+                            </div>
+                        </div><br/><br/><br/><br/><br/>
+
+                        <div class="text-center">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                        <h2> Remarks</h2>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div><br/><br/>
+
+                        <div class="text-left">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                              <span>Appraiser Remarks: </span><span t-field="doc.appraiser_user"/><br/>
+                                              <span>Appraiser Signature: </span><span t-field="doc.appraisal_period"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                            <span>Employee Remarks: </span><strong t-field="doc.partner_id"/><br/>
+                                            <span>Employee Signature: </span><strong t-field="doc.appraisal_period"/>
+
+                                  </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

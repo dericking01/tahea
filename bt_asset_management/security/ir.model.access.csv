@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bt_asset,bt.asset,model_bt_asset,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_move,bt.asset.move,model_bt_asset_move,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_location,bt.asset.location,model_bt_asset_location,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_category,bt.asset.category,model_bt_asset_category,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_code,bt.asset.code,model_bt_asset_code,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_code_line,bt.asset.code.line,model_bt_asset_code_line,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_asset_investment,bt.asset.investment,model_bt_asset_investment,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_inv,bt.inv,model_bt_inv,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_fund_mix,bt.fund.mix,model_bt_fund_mix,bt_asset_management.group_asset_management_user,1,1,1,0
+access_bt_return,bt.return,model_bt_return,bt_asset_management.group_asset_management_user,1,1,1,0

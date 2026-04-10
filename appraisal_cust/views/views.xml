@@ -1,0 +1,77 @@
+<odoo>
+  <data>
+
+    <!--Hide Contact and Email List View-->
+    <record id="appraisal_normal_form_view1" model="ir.ui.view">
+      <field name="name">survey.user_input.form1</field>
+      <field name="model">survey.user_input</field>
+      <field name="inherit_id" ref="survey.survey_user_input_view_tree" />
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+             <!-- Hide Contact and Email -->
+             <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name='appraiser_user'/>
+             </xpath>
+             <xpath expr="//field[@name='email']" position="replace">
+             </xpath>
+      </field>
+    </record>
+
+    <!--Hide Contact and Email Form View-->
+    <record id="appraisal_form_normal_view2" model="ir.ui.view">
+      <field name="name">survey.user_input.form2</field>
+      <field name="model">survey.user_input</field>
+      <field name="inherit_id" ref="survey.survey_user_input_view_form" />
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+             <!-- Hide Contact and Email -->
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                 <attribute name="partner_id">invisible</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="attributes">
+                 <attribute name="email">invisible</attribute>
+            </xpath>
+            <xpath expr="//field[@name='survey_id']" position="after">
+                  <field name='department'/>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="after">
+                   <field name='appraisal_period'/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name='appraiser_user'/>
+            </xpath>
+      </field>
+    </record>
+
+   <!-- Add Group on Survey Result-->
+    <record id="department_form_normal_view2" model="ir.ui.view">
+      <field name="name">survey.user_input.form3</field>
+      <field name="model">survey.user_input</field>
+      <field name="inherit_id" ref="survey.survey_user_input_view_search" />
+      <field name="arch" type="xml">
+          <xpath expr="//filter[@name='group_by_partner']" position="after">
+            <filter string="Department" name="group_by_department" domain="[]" context="{'group_by': 'department'}"/>
+          </xpath>
+          <xpath expr="//filter[@name='group_by_department']" position="after">
+            <filter string="Appraisal Period" name="group_by_appraisal_period" domain="[]" context="{'group_by': 'appraisal_period'}"/>
+          </xpath>
+          <xpath expr="//filter[@name='group_by_appraisal_period']" position="after">
+            <filter string="Appraiser" name="group_by_appraiser" domain="[]" context="{'group_by': 'appraiser_user'}"/>
+          </xpath>
+      </field>
+    </record>
+
+     <!--Add Department On Survey Form-->
+    <record id="group_by_department_view" model="ir.ui.view">
+      <field name="name">survey.survey.form2</field>
+      <field name="model">survey.survey</field>
+      <field name="inherit_id" ref="survey.survey_survey_view_form" />
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                 <field name='department_id'/>
+            </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

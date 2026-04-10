@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+    <record id="form_employee_dev_employee_multi_survey" model="ir.ui.view">
+        <field name="name">form_employee_dev_employee_multi_survey_name</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                <page string="Survey" name="employee_survey_tab">
+                    <field name="employee_survey_ids">
+                        <tree editable="bottom">
+                            <field name="survey_id"/>
+                            <field name="survey_answer_id" invisible="1"/>
+                            <button name="print_survey"
+                                    type="object"
+                                    string="Print Answer"
+                                    icon="fa-print"
+                                    attrs="{'invisible': [('survey_answer_id', '=', False)]}"/>
+                            <button name="start_survey_for_employee"
+                                    type="object"
+                                    string="Start"
+                                    icon="fa-play-circle"
+                                    attrs="{'invisible': [('survey_answer_id', '!=', False)]}"/>
+                            <button name="send_survey_to_employee"
+                                    type="object"
+                                    string="Send"
+                                    icon="fa-paper-plane"
+                                    attrs="{'invisible': [('survey_answer_id', '!=', False)]}"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="survey_id"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

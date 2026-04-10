@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="fund_movement_wizard_form" model="ir.ui.view">
+            <field name="name">Fund Movement Wizard Form</field>
+            <field name="model">fund.movement.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <group>
+                            <field name="investment_adm"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="print_report" string="Print PDF" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_fund_movement_wizard" model="ir.actions.act_window">
+            <field name="name">Fund Movement Wizard</field>
+            <field name="res_model">fund.movement.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_fund_movement_wizard"
+                  id="menu_fund_movement_wizard"
+                  name="Report Fund Movement"
+                  parent="bt_asset_management.asset_management_main_menu"
+                  sequence="200"/>
+
+
+    </data>
+</odoo>

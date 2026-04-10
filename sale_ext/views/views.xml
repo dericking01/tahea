@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <record model="ir.actions.act_window" id="action_medical_prescription_order">
+        <field name="name">Prescription Order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">medical.prescription.order</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="basic_hms.medical_prescription_order_search_view" />
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="dental_prescription_order" action="action_medical_prescription_order"
+        name="Prescriptions" parent="sale.sale_menu_root" sequence="2" />
+  </data>
+</odoo>
