@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="view_bi_employee_age_inherit_hr_form" model="ir.ui.view">
+        <field name="name">bi.employee.age.inherit.hr.view.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='birthday']" position="after">
+                <field name="employee_age" attrs="{'invisible': [('birthday','=', False)]}"/>
+                <!-- <field name="position_change" placeholder="Position Change Date"/>
+                <field name="promotion_date" placeholder="Promotion Date"/>
+                <field name="hired_date" placeholder="Hired Date"/> -->
+            </xpath>
+        </field>
+    </record>
+</odoo>

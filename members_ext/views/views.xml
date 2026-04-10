@@ -1,0 +1,23 @@
+<odoo>
+  <data>
+    <!-- Declared the same in every module that may need it -->
+    <record id="personal_information1" model="ir.ui.view">
+        <field name="name">Information for contacts form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="priority">3</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                    <field name='empl_no' />
+                    <field name='ni_number' />
+                    <field name='dofa' />
+            </xpath>
+            <!-- <xpath expr="//field[@name='vat']" position="after">
+                    <field name='village' />
+                    <field name='district' />
+                    <field name='t/i' />
+            </xpath> -->
+        </field>
+    </record>
+  </data>
+</odoo>
