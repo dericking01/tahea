@@ -95,6 +95,11 @@
 
             </xpath>
 
+            <!-- Hide Cancel button once PO is confirmed (purchase state) -->
+            <xpath expr="//header//button[@name='button_cancel']" position="attributes">
+                <attribute name="invisible">state == 'purchase'</attribute>
+            </xpath>
+
                        
                 <!-- Update Statusbar -->
             <xpath expr="//field[@name='state']" position="attributes">
