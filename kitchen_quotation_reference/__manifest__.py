@@ -1,5 +1,5 @@
 {
-    'name': 'Sale Quotation Reference',
+    'name': 'Kitchen Quotation Reference',
     'version': '18.0.1.0.0',
     'category': 'Sales',
     'summary': 'Reuse Studio Reference on quotations and propagate it to invoices',
