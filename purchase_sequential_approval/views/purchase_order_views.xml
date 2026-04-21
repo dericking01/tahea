@@ -101,7 +101,7 @@
             </xpath>
 
             <!-- Lock button visible only to Administrator -->
-            <xpath expr="//header//button[@name='button_lock']" position="attributes">
+            <xpath expr="//header//button[@name='button_done']" position="attributes">
                 <attribute name="groups">base.group_system</attribute>
             </xpath>
 
