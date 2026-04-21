@@ -1,18 +1,12 @@
-from odoo import fields, models
+from odoo import models
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    quotation_reference = fields.Char(string='Reference')
-
     def _prepare_invoice(self):
         vals = super()._prepare_invoice()
-        vals['quotation_reference'] = self.quotation_reference
+        # Reuse Studio-managed field and propagate from quotation to invoice.
+        if 'x_studio_reference' in self._fields:
+            vals['x_studio_reference'] = self.x_studio_reference
         return vals
-
-
-class AccountMove(models.Model):
-    _inherit = 'account.move'
-
-    quotation_reference = fields.Char(string='Reference', copy=False)
