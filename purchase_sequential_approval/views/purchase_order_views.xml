@@ -105,6 +105,11 @@
                 <attribute name="groups">base.group_system</attribute>
             </xpath>
 
+            <!-- Cancel button visible only to Administrator -->
+            <xpath expr="//header//button[@name='button_cancel']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+
                        
                 <!-- Update Statusbar -->
             <xpath expr="//field[@name='state']" position="attributes">
