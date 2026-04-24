@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="approval_vendor_bills.list">
+      <field name="name">approval_vendor_bills list</field>
+      <field name="model">approval_vendor_bills.approval_vendor_bills</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="approval_vendor_bills.action_window">
+      <field name="name">approval_vendor_bills window</field>
+      <field name="res_model">approval_vendor_bills.approval_vendor_bills</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="approval_vendor_bills.action_server">
+      <field name="name">approval_vendor_bills server</field>
+      <field name="model_id" ref="model_approval_vendor_bills_approval_vendor_bills"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="approval_vendor_bills" id="approval_vendor_bills.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="approval_vendor_bills.menu_1" parent="approval_vendor_bills.menu_root"/>
+    <menuitem name="Menu 2" id="approval_vendor_bills.menu_2" parent="approval_vendor_bills.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="approval_vendor_bills.menu_1_list" parent="approval_vendor_bills.menu_1"
+              action="approval_vendor_bills.action_window"/>
+    <menuitem name="Server to list" id="approval_vendor_bills" parent="approval_vendor_bills.menu_2"
+              action="approval_vendor_bills.action_server"/>
+-->
+  </data>
+</odoo>

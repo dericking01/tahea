@@ -1,0 +1,35 @@
+ <odoo>
+ 
+ 
+        <record id="view_approval_request_form_inherit" model="ir.ui.view">
+            <field name="name">approval.request.form.inherit.bill.expense</field>
+            <field name="model">approval.request</field>
+            <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//sheet/notebook/page[@name='approvers']" position="before">
+                    <page string="Selected Bills To Pay">
+                        <group>
+                           <field name="bill_line_ids"
+                                        nolabel="1"
+                                        readonly="request_status in ['pending', 'approved', 'refused', 'cancel']">
+                                        <list editable="bottom">
+                                            <field name="bill_id"/>
+                                            <field name="partner_id"/>
+                                            <field name="bill_amount"/>
+                                            <field name="amount_to_pay"/>
+                                        </list>
+                                    </field>
+                        </group>
+
+                        <group>
+                            <field name="total_bill_amount" readonly="1"/>
+                            <field name="total_to_pay" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+</odoo>
