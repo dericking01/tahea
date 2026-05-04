@@ -1,8 +1,26 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+
+class ResGroups(models.Model):
+    _inherit = 'res.groups'
+
+    show_po_lock_button = fields.Boolean(string='Show PO Lock Button')
+    show_po_cancel_button = fields.Boolean(string='Show PO Cancel Button')
+
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
+
+    can_see_lock_button = fields.Boolean(
+        string='Can See Lock Button',
+        compute='_compute_button_visibility',
+        compute_sudo=True,
+    )
+    can_see_cancel_button = fields.Boolean(
+        string='Can See Cancel Button',
+        compute='_compute_button_visibility',
+        compute_sudo=True,
+    )
 
     # Extend existing state field
     state = fields.Selection(
@@ -28,6 +46,32 @@ class PurchaseOrder(models.Model):
     approval_date_internal_control = fields.Datetime(string="Internal Control Manager Approval Date", readonly=True)
     approved_finance_id = fields.Many2one('res.users', string="Finance Manager Approved By", readonly=True)
     approval_date_finance = fields.Datetime(string="Finance Manager Approval Date", readonly=True)
+
+    @api.model
+    def _approval_group_xmlids(self):
+        return [
+            'purchase_sequential_approval.group_ops_manager',
+            'purchase_sequential_approval.group_chief_controller',
+            'purchase_sequential_approval.group_operations_manager',
+            'purchase_sequential_approval.group_internal_control_manager',
+            'purchase_sequential_approval.group_finance_manager',
+        ]
+
+    @api.depends_context('uid')
+    def _compute_button_visibility(self):
+        custom_group_ids = []
+        for xmlid in self._approval_group_xmlids():
+            group = self.env.ref(xmlid, raise_if_not_found=False)
+            if group:
+                custom_group_ids.append(group.id)
+
+        user_groups = self.env.user.groups_id.sudo().filtered(lambda g: g.id in custom_group_ids)
+        can_lock = any(user_groups.mapped('show_po_lock_button'))
+        can_cancel = any(user_groups.mapped('show_po_cancel_button'))
+
+        for order in self:
+            order.can_see_lock_button = can_lock
+            order.can_see_cancel_button = can_cancel
 
 
     def copy(self, default=None): 
@@ -116,13 +160,7 @@ class PurchaseOrder(models.Model):
             order.message_post(body=_('Approved by Finance Manager: %s') % self.env.user.name)
 
     def action_reject(self, reason=None):
-        allowed_groups = [
-            'purchase_sequential_approval.group_ops_manager',
-            'purchase_sequential_approval.group_chief_controller',
-            'purchase_sequential_approval.group_operations_manager',
-            'purchase_sequential_approval.group_internal_control_manager',
-            'purchase_sequential_approval.group_finance_manager',
-        ]
+        allowed_groups = self._approval_group_xmlids()
         for order in self:
             if not any(self.env.user.has_group(g) for g in allowed_groups):
                 raise UserError(_('You are not authorized to reject this PO.'))

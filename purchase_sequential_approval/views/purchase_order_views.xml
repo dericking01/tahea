@@ -13,6 +13,8 @@
             <xpath expr="//sheet" position="inside">
                 <group name="approval_group" string="Approval">
                     <!-- <field name="approval_state" readonly="1"/> -->
+                    <field name="can_see_lock_button" invisible="1"/>
+                    <field name="can_see_cancel_button" invisible="1"/>
                     <field name="approved_ops_id" readonly="1"/>
                     <field name="approval_date_ops" readonly="1"/>
                     <field name="approved_controller_id" readonly="1"/>
@@ -97,17 +99,12 @@
 
             <!-- Hide Cancel button once PO is confirmed (purchase state) -->
             <xpath expr="//header//button[@name='button_cancel']" position="attributes">
-                <attribute name="invisible">state == 'purchase'</attribute>
+                <attribute name="invisible">state == 'purchase' or not can_see_cancel_button</attribute>
             </xpath>
 
-            <!-- Lock button visible only to Administrator -->
+            <!-- Lock button visible only when current user's custom role allows it -->
             <xpath expr="//header//button[@name='button_done']" position="attributes">
-                <attribute name="groups">base.group_system</attribute>
-            </xpath>
-
-            <!-- Cancel button visible only to Administrator -->
-            <xpath expr="//header//button[@name='button_cancel']" position="attributes">
-                <attribute name="groups">base.group_system</attribute>
+                <attribute name="invisible">state != 'purchase' or not can_see_lock_button</attribute>
             </xpath>
 
                        
