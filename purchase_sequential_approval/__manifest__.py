@@ -13,6 +13,7 @@
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
+        'views/res_groups_views.xml',
         'views/purchase_order_views.xml',
         'views/purchase_order_report_inherit.xml',
     ],

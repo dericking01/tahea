@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_groups_form_inherit_purchase_sequential_approval" model="ir.ui.view">
+        <field name="name">res.groups.form.purchase.sequential.approval</field>
+        <field name="model">res.groups</field>
+        <field name="inherit_id" ref="base.view_groups_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="PO Buttons" name="po_button_visibility">
+                    <group>
+                        <div class="o_form_label text-muted">
+                            These options control Purchase Order header button visibility for users assigned to this group.
+                        </div>
+                        <field name="show_po_lock_button"/>
+                        <field name="show_po_cancel_button"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
