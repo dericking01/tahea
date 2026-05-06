@@ -13,6 +13,7 @@
                         </div>
                         <field name="show_po_lock_button"/>
                         <field name="show_po_cancel_button"/>
+                        <field name="show_po_unlock_button"/>
                     </group>
                 </page>
             </xpath>
