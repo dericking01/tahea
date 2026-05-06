@@ -7,6 +7,7 @@ class ResGroups(models.Model):
 
     show_po_lock_button = fields.Boolean(string='Show PO Lock Button')
     show_po_cancel_button = fields.Boolean(string='Show PO Cancel Button')
+    show_po_unlock_button = fields.Boolean(string='Show PO Unlock Button')
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
@@ -18,6 +19,11 @@ class PurchaseOrder(models.Model):
     )
     can_see_cancel_button = fields.Boolean(
         string='Can See Cancel Button',
+        compute='_compute_button_visibility',
+        compute_sudo=True,
+    )
+    can_see_unlock_button = fields.Boolean(
+        string='Can See Unlock Button',
         compute='_compute_button_visibility',
         compute_sudo=True,
     )
@@ -68,10 +74,12 @@ class PurchaseOrder(models.Model):
         user_groups = self.env.user.groups_id.sudo().filtered(lambda g: g.id in custom_group_ids)
         can_lock = any(user_groups.mapped('show_po_lock_button'))
         can_cancel = any(user_groups.mapped('show_po_cancel_button'))
+        can_unlock = any(user_groups.mapped('show_po_unlock_button'))
 
         for order in self:
             order.can_see_lock_button = can_lock
             order.can_see_cancel_button = can_cancel
+            order.can_see_unlock_button = can_unlock
 
 
     def copy(self, default=None): 
