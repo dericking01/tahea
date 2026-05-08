@@ -1,0 +1,81 @@
+
+<odoo>
+
+    <record id="seq_cashier_report" model="ir.sequence">
+        <field name="name">Cashier Report</field>
+        <field name="code">cashier.report</field>
+        <field name="prefix">CR/</field>
+        <field name="padding">4</field>
+        <field name="implementation">standard</field>
+    </record>
+
+    
+
+    
+
+    <!-- Action must come first -->
+    <record id="action_cashier_report" model="ir.actions.act_window">
+        <field name="name">Cashier Reports</field>
+        <field name="res_model">cashier.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Root menu -->
+    <menuitem id="menu_cashier_root" name="Cashier Reports" sequence="1"/>
+
+    <!-- Sub menu -->
+    <menuitem id="menu_cashier_report" 
+              name="Cashier Reports List" 
+              parent="menu_cashier_root" 
+              action="action_cashier_report"
+              sequence="2"/>
+
+     <record id="action_cashier_payment_method" model="ir.actions.act_window">
+        <field name="name">Payment Methods</field>
+        <field name="res_model">cashier.payment.method</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_cashier_payment_method"
+              name="Payment Methods"
+              parent="menu_cashier_root"
+              action="action_cashier_payment_method"
+              sequence="5"/>
+
+    <!-- Action to open pivot view -->
+    <record id="action_cashier_report_pivot" model="ir.actions.act_window">
+        <field name="name">Cashier Report Pivot</field>
+        <field name="res_model">cashier.report</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="view_id" ref="view_cashier_report_pivot"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Use this pivot table to analyze your Cashier Reports.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu item under your module menu -->
+    <menuitem id="menu_cashier_report_pivot"
+              name="Cashier Pivot"
+              parent="menu_cashier_root"
+              action="action_cashier_report_pivot"
+              sequence="6"/>
+
+
+      <!-- Wizard Action -->
+    <record id="action_cashier_report_wizard" model="ir.actions.act_window">
+        <field name="name">Periodic Cashier Report</field>
+        <field name="res_model">cashier.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    
+    <!-- Submenu for Wizard -->
+    <menuitem id="menu_cashier_periodic_wizard" 
+              name="Periodic Report" 
+              parent="menu_cashier_root" 
+              action="action_cashier_report_wizard" 
+              sequence="10"/>
+</odoo>

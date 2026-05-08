@@ -1,0 +1,31 @@
+<odoo>
+    <record id="view_cashier_payment_method_tree" model="ir.ui.view">
+        <field name="name">cashier.payment.method.tree</field>
+        <field name="model">cashier.payment.method</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cashier_payment_method_form" model="ir.ui.view">
+        <field name="name">cashier.payment.method.form</field>
+        <field name="model">cashier.payment.method</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   
+</odoo>
