@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_cashier_report_wizard_form" model="ir.ui.view">
+        <field name="name">cashier.report.wizard.form</field>
+        <field name="model">cashier.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cashier Report Wizard">
+                <sheet>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="sale_type"/>
+                        <field name="shop_ids" widget="many2many_tags"/>
+                    </group>
+                    <footer>
+                        <button string="Export Excel" type="object" name="action_export_excel" class="btn-primary"/>
+                        <field name="excel_file" filename="file_name" readonly="1"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

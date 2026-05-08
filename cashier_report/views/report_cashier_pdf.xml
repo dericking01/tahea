@@ -1,0 +1,105 @@
+<odoo>
+       <template id="report_cashier_pdf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page" style="padding:20px; font-family:Arial, sans-serif;">
+                    
+                    <!-- Header -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:10px;">
+                        <div>
+                           <t t-esc="company.name"/>
+                        </div>
+                        <div style="text-align:center; flex-grow:1;">
+                            <h2 style="margin:0;">Cashier Report</h2>
+                            <p style="margin:0; font-size:12px;"><strong>Report No:</strong> <span t-field="doc.name"/></p>
+                            <p style="margin:0; font-size:12px;"><strong>Date:</strong> <span t-field="doc.date"/></p>
+                            <p style="margin:0; font-size:12px;"><strong>Shop:</strong> <span t-field="doc.shop_id.name"/></p>
+                            <p style="margin:0; font-size:12px;"><strong>Sale Type:</strong> <span t-field="doc.sale_type"/></p>
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <!-- Transactions Table -->
+                    <h3 style="margin-top:20px;">Transactions</h3>
+                    <table class="table table-sm" style="width:100%; border-collapse: collapse; border:1px solid #000;">
+                        <thead>
+                            <tr style="background:#f2f2f2;">
+                                <th style="border:1px solid #000; padding:5px;">Payment Method</th>
+                                <th style="border:1px solid #000; padding:5px;">Transaction Ref</th>
+                                <th style="border:1px solid #000; padding:5px; text-align:right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.line_ids" t-as="line">
+                                <td style="border:1px solid #000; padding:5px;"><span t-field="line.payment_method_id.name"/></td>
+                                <td style="border:1px solid #000; padding:5px;"><span t-field="line.transaction_ref"/></td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right;"><span t-field="line.amount"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="text-align:right; font-weight:bold;">Total Sales: <span t-field="doc.total_sales"/></p>
+
+                    <!-- Expenditures Table -->
+                    <h3>Expenditures</h3>
+                    <table class="table table-sm" style="width:100%; border-collapse: collapse; border:1px solid #000;">
+                        <thead>
+                            <tr style="background:#f2f2f2;">
+                                <th style="border:1px solid #000; padding:5px;">Description</th>
+                                <th style="border:1px solid #000; padding:5px; text-align:right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="doc.expenditure_ids" t-as="exp">
+                                <td style="border:1px solid #000; padding:5px;"><span t-field="exp.description"/></td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right;"><span t-field="exp.amount"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="text-align:right; font-weight:bold;">Total Expenditure: <span t-field="doc.total_expenditure"/></p>
+
+                    <!-- Summary -->
+                    <h3>Summary</h3>
+                    <p><strong>Total Sales:</strong> <span t-field="doc.total_sales"/></p>
+                    <p><strong>Total Expenditure:</strong> <span t-field="doc.total_expenditure"/></p>
+                    <p><strong>Balance:</strong> <span t-field="doc.balance"/></p>
+
+                    <!-- Signature Section -->
+                    <!-- <div style="margin-top:40px; display:flex; justify-content:space-between;">
+                        <div style="text-align:center;">
+                            <p>Prepared By:</p>
+                            <p style="margin-top:50px;">________________________</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <p>Verified By:</p>
+                            <p style="margin-top:50px;">________________________</p>
+                        </div>
+                        <div style="text-align:center;">
+                            <p>Approved By:</p>
+                            <p style="margin-top:50px;">________________________</p>
+                        </div>
+                    </div> -->
+
+                    <!-- Footer -->
+                    <div style="margin-top:30px; font-size:12px;">
+                        <p>Printed By: <span t-esc="user.name"/></p>
+                        <p>Printed Date: <t t-esc="datetime.date.today().strftime('%d-%m-%Y')"/>
+</p>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+    <report
+        id="action_report_cashier"
+        string="Cashier Report"
+        model="cashier.report"
+        report_type="qweb-pdf"
+        name="cashier_report.report_cashier_pdf"
+        file="cashier_report.report_cashier_pdf"
+        print_report_name="'Cashier Report - %s' % (object.name)"
+    />
+
+
+</odoo>

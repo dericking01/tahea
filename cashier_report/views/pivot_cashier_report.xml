@@ -1,0 +1,21 @@
+<odoo>
+    <!-- Pivot View for Cashier Report -->
+    <record id="view_cashier_report_pivot" model="ir.ui.view">
+        <field name="name">cashier.report.pivot</field>
+        <field name="model">cashier.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Cashier Report Pivot">
+                <field name="shop_id" type="row"/>
+                <field name="sale_type" type="row"/>
+                <field name="date" type="col"/>
+                <field name="total_sales" type="measure"/>
+                <field name="total_expenditure" type="measure"/>
+                <field name="balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    
+
+    
+</odoo>

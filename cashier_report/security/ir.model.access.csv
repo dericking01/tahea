@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cashier_report,cashier.report,model_cashier_report,,1,1,1,0
+access_cashier_report_line,cashier.report.line,model_cashier_report_line,,1,1,1,1
+access_cashier_payment_method,cashier.payment.method,model_cashier_payment_method,,1,1,1,0
+access_cashier_expenditure,cashier.expenditure,model_cashier_expenditure,,1,1,1,1
+access_cashier_report_wizard,cashier.report.wizard,model_cashier_report_wizard,,1,1,1,0
+access_cashier_shop_user,access_cashier_shop_user,model_cashier_shop,,1,1,1,0

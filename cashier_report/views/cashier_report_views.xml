@@ -1,0 +1,87 @@
+<odoo>
+    <record id="view_cashier_report_form" model="ir.ui.view">
+        <field name="name">cashier.report.form.advanced</field>
+        <field name="model">cashier.report</field>
+        <field name="arch" type="xml">
+            <form string="Cashier Report" create="false">
+                <sheet>
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- Stat Buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_transactions" class="oe_stat_button" icon="fa-credit-card">
+                            <field name="total_sales" string="Total Sales" widget="statinfo"/>
+                        </button>
+                        <button type="object" name="action_view_expenditures" class="oe_stat_button" icon="fa-money">
+                            <field name="total_expenditure" string="Total Expenditure" widget="statinfo"/>
+                        </button>
+                        <button type="object" name="action_view_balance" class="oe_stat_button" icon="fa-balance-scale">
+                            <field name="balance" string="Balance" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!-- Details -->
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="shop_id"/>
+                            <field name="sale_type"/>
+                            <field name="employee_id"/>
+                        </group>
+                    </group>
+
+                    <!-- Tabs -->
+                    <notebook>
+                        <page string="Transactions" icon="fa-credit-card">
+                            <field name="line_ids" context="{'default_report_id': id}">
+                                <list editable="bottom">
+                                    <field name="payment_method_id"/>
+                                    <field name="transaction_ref"/>
+                                    <field name="amount" sum="Total Amount"/>
+                                </list>
+                            </field>
+                        </page>
+
+
+                        <page string="Expenditures" icon="fa-money">
+                        <field name="expenditure_ids" context="{'default_report_id': id}">
+                            <list editable="bottom">
+                                <field name="description"/>
+                                <field name="amount" sum="Total Expense"/>
+                            </list>
+                        </field>
+                        <group>
+                            <field name="total_expenditure" readonly="1"/>
+                            <field name="balance" readonly="1"/>
+                        </group>
+                    </page>
+
+
+                        
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Cashier Report Tree View -->
+    <record id="view_cashier_report_tree_inherit" model="ir.ui.view">
+        <field name="name">cashier.report.tree.inherit</field>
+        <field name="model">cashier.report</field>
+        <field name="arch" type="xml">
+            <list string="Cashier Reports" default_order="date desc">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="shop_id"/>
+                <field name="sale_type"/>
+                <field name="employee_id"/>
+            </list>
+        </field>
+    </record>
+</odoo>
