@@ -3,7 +3,7 @@
     <!-- REPORT ACTION -->
     <record id="action_report_approval_request" model="ir.actions.report">
         <field name="name">Approval Request Report PDF</field>
-        <field name="model">approval.request</field>
+        <field name="model">approval.request</field> 
 
         <field name="report_type">qweb-pdf</field>
 
