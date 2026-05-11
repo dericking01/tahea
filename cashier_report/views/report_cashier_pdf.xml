@@ -1,5 +1,14 @@
 <odoo>
-       <template id="report_cashier_pdf">
+    <record id="action_report_cashier" model="ir.actions.report">
+        <field name="name">Cashier Report</field>
+        <field name="model">cashier.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cashier_report.report_cashier_pdf</field>
+        <field name="report_file">cashier_report.report_cashier_pdf</field>
+        <field name="print_report_name">'Cashier Report - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_cashier_pdf">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page" style="padding:20px; font-family:Arial, sans-serif;">
@@ -73,17 +82,6 @@
             </t>
         </t>
     </template>
-
-
-    <report
-        id="action_report_cashier"
-        string="Cashier Report"
-        model="cashier.report"
-        report_type="qweb-pdf"
-        name="cashier_report.report_cashier_pdf"
-        file="cashier_report.report_cashier_pdf"
-        print_report_name="'Cashier Report - %s' % (object.name)"
-    />
 
 
 </odoo>
