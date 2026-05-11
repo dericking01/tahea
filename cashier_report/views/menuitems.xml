@@ -8,9 +8,6 @@
         <field name="padding">4</field>
         <field name="implementation">standard</field>
     </record>
-
-    
-
     
 
     <!-- Action must come first -->
