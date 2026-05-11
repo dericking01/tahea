@@ -1,0 +1,219 @@
+<odoo>
+
+    <!-- REPORT ACTION -->
+    <record id="action_report_approval_request" model="ir.actions.report">
+        <field name="name">Approval Request Report PDF</field>
+        <field name="model">approval.request</field>
+
+        <field name="report_type">qweb-pdf</field>
+
+        <field name="report_name">dcl_approval_request_pdf.report_approval_request_document</field>
+        <field name="report_file">dcl_approval_request_pdf.report_approval_request_document</field>
+
+        <field name="print_report_name">'Approval Request - %s' % (object.name)</field>
+
+        <field name="binding_type">report</field>
+    </record>
+
+
+    <!-- PROFESSIONAL QWEB TEMPLATE -->
+<template id="report_approval_request_document">
+    <t t-call="web.external_layout">
+
+        <main>
+
+            <t t-foreach="docs" t-as="o">
+
+                <div class="page" style="font-size:14px; color:#2c2c2c;">
+
+                  <!-- ================= HEADER ================= -->
+                <div style="position:relative;" class="mb-4">
+
+                    <!-- RIGHT SIDE TAG -->
+                    <div style="
+                        position:absolute;
+                        left:0;
+                        top:0;
+                    ">
+
+                        <t t-set="company_name"
+                        t-value="(o.company_id.name or '').strip().lower()"/>
+
+                        <t t-if="company_name in ['discount centre ltd', 'discount centre ltd - production']">
+
+                            <span style="
+                                background:#f3f3f3;
+                                padding:8px 20px;
+                                border-radius:8px;
+                                font-size:13px;
+                                font-weight:700;
+                                color:#444;
+                                display:inline-block;
+                                box-shadow:0px 2px 6px rgba(0,0,0,0.12);
+                                letter-spacing:0.5px;
+                            ">
+
+                                <!-- RETAIL -->
+                                <t t-if="company_name == 'discount centre ltd'">
+                                    RETAIL AND TRADING DEPT
+                                </t>
+
+                                <!-- MANUFACTURING -->
+                                <t t-if="company_name == 'discount centre ltd - production'">
+                                    MANUFACTURING DEPT
+                                </t>
+
+                            </span>
+
+                        </t>
+
+                    </div>
+                    <br/>
+                    <br/>
+
+
+                    <!-- CENTER CONTENT -->
+                    <div class="text-center">
+
+                        <!-- TITLE -->
+                        <h1 style="
+                            font-size:30px;
+                            font-weight:700;
+                            margin-bottom:8px;
+                            letter-spacing:1px;
+                            color:#222;
+                        ">
+                            FUND REQUEST
+                        </h1>
+
+                        <!-- DOCUMENT NUMBER -->
+                        <div style="font-size:18px; margin-bottom:5px;">
+                            <strong t-esc="o.name"/>
+                        </div>
+
+                        <!-- DATE -->
+                        <div style="
+                            color:#666;
+                            font-size:14px;
+                        ">
+                            Date:
+                            <span t-esc="o.date and o.date.strftime('%d-%m-%Y')"/>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                    <hr style="border:1px solid #000;"/>
+
+
+                    <!-- ================= INFO CARDS ================= -->
+                    <div class="row mt-4">
+
+                        <!-- LEFT CARD -->
+                        <div class="col-6">
+                            <div style="border:1px solid #ddd; padding:15px; border-radius:6px; min-height:120px;">
+
+                                <h4 style="margin-bottom:10px; font-size:16px;">
+                                    Request Information
+                                </h4>
+
+                                <p style="margin:0;">
+                                    <strong>Requested By:</strong><br/>
+                                    <span t-esc="o.request_owner_id.name if o.request_owner_id else ''"/>
+                                </p>
+
+                                <p style="margin-top:10px;">
+                                    <strong>Contact:</strong><br/>
+                                    <span t-esc="o.partner_id.name if o.partner_id else ''"/>
+                                </p>
+
+                            </div>
+                        </div>
+
+
+                        <!-- RIGHT CARD -->
+                        <div class="col-6">
+                            <div style="border:1px solid #ddd; padding:15px; border-radius:6px; min-height:120px;">
+
+                                <h4 style="margin-bottom:10px; font-size:16px;">
+                                    Financial Summary
+                                </h4>
+
+                                <p style="margin:0;">
+                                    <strong>Amount:</strong><br/>
+                                    <span style="font-size:18px; font-weight:600;"
+                                          t-esc="'{:,.2f}'.format(o.amount or 0.0)"/>
+                                </p>
+
+                                <p style="margin-top:10px;">
+                                    <strong>Status:</strong><br/>
+                                    <span t-esc="o.request_status"/>
+                                </p>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= DESCRIPTION ================= -->
+                    <div class="mt-4">
+
+                        <div style="border:1px solid #ddd; padding:15px; border-radius:6px;">
+
+                            <h4 style="margin-bottom:10px;">
+                                Description
+                            </h4>
+
+                            <p style="margin:0; white-space:pre-line;">
+                                <t t-esc="o.reason"/>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= RECEIVER SIGNATURE ================= -->
+                    <div class="mt-5">
+
+                        <h4>Receiver Confirmation</h4>
+
+                        <div class="row mt-3 text-center">
+
+                            <div class="col-4">
+                                <div style="border-bottom:1px solid #000; height:45px;"></div>
+                                <strong>Name</strong>
+                            </div>
+
+                            <div class="col-4">
+                                <div style="border-bottom:1px solid #000; height:45px;"></div>
+                                <strong>Phone Number</strong>
+                            </div>
+
+                            <div class="col-4">
+                                <div style="border-bottom:1px solid #000; height:45px;"></div>
+                                <strong>Signature</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= FOOTER ================= -->
+                    <div class="text-center mt-5" style="font-size:11px; color:#777;">
+                        This document is system generated and does require a physical Signature.
+                    </div>
+
+                </div>
+
+            </t>
+
+        </main>
+
+    </t>
+</template>
+
+</odoo>

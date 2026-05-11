@@ -16,7 +16,7 @@
                             <p style="margin:0; font-size:12px;"><strong>Shop:</strong> <span t-field="doc.shop_id.name"/></p>
                             <p style="margin:0; font-size:12px;"><strong>Sale Type:</strong> <span t-field="doc.sale_type"/></p>
                         </div>
-                        <div></div>
+                        <!-- <div></div> -->
                     </div>
 
                     <!-- Transactions Table -->
@@ -63,27 +63,11 @@
                     <p><strong>Total Expenditure:</strong> <span t-field="doc.total_expenditure"/></p>
                     <p><strong>Balance:</strong> <span t-field="doc.balance"/></p>
 
-                    <!-- Signature Section -->
-                    <!-- <div style="margin-top:40px; display:flex; justify-content:space-between;">
-                        <div style="text-align:center;">
-                            <p>Prepared By:</p>
-                            <p style="margin-top:50px;">________________________</p>
-                        </div>
-                        <div style="text-align:center;">
-                            <p>Verified By:</p>
-                            <p style="margin-top:50px;">________________________</p>
-                        </div>
-                        <div style="text-align:center;">
-                            <p>Approved By:</p>
-                            <p style="margin-top:50px;">________________________</p>
-                        </div>
-                    </div> -->
 
                     <!-- Footer -->
                     <div style="margin-top:30px; font-size:12px;">
                         <p>Printed By: <span t-esc="user.name"/></p>
-                        <p>Printed Date: <t t-esc="datetime.date.today().strftime('%d-%m-%Y')"/>
-</p>
+                        <p>Printed Date: <t t-esc="datetime.date.today().strftime('%d-%m-%Y')"/></p>
                     </div>
                 </div>
             </t>
