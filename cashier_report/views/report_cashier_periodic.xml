@@ -1,14 +1,13 @@
 <odoo>
-<report
-    id="action_print_cashier_periodic_report"
-    model="cashier.report.wizard"
-    string="Periodic Cashier Report"
-    report_type="qweb-pdf"
-    file="cashier_report.report_cashier_periodic"
-    name="cashier_report.report_cashier_periodic"
-/>
+    <record id="action_print_cashier_periodic_report" model="ir.actions.report">
+        <field name="name">Periodic Cashier Report</field>
+        <field name="model">cashier.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cashier_report.report_cashier_periodic</field>
+        <field name="report_file">cashier_report.report_cashier_periodic</field>
+    </record>
 
-<template id="report_cashier_periodic">
+    <template id="report_cashier_periodic">
         <t t-call="web.html_container">
             <div class="page">
                 <h3>Cashier Report Summary</h3>
