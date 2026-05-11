@@ -1,0 +1,102 @@
+<odoo>
+        <template id="report_delivery_document_inherit_vehicle_info"
+                inherit_id="stock.report_delivery_document">
+
+            <!-- ERAMCO MINING TAG ABOVE DELIVERY ADDRESS -->
+            <xpath expr="//div[@name='div_outgoing_address']" position="before">
+
+                <div style="
+                    width:100%;
+                    display:block;
+                    margin-bottom:15px;
+                    text-align:right;
+                    clear:both;
+                ">
+
+                    <span style="
+                        display:inline-block;
+                        background:#f2f2f2;
+                        padding:8px 18px;
+                        border-radius:8px;
+                        font-size:16px;
+                        font-weight:bold;
+                        color:#4a4a4a;
+                        box-shadow:0px 2px 6px rgba(0,0,0,0.15);
+                    ">
+                        ERAMCO MINING
+                    </span>
+
+                </div>
+
+            </xpath>
+
+             <xpath expr="//table[hasclass('table')]" position="before">
+
+                <br/>
+
+                <div style="border:1px solid #dcdcdc; padding:10px; margin-top:10px;">
+
+                    <h4 style="margin-bottom:10px;">
+                        <strong>Vehicle Information</strong>
+                    </h4>
+
+                    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+
+                        <tr>
+                            <td style="width:25%; padding:6px;">
+                                <strong>Truck Reg Number</strong>
+                            </td>
+                            <td style="width:25%; padding:6px;">
+                                <span t-field="o.vehicle_no"/>
+                            </td>
+
+                            <td style="width:25%; padding:6px;">
+                                <strong>Trailer Number</strong>
+                            </td>
+                            <td style="width:25%; padding:6px;">
+                                <span t-field="o.trailer_no"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:6px;">
+                                <strong>Driver Name</strong>
+                            </td>
+                            <td style="padding:6px;">
+                                <span t-field="o.vehicle_driver_name"/>
+                            </td>
+
+                            <td style="padding:6px;">
+                                <strong>Driver License</strong>
+                            </td>
+                            <td style="padding:6px;">
+                                <span t-field="o.license_driver"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:6px;">
+                                <strong>Contact No</strong>
+                            </td>
+                            <td style="padding:6px;">
+                                <span t-field="o.driver_contact_number"/>
+                            </td>
+
+                            <td style="padding:6px;">
+                                <strong>Transporter Name</strong>
+                            </td>
+                            <td style="padding:6px;">
+                                <span t-field="o.corresponding_company"/>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+                <br/>
+
+            </xpath>
+
+        </template>
+</odoo>
