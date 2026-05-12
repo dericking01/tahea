@@ -1,0 +1,47 @@
+<odoo>
+  <data>
+        <template id="report_saleorder_document_tag_inherit"
+          inherit_id="sale.report_saleorder_document">
+
+          <xpath expr="//t[@t-call='web.external_layout']" position="inside">
+
+              <div style="position:absolute; top:15px; right:20px;">
+                  <span style="
+                      background:#f2f2f2;
+                      padding:8px 18px;
+                      border-radius:8px;
+                      font-weight:bold;
+                      font-size:16px;
+                      color:#4a4a4a;
+                  ">
+                      ERAMCO MINING
+                  </span>
+              </div>
+
+          </xpath>
+
+      </template>
+
+     <template id="report_invoice_document_tag_inherit"
+          inherit_id="account.report_invoice_document">
+
+            <xpath expr="//t[@t-call='web.external_layout']" position="inside">
+
+                <div style="position:absolute; top:15px; right:20px;">
+                    <span style="
+                        background:#f2f2f2;
+                        padding:8px 18px;
+                        border-radius:8px;
+                        font-weight:bold;
+                        font-size:16px;
+                        color:#4a4a4a;
+                    ">
+                        ERAMCO MINING
+                    </span>
+                </div>
+
+            </xpath>
+
+        </template>
+  </data>
+</odoo>
