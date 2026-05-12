@@ -3,7 +3,7 @@
     <!-- REPORT ACTION -->
     <record id="action_report_approval_request" model="ir.actions.report">
         <field name="name">Approval Request Report PDF</field>
-        <field name="model">approval.request</field> 
+        <field name="model">approval.request</field>
 
         <field name="report_type">qweb-pdf</field>
 
@@ -39,7 +39,7 @@
                         <t t-set="company_name"
                         t-value="(o.company_id.name or '').strip().lower()"/>
 
-                        <t t-if="company_name in ['discount centre ltd', 'discount centre ltd - production']">
+                        <t t-if="company_name in ['discount centre ltd', 'discount centre ltd - production', 'discount centre ltd.']">
 
                             <span style="
                                 background:#f3f3f3;
@@ -61,6 +61,11 @@
                                 <!-- MANUFACTURING -->
                                 <t t-if="company_name == 'discount centre ltd - production'">
                                     MANUFACTURING DEPT
+                                </t>
+
+                                 <!-- Eramco Mining -->
+                                <t t-if="company_name == 'discount centre ltd.'">
+                                    ERAMCO MINING
                                 </t>
 
                             </span>
