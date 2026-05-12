@@ -6,14 +6,27 @@
             <field name="name">DELIVERY NOTE</field>
         </record>
 
-        <!-- Show DELIVERY NOTE as the document title on the report body -->
+        <!-- Render a centered, premium title band for delivery note -->
         <template id="report_delivery_document_delivery_note_title" inherit_id="stock.report_delivery_document">
             <xpath expr="//div[hasclass('page')]/h2" position="replace">
-                <h2>
-                    <span>DELIVERY NOTE</span>
-                    <br/>
-                    <span t-field="o.name">WH/OUT/0001</span>
-                </h2>
+                <div style="margin: 8px 0 18px 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 34%; border-bottom: 1px solid #c8d1e0;">&#160;</td>
+                            <td style="width: 32%; text-align: center; padding: 0 12px;">
+                                <span style="font-size: 30px; font-weight: 700; letter-spacing: 3px; color: #1f3555; text-transform: uppercase;">
+                                    DELIVERY NOTE
+                                </span>
+                            </td>
+                            <td style="width: 34%; border-bottom: 1px solid #c8d1e0;">&#160;</td>
+                        </tr>
+                    </table>
+                    <div style="text-align: center; margin-top: 6px;">
+                        <span style="font-size: 11px; color: #5f6f88; letter-spacing: 1.2px; text-transform: uppercase;">
+                            Reference: <span t-field="o.name">WH/OUT/0001</span>
+                        </span>
+                    </div>
+                </div>
             </xpath>
         </template>
     </data>
