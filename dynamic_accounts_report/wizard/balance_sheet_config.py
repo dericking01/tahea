@@ -36,17 +36,33 @@ class BalanceSheet(models.TransientModel):
         journal_items = self.find_journal_items(report_lines, data['form'])
 
         def set_report_level(rec):
-            """This function is used to set the level of each item.
-            This level will be used to set the alignment in the dynamic
-            reports."""
+            """Compute a line level using parent links without recursion.
+
+            This avoids infinite recursion when malformed data introduces
+            cyclic parent relationships.
+            """
             level = 1
-            if not rec['parent']:
-                return level
-            else:
+            parent = rec.get('parent')
+            visited = set()
+
+            while parent:
+                if parent in visited:
+                    break
+                visited.add(parent)
+
+                found_parent = False
                 for line in report_lines:
-                    key = 'a_id' if line['type'] == 'account' else 'id'
-                    if line[key] == rec['parent']:
-                        return level + set_report_level(line)
+                    key = 'a_id' if line.get('type') == 'account' else 'id'
+                    if line.get(key) == parent:
+                        level += 1
+                        parent = line.get('parent')
+                        found_parent = True
+                        break
+
+                if not found_parent:
+                    break
+
+            return level
 
         # finding the root
         for item in report_lines:
