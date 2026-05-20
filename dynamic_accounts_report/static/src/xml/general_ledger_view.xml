@@ -97,7 +97,6 @@
                                             <span>-</span>
                                         </t>
                                         <t t-else="">
-                                            <t t-esc="account['credit']" />
 <!--                                            <t t-raw="Math.round(account['credit'] * Math.pow(10, decimal_point)) / Math.pow(10, decimal_point)"/>-->
                                             <t t-out="Math.round(account['credit'] * Math.pow(10, decimal_point)) / Math.pow(10, decimal_point)"/>
                                             <t t-esc="currency[0]" />
@@ -108,7 +107,6 @@
                                             <span>-</span>
                                         </t>
                                         <t t-else="">
-                                            <t t-esc="account['balance']" />
                                             <t t-out="Math.round(account['balance'] * Math.pow(10, decimal_point)) / Math.pow(10, decimal_point)"/>
 <!--                                            <t t-raw="Math.round(account['balance'] * Math.pow(10, decimal_point)) / Math.pow(10, decimal_point)"/>-->
                                             <t t-esc="currency[0]" />
