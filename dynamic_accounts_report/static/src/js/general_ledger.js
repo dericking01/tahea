@@ -152,56 +152,42 @@ odoo.define('dynamic_accounts_report.general_ledger', function(require) {
 			e.preventDefault();
 			var self = this;
 			var action_title = self._title
-			self._rpc({
-				model: 'account.general.ledger',
-				method: 'view_report',
-				args: [
-					[self.wizard_id], action_title
-				],
-			}).then(function(data) {
-				var action = {
-					'type': 'ir.actions.report',
-					'report_type': 'qweb-pdf',
-					'report_name': 'dynamic_accounts_report.general_ledger',
-					'report_file': 'dynamic_accounts_report.general_ledger',
-					'data': {
-						'report_data': data
-					},
-					'context': {
-						'active_model': 'account.general.ledger',
-						'landscape': 1,
-						'trial_pdf_report': true
-					},
-					'display_name': action_title,
-				};
-				return self.do_action(action);
-			});
+			var action = {
+				'type': 'ir.actions.report',
+				'report_type': 'qweb-pdf',
+				'report_name': 'dynamic_accounts_report.general_ledger',
+				'report_file': 'dynamic_accounts_report.general_ledger',
+				'data': {
+					'wizard_id': self.wizard_id,
+					'title': action_title,
+				},
+				'context': {
+					'active_model': 'account.general.ledger',
+					'landscape': 1,
+					'trial_pdf_report': true
+				},
+				'display_name': action_title,
+			};
+			return self.do_action(action);
 		},
 
 		print_xlsx: function() {
 			var self = this;
 			var action_title = self._title
-			self._rpc({
-				model: 'account.general.ledger',
-				method: 'view_report',
-				args: [
-					[self.wizard_id], action_title
-				],
-			}).then(function(data) {
-				var action = {
-					//                    'type': 'ir_actions_dynamic_xlsx_download',
-					'data': {
-						'model': 'account.general.ledger',
-						'options': JSON.stringify(data['filters']),
-						'output_format': 'xlsx',
-						'report_data': JSON.stringify(data['report_lines']),
-						'report_name': action_title,
-						'dfr_data': JSON.stringify(data),
-					},
-				};
-				//                return self.do_action(action);
-				self.downloadXlsx(action)
-			});
+			var action = {
+				'data': {
+					'model': 'account.general.ledger',
+					'options': JSON.stringify({
+						'wizard_id': self.wizard_id,
+						'title': action_title,
+					}),
+					'output_format': 'xlsx',
+					'report_data': JSON.stringify([]),
+					'report_name': action_title,
+					'dfr_data': JSON.stringify({}),
+				},
+			};
+			self.downloadXlsx(action)
 		},
 
 		downloadXlsx: function(action) {

@@ -619,10 +619,20 @@ class GeneralView(models.TransientModel):
     def get_dynamic_xlsx_report(self, data, response, report_data, dfr_data):
         user = self.env.user
         user_language = user.lang
-        report_data_main = json.loads(report_data)
         output = io.BytesIO()
-        name_data = json.loads(dfr_data)
         filters = json.loads(data)
+        report_data_main = json.loads(report_data)
+        name_data = json.loads(dfr_data)
+
+        wizard_id = filters.get('wizard_id')
+        if wizard_id:
+            wizard = self.env['account.general.ledger'].browse(int(wizard_id))
+            report_title = filters.get('title') or wizard.titles or 'General Ledger'
+            generated_data = wizard.view_report([wizard.id], report_title)
+            report_data_main = generated_data.get('report_lines', [])
+            name_data = generated_data
+            filters = generated_data.get('filters', {})
+
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         sheet = workbook.add_worksheet()
         head = workbook.add_format({'align': 'center', 'bold': True,
@@ -635,8 +645,8 @@ class GeneralView(models.TransientModel):
         txt_l = workbook.add_format(
             {'font_size': '10px', 'border': 1, 'bold': True})
         sheet.merge_range('A2:J3',
-                          filters.get('company_name') + ':' + name_data.get(
-                              'name'), head)
+                          (filters.get('company_name') or '') + ':' +
+                          (name_data.get('name') or ''), head)
         date_head = workbook.add_format({'align': 'center', 'bold': True,
                                          'font_size': '10px'})
         date_style = workbook.add_format({'align': 'center',
@@ -654,7 +664,7 @@ class GeneralView(models.TransientModel):
              filters['accounts']]) + '  Account Tags: ' + ', '.join(
             [at or '' for at in
              filters['analytics']]) + '  Target Moves : ' + filters.get(
-            'target_move'), date_head)
+            'target_move', ''), date_head)
         sheet.write('A8', 'Code', sub_heading)
         sheet.write('B8', 'Amount', sub_heading)
         sheet.write('C8', 'Date', sub_heading)
