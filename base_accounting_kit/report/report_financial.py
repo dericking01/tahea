@@ -57,15 +57,31 @@ class AccountFinancialReport(models.Model):
                 level = report.parent_id.level + 1
             report.level = level
 
-    def _get_children_by_order(self):
-        """returns a recordset of all the children computed recursively,
-         and sorted by sequence. Ready for the printing"""
-        res = self
-        children = self.search([('parent_id', 'in', self.ids)],
-                               order='sequence ASC')
-        if children:
-            for child in children:
-                res += child._get_children_by_order()
+    def _get_children_by_order(self, visited=None):
+        """Return current reports and descendants sorted by sequence.
+
+        A recursion guard is used to prevent infinite loops when the
+        financial report hierarchy contains cyclic parent-child links.
+        """
+        visited = visited or set()
+        res = self.env['account.financial.report']
+
+        current = self.filtered(lambda report: report.id not in visited)
+        if not current:
+            return res
+
+        for report in current:
+            visited.add(report.id)
+            res += report
+
+        children = self.search([
+            ('parent_id', 'in', current.ids),
+            ('id', 'not in', list(visited)),
+        ], order='sequence ASC')
+
+        for child in children:
+            res += child._get_children_by_order(visited=visited)
+
         return res
 
     name = fields.Char('Report Name', required=True, translate=True)
