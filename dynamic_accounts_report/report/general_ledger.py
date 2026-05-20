@@ -28,7 +28,21 @@ class GeneralLedger(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         if self.env.context.get('trial_pdf_report'):
-            if data.get('report_data'):
+            if data and data.get('wizard_id'):
+                wizard = self.env['account.general.ledger'].browse(
+                    int(data.get('wizard_id')))
+                title = data.get('title') or wizard.titles or 'General Ledger'
+                report_data = wizard.view_report([wizard.id], title)
+                data.update(
+                    {'doc_ids': docids,
+                     'account_data': report_data.get('report_lines', []),
+                     'Filters': report_data.get('filters', {}),
+                     'debit_total': report_data.get('debit_total', 0.0),
+                     'credit_total': report_data.get('credit_total', 0.0),
+                     'title': report_data.get('name', title),
+                     'company': self.env.company,
+                     })
+            elif data and data.get('report_data'):
                 data.update(
                     {'doc_ids': docids,
                      'account_data': data.get('report_data')['report_lines'],
