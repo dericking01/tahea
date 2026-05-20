@@ -18,6 +18,10 @@
                     <strong>To:</strong>
                     <t t-esc="Filters['date_to']"/>
                     </span>
+                    <div t-if="pdf_note" style="margin-top: 8px; color: #8a6d3b;">
+                        <strong>Note:</strong>
+                        <t t-esc="pdf_note"/>
+                    </div>
                     <div>
                         <div style="width:100%;">
                             <div style="text-align:centre;" class="row">
