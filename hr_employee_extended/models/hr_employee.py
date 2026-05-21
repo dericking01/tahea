@@ -17,6 +17,13 @@ class HrEmployeeExtended(models.Model):
         index=True
     )
 
+    wcf = fields.Char(
+        string='WCF',
+        help='Optional WCF field',
+        tracking=True,
+        index=True
+    )
+
 class hr_custom(models.Model):
     _inherit = 'hr.contract'
 
