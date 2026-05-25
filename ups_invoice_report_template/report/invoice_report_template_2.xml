@@ -107,6 +107,7 @@
                                 <th class="text-start"  t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">Item Description</th>
                                 <!-- <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">HSN/SAC	</th> -->
                                 <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">Qty</th>
+                                <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">UOM</th>
                                 <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">Price</th>
                                 <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">Taxes</th>
                                 <th class="text-center" t-attf-style="color: {{ header or '#555555' }}; background-color: {{ th_bg }};">Total</th>
@@ -121,6 +122,7 @@
                                 <td class="text-start"><span t-field="line.name"/></td>
                                 <!-- <td class="text-center"><span t-field="line.l10n_in_hsn_code"/></td> -->
                                 <td class="text-center"><span t-field="line.quantity"/></td>
+                                <td class="text-center"><span t-field="line.product_uom_id"/></td>
                                 <td class="text-center"><span t-field="line.price_unit"/></td>
                                 <td class="text-center">
                                     <t t-foreach="line.tax_ids" t-as="tax" t-enumerate="i">
