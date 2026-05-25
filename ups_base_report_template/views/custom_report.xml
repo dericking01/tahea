@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+        <record id="inherit_config_setting_view" model="ir.ui.view">
+            <field name="name">inherit.config.setting.view</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Insert our app inside the settings form -->
+                <xpath expr="//form" position="inside">
+                    <app name="custom_report_settings" string="Custom Report" data-string="Custom Report" logo="/ups_sale_report_template/static/description/setting_report_logo.jpeg">
+                        <block title="Custom Report Settings">
+                            <setting
+                                string="Enable Custom Report"
+                                company_dependent="1"
+                                help="Enable custom report for this company">
+                                <field name="ups_custom_report"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+
+
+        <record id="action_custom_configuration" model="ir.actions.act_window">
+            <field name="name">Settings</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context">{'module': 'custom_report_settings'}</field>
+        </record>
+
+        <menuitem
+            id="menu_my_custom_config"
+            name="Custom Report"
+            parent="base.menu_administration"
+            sequence="1"
+            action="action_custom_configuration"
+            groups="base.group_system"/>
+
+</odoo>
