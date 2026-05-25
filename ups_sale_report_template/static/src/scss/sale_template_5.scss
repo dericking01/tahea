@@ -1,0 +1,158 @@
+.sale_order_5 {
+    font-family: 'Helvetica', sans-serif;
+    background-color: white;
+
+    /* Header with Curve Effect */
+    .sale-order-header {
+        page-break-inside: avoid;
+        background-color: #f8f9fa;
+        min-height: 120px;
+        margin-bottom: 30px;
+
+        .logo-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Stacks text under logo */
+    align-items: flex-start; /* Aligns items to the left */
+    
+    img { 
+        max-height: 110px; 
+        margin-bottom: 10px;
+    }
+    
+    .company-location {
+        font-weight: bold;
+        color: #666;
+    }
+}
+
+        .order-info {
+            background-color: #ff8a00; /* primary-orange */
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: right;
+            border-radius: 0 0 0 100px; /* Elegant curve */
+            
+            h1 {
+                font-size: 28px;
+                font-weight: 900;
+                margin: 0;
+                text-transform: uppercase;
+            }
+            p { margin: 2px 0; font-size: 18px;}
+        }
+    }
+
+    /* Info Blocks */
+    .customer-company-info {
+        padding: 0 25px;
+        margin-bottom: 40px;
+        page-break-inside: avoid;
+
+        .info-block {
+            border-left: 4px solid #ff8a00; /* primary-orange */
+            padding-left: 15px;
+            
+            .info-title {
+                font-size: 16px;
+                color: #ff8a00; /* primary-orange */
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+            }
+            .name-display {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 3px;
+            }
+            .address-display {
+                font-size: 12px;
+                color: #666666; /* text-muted */
+            }
+        }
+    }
+
+    /* Table Styling */
+    .table-container {
+        padding: 0 15px;
+        
+        .table_modern_minimal {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+
+            thead th {
+                padding: 12px 10px;
+                font-size: 14px;
+                text-transform: uppercase;
+                border: none;
+                font-weight: bold;
+            }
+
+            tbody tr {
+                page-break-inside: avoid;
+            }
+
+            tbody td {
+                padding: 12px 10px;
+                border-bottom: 1px solid #eeeeee;
+                font-size: 13px;
+                vertical-align: top;
+            }
+            
+            tr:last-child td { 
+                border-bottom: 2px solid #ff8a00; /* primary-orange */
+            }
+            .bg-light { background-color: #fafafa; }
+        }
+    }
+
+    /* Totals */
+    .totals_wrapper {
+        padding: 0 25px;
+        page-break-inside: avoid;
+
+        .terms_box {
+            background: #fdfdfd;
+            border: 1px solid #eeeeee;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: justify;
+        }
+
+        .terms-condition-box{
+            padding-right: 30px;
+        }
+
+        .table_summary {
+            width: 100%;
+            tr td {
+                padding: 8px 5px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .total_row {
+                font-size: 18px;
+                font-weight: bold;
+                color: #ff8a00; /* primary-orange */
+                border-top: 2px solid #ff8a00; /* primary-orange */
+                border-bottom: none; 
+            }
+        }
+    }
+
+    /* Footer */
+    .contact-footer {
+        margin-top: 50px;
+        padding: 20px;
+        border-top: 1px solid #eeeeee;
+        font-size: 12px;
+        color: #666666; /* text-muted */
+        page-break-inside: avoid;
+        
+        .color-orange { 
+            color: #ff8a00; /* primary-orange */
+            margin-right: 5px; 
+        }
+    }
+}

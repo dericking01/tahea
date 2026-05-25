@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_sale_custom" model="report.paperformat">
+        <field name="name">A4 - Sale Custom Size</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+
+        <!-- Margins -->
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+
+        <!-- Header handling -->
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">40</field>
+
+        <!-- Rendering -->
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="True"/>
+    </record>
+
+
+     <record id="sale_template_1" model="ir.actions.report">
+            <field name="name">Sale Template Report</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_1</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_1</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+            
+        </record>
+
+
+        <record id="sale_template_2" model="ir.actions.report">
+            <field name="name">Sale Template 2</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_2</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_2</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_3" model="ir.actions.report">
+            <field name="name">Sale Template 3</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_3</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_3</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_4" model="ir.actions.report">
+            <field name="name">Sale Template 4</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_4</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_4</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_5" model="ir.actions.report">
+            <field name="name">Sale Template 5</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_5</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_5</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_6" model="ir.actions.report">
+            <field name="name">Sale Template 6</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_6</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_6</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_7" model="ir.actions.report">
+            <field name="name">Sale Template 7</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_7</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_7</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_8" model="ir.actions.report">
+            <field name="name">Sale Template 8</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_8</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_8</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_9" model="ir.actions.report">
+            <field name="name">Sale Template 9</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_9</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_9</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="sale_template_10" model="ir.actions.report">
+            <field name="name">Sale Template 10</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ups_sale_report_template.report_sale_order_template_10</field>
+            <field name="report_file">ups_sale_report_template.report_sale_order_template_10</field>
+            <field name="paperformat_id" ref="ups_sale_report_template.paperformat_sale_custom"/>
+            <field name="print_report_name">'Sale Order'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+        </record>
+</odoo>

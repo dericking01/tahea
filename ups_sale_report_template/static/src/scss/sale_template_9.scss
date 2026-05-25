@@ -1,0 +1,168 @@
+.sale_order_9 {
+    padding: 25px 0;
+    font-family: 'Poppins', sans-serif;
+
+    .sale-order-inner {
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 0 25px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+
+        /* Decorative Corners */
+        &:after {
+            content: "";
+            width: 80px;
+            height: 260px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: .9;
+            background: url('../img/top-corner-backgroung.png') no-repeat;
+            background-size: contain;
+        }
+
+        &:before {
+            content: "";
+            width: 80px;
+            height: 260px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            opacity: .9;
+            background: url('../img/bottom-corner-backgroung.png') no-repeat;
+            background-size: contain;
+        }
+    }
+
+    .sale-top-header {
+    page-break-inside: avoid;
+    padding: 30px 60px;
+    border-bottom: 2px solid #edf1fc;
+
+    .header_table {
+        width: 100%;
+        border-collapse: collapse;
+
+        .header_left {
+            vertical-align: middle;
+            
+            .logo_box, .details_box {
+                display: inline-block; // Keeps them side-by-side
+                vertical-align: middle;
+            }
+
+            .logo_box img {
+                max-height: 60px;
+                margin-right: 20px;
+            }
+
+            .details_box {
+                padding-left: 20px;
+                border-left: 1px solid #dee2e6;
+                
+                h4 { font-size: 15px; font-weight: 800; margin: 0; text-transform: uppercase; }
+                .location { font-size: 10px; color: #666; text-transform: uppercase; margin-top: 3px; 
+                    i { color: #1f4acb; margin-right: 4px; }
+                }
+            }
+        }
+
+        .header_right {
+            text-align: right;
+            vertical-align: middle;
+            padding-right: 30px;
+
+            h1 { font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; }
+            p { font-size: 13px; margin: 0; color: #444; 
+                span { font-weight: 700; color: #1f4acb; }
+            }
+        }
+    }
+}
+
+.sale-table thead th{
+    font-weight: bold;
+    color: #333333;
+}
+
+    /* --- Customer & Invoicing Section --- */
+    .sale-info {
+        padding: 40px 60px;
+        background: #f2f5ff; 
+        border-bottom: 2px solid #edf1fc;
+        page-break-inside: avoid;
+
+        .inv-title-1 {
+            color: #1f4acb;
+            font-size: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        p, div {
+            color: #444 !important;
+            font-size: 16px;
+        }
+    }
+
+    /* --- Table Section --- */
+    .order-summary {
+        padding: 40px 60px;
+
+        .bg-active {
+            background: #1f4acb !important;
+            color: #fff !important;
+
+            th {
+                padding: 12px;
+                font-size: 14px;
+                border: none !important;
+                text-transform: uppercase;
+                font-weight: 600;
+                color: #fff;
+            }
+        }
+
+        .table td {
+            padding: 12px;
+            font-size: 14px;
+            border-top: 1px solid #e3e3e3 !important;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 2px solid #1f4acb !important;
+        }
+    }
+
+    /* --- Payment + Terms --- */
+    .sale-information {
+        padding: 40px 60px;
+        page-break-inside: avoid;
+
+        .inv-title-1 {
+            color: #1f4acb;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-align: justify;
+            
+        }
+
+        p {
+            font-size: 18px;
+            color: #444 !important;
+            text-align: justify;
+        }
+
+        .info-column{
+            text-align: justify;
+        }
+    }
+
+    /* --- Helpers --- */
+    .fw-bold { font-weight: 700 !important; }
+    .text-muted { color: #666 !important; }
+}

@@ -1,0 +1,228 @@
+.sale_order_8 {
+    font-family: 'Poppins', sans-serif !important;
+    // background: url("../img/img-5.jpg") top left repeat;
+    background-size: 100%;          
+    background-position: auto;   
+    background-repeat: no-repeat;
+    background-color: #ededed;
+
+    // Helper Classes to replace inline styles
+    .text-end { text-align: right !important; }
+    .text-center { text-align: center !important; }
+    .col-6 { width: 50%; }
+    .col-7 { width: 60%; }
+    .col-5 { width: 40%; }
+    
+.sale_order_info {
+    page-break-inside: avoid;
+    padding: 20px !important;
+    background: transparent !important;
+
+    .brand_stack_container {
+        display: block; // Forces vertical stacking
+        width: 100%;
+
+        .sale_order_logo {
+            display: block;
+            margin-bottom: 15px; // Space between logo and company name
+            background: transparent;
+
+            img {
+                max-height: 80px;
+                width: auto;
+                display: block;
+            }
+        }
+
+        .brand_details {
+            display: block;
+            margin: 0;
+            padding: 0;
+
+            .brand_name {
+                font-size: 20px;
+                font-weight: 900;
+                color: #0f172a;
+                text-transform: uppercase;
+                letter-spacing: -0.5px;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .brand_address {
+                margin-top: 8px;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                font-weight: 600;
+
+                .icon_location {
+                    margin-right: 5px;
+                    color: #64748b;
+                    font-size: 16px;
+                }
+
+                .brand_country {
+                    margin-top: 2px;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}
+
+.sale_order_contact_column {
+    page-break-inside: avoid;
+    vertical-align: top;
+    padding: 40px !important; // Matching your left-side padding
+    background: transparent !important;
+}
+
+.sale_order_contact_us {
+    text-align: right;
+
+    .inv-title-1 {
+        font-size: 24px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+        line-height: 1;
+    }
+
+    .contact-details {
+        font-size: 16px;
+        color: #535353;
+        line-height: 1.6;
+
+        .contact-item {
+            display: block;
+            margin-bottom: 3px;
+
+            .icon-style {
+                margin-left: 8px; 
+                width: 20px;      
+                text-align: center;
+                font-size: 20px;
+            }
+            
+            span {
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+    .sale_order_main_content {
+        background-color: #ffffff !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        margin-top: 10px;
+
+        .content-header-padding { page-break-inside: avoid; padding: 40px 50px 20px 50px; }
+        .content-address-padding { page-break-inside: avoid; padding: 0 50px 30px 50px; }
+    }
+
+    .order-date { color: #666; margin-bottom: 0; }
+    .address-text { color: #666; font-size: 14px; }
+
+    .inv-title-1 {
+        font-weight: 700;
+        font-size: 15px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .sale_order_label {
+        font-weight: 800;
+        font-size: 42px;
+        color: #262525;
+        letter-spacing: -1px;
+        margin: 0;
+    }
+
+    .name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #262525;
+        margin-bottom: 5px;
+    }
+
+    table.structure_table {
+        width: 100%;
+        border-collapse: collapse;
+        td { border: none !important; vertical-align: top; }
+    }
+
+    .sale_order_center {
+        padding: 0 30px;
+    }
+
+    .sale_order_table {
+        width: 100%;
+        margin: 20px 0;
+        border-collapse: collapse;
+
+        thead {
+            tr {
+                background-color: #f5f7fc !important;
+            }
+            th {
+                padding: 15px 20px !important;
+                border: none !important;
+                font-weight: 600;
+            }
+        }
+
+        tbody td {
+            padding: 12px 20px !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            color: #535353;
+            vertical-align: middle;
+        }
+
+        .total_row {
+            page-break-inside: avoid;
+            background-color: #fcfcfc !important;
+            td {
+                border-top: 2px solid #1f78ff !important;
+                padding: 20px !important;
+                font-size: 16px;
+            }
+            .total-amount-cell {
+                color: #1f78ff;
+                font-size: 30px;
+            }
+        }
+    }
+
+    .sale_order_bottom {
+    padding: 30px 30px;
+    border-top: 1px solid #f0f0f0;
+    page-break-inside: avoid;
+
+     .terms-column {
+        padding-right: 30px !important; /* As requested earlier */
+        vertical-align: top;
+    }
+
+    .terms-text { 
+        font-size: 14px !important; 
+        color: #777; 
+        line-height: 1.5;
+        white-space: pre-wrap;
+        text-align: justify !important;
+        text-justify: inter-word; 
+    }
+
+    .payment-info-list { 
+        font-size: 15px; 
+        color: #555;
+        margin: 0;
+    }
+}
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: local('Poppins');
+}

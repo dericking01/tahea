@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="sale.report_saleorder_raw">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-if="doc.company_id.ups_custom_report and doc.company_id.templates == 'template1'">
+                    <t t-call="ups_sale_report_template.report_so_custom_1" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template2'">
+                    <t t-call="ups_sale_report_template.report_so_custom_2" t-lang="doc.partner_id.lang"/>
+                </t>
+                 <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template3'">
+                    <t t-call="ups_sale_report_template.report_so_custom_3" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template4'">
+                    <t t-call="ups_sale_report_template.report_so_custom_4" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template5'">
+                    <t t-call="ups_sale_report_template.report_so_custom_5" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template6'">
+                    <t t-call="ups_sale_report_template.report_so_custom_6" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template7'">
+                    <t t-call="ups_sale_report_template.report_so_custom_7" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template8'">
+                    <t t-call="ups_sale_report_template.report_so_custom_8" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template9'">
+                    <t t-call="ups_sale_report_template.report_so_custom_9" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-elif="doc.company_id.ups_custom_report and doc.company_id.templates == 'template10'">
+                    <t t-call="ups_sale_report_template.report_so_custom_10" t-lang="doc.partner_id.lang"/>
+                </t>
+                <t t-else="">
+                    <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

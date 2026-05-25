@@ -1,0 +1,197 @@
+.sale_order_10 {
+    padding: 20px 0;
+    font-family: 'Poppins', sans-serif;
+
+    // Global print logic for Odoo
+    .page {
+        page-break-after: always;
+    }
+
+    .sale-order-info {
+        position: relative;
+        z-index: 0;
+        padding: 40px 50px;
+        background: #fff6f6;
+        border-radius: 20px;
+        min-height: 1050px;
+
+        &:after {
+            content: "";
+            width: 300px; 
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            // background: url('../img/background_so10.png');
+            background-size: cover;
+            z-index: -1;
+            border-radius: 20px 0 0 20px;
+        }
+    }
+
+    .border-shadow-bg {
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        padding: 20px;
+        
+        page-break-inside: avoid !important; // Keeps the entire card block together
+        break-inside: avoid !important;
+
+        &.sale-table-container {
+            padding: 0;
+            overflow: hidden;
+            page-break-inside: auto !important; // Tables should be allowed to break
+        }
+    }
+
+// Brand Container logic
+.brand-container {
+    display: flex;
+    align-items: center; // Vertically centers the text with the logo
+}
+
+.branding-section {
+    vertical-align: middle;
+
+    .branding-container {
+        display: table !important; // Forces side-by-side in PDF
+        width: auto;
+        border-collapse: collapse;
+
+        .logo-holder {
+            display: table-cell;
+            vertical-align: middle;
+            padding-right: 18px;
+
+            img {
+                max-height: 50px; // Smaller size for better fitting
+                width: auto;
+                display: block;
+                background: transparent;
+            }
+        }
+
+        .details-holder {
+            display: table-cell;
+            vertical-align: middle;
+            padding-left: 18px;
+            border-left: 1px solid #cbd5e1; // Thin, elegant line
+            text-align: left;
+
+            .biz-name {
+                font-size: 15px; // Slightly smaller for elegance
+                font-weight: 800;
+                color: #0f172a;
+                text-transform: uppercase;
+                letter-spacing: -0.3px;
+                line-height: 1;
+                margin-bottom: 3px;
+            }
+
+            .biz-loc {
+                font-size: 11px; // Condensed info
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 600;
+                line-height: 1.3;
+
+                .biz-country {
+                    color: #1e293b;
+                    font-weight: 700;
+                    margin-top: 1px;
+                }
+            }
+        }
+    }
+}
+
+// Ensure floats clear if you aren't using Flexbox in your Odoo version
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+    // Table Styling
+    .sale-default-table {
+        width: 100%;
+        border-collapse: collapse;
+        
+        thead {
+            display: table-header-group; // Ensures header repeats on new pages
+        }
+
+        tr {
+            page-break-inside: avoid !important; // Prevents a single row from splitting
+            page-break-after: auto;
+        }
+        
+        thead th {
+            padding: 12px 15px;
+            color: #11bbb0;
+            font-weight: 700;
+            border-bottom: 2px solid #f4f4f4;
+            text-transform: uppercase;
+            font-size: 16px;
+
+            &.col-desc { padding-left: 25px; width: 45%; }
+            &.col-total { padding-right: 25px; width: 20%; }
+        }
+        
+        tbody tr{
+            page-break-inside: avoid !important;
+            td {
+            padding: 15px;
+            font-size: 14px;
+            color: #535353;
+            border-bottom: 1px solid #f4f4f4;
+            vertical-align: middle;
+
+            &.col-desc { padding-left: 25px; }
+            &.col-total { padding-right: 25px; }
+        }
+    }
+
+        .total-row {
+            background-color: #fafafa;
+            page-break-inside: avoid !important; // Keeps total calculation block together
+            
+            td {
+                border-top: 2px solid #11bbb0;
+                color: #262525;
+                padding: 20px 15px;
+                
+                &.total-amount-cell {
+                    padding-right: 25px;
+                    color: #11bbb0;
+                }
+            }
+        }
+    }
+
+    // Typography & Lists (remain unchanged)
+    .terms-column{ font-size: 14px; padding-right: 30px; text-align: justify;}
+    .sale-title-label { color: #11bbb0; font-size: 14px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+    .sale-main-name { font-weight: 800; font-size: 34px; color: #262525; margin: 0; }
+    .sale-bold-text { font-size: 18px; color: #262525; font-weight: 600; line-height: 1.2; }
+    .sale-text-muted { color: #535353; font-size: 14px; }
+    .sale-contact-list {
+        max-width: 250px;
+        h1 { font-size: 16px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; color: #262525; }
+        ul { list-style: none; padding: 0; margin: 0;
+            li { font-size: 13px; color: #535353; margin-bottom: 6px; 
+                 i { color: #11bbb0; width: 22px; }
+            }
+        }
+    }
+    .sale-payment-info-block { max-width: 350px; }
+    .sale-payment-list {
+        list-style: none; padding: 0; font-size: 13px; margin: 0;
+        li { margin-bottom: 5px; font-size: 14px;}
+        li strong { color: #11bbb0; font-size: 14px;}
+    }
+    .sale-horizontal-divider { opacity: 0.1; margin: 15px 0; }
+}

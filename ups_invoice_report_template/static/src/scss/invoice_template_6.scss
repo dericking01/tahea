@@ -1,0 +1,412 @@
+.invoice_wrapper {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #2D2D2D;
+    
+
+    /* REFINED HEADER: Slimmer and sharper */
+    .top-yellow-bar {
+        page-break-inside: avoid;
+        background-color: #FFCC00 !important;
+        height: 60px;              
+        display: block;
+        position: relative;
+        margin: 10px 0 10px 0;
+
+        .invoice-title {
+            border: none;
+            color: #2D2D2D;        
+            font-size: 45px;       
+            font-weight: 300;      
+            letter-spacing: 10px;   
+            line-height: 60px;     
+            text-transform: uppercase;
+            padding: 0 30px 0 50px;
+            background-color: #ffffff;
+            position: absolute;
+            right: 80px;
+        }
+    }
+
+.logo_header_container {
+    text-align: right;   
+
+    .header-logo-wrapper {
+        display: inline-block;
+        height: 70px; 
+        min-width: 100px;
+        vertical-align: middle;
+
+        .company_logo_img {
+            max-height: 50px;
+            width: auto;
+            max-width: 220px; 
+            display: block;
+            object-fit: contain;
+            image-rendering: -webkit-optimize-contrast; 
+        }
+    }
+}
+
+
+    .state_header_container {
+    text-align: right;   
+    padding-bottom: 10px;
+
+    .header-logo-wrapper {
+        display: inline-block;
+        text-align: right;
+
+        .status-container {
+            display: block;
+
+            .status-badge {
+                padding: 4px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            /* State Specific Colors */
+            .state-draft {
+                background-color: #E9ECEF !important;
+                color: #495057 !important;
+                border: 1px solid #CED4DA;
+            }
+
+            .state-posted {
+                background-color: #D4EDDA !important; /* Soft Green */
+                color: #155724 !important;
+                border: 1px solid #C3E6CB;
+            }
+
+            .state-cancel {
+                background-color: #F8D7DA !important; /* Soft Red */
+                color: #721C24 !important;
+                border: 1px solid #F5C6CB;
+            }
+
+            .state-default {
+                background-color: #D1ECF1 !important; /* Soft Blue */
+                color: #0C5460 !important;
+            }
+        }
+    }
+}
+
+    /* INFO SECTION: Balanced alignment */
+    .info-section {
+        page-break-inside: avoid;
+
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .partner-name {
+            color: #000;
+            font-weight: 900;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .company-name {
+            color: #000;
+            font-weight: 900;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .address-text {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .meta-wrapper {
+            page-break-inside: avoid;
+            width: 280px;
+            border-top: 2px solid #2D2D2D;
+            padding-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            margin-bottom: 6px;
+            font-size: 13px;
+
+            .meta-label {
+                font-weight: 700;
+                flex: 1;
+                color: #888;
+                text-transform: uppercase;
+                font-size: 10px;
+            }
+
+            .meta-value {
+                flex: 1.2;
+                text-align: right;
+                color: #000;
+                font-weight: 600;
+            }
+        }
+
+        .gst-place-box {
+            page-break-inside: avoid;
+            border-left: 3px solid #FFCC00; 
+            padding-left: 15px;
+            margin-top: 15px;
+            padding-top: 5px;
+
+            .tax-line {
+                font-size: 13px;
+                line-height: 1.4;
+                display: block;
+
+                .tax-label {
+                    font-weight: 800;
+                    color: #666;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-right: 5px;
+                }
+
+                .tax-value {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #2D2D2D;
+                }
+            }
+        }
+
+        .supply-div{
+            padding-left: 40px;
+        }
+    }
+
+    .table-container {
+    margin-bottom: 30px;
+    page-break-inside: avoid;
+
+    .table-custom {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed; // Important for respecting widths
+
+        thead th {
+            background-color: #2D2D2D !important;
+            color: #FFFFFF !important;
+            padding: 12px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            border: 1px solid #2D2D2D;
+            text-align: center;
+
+            // Width Arrangement moved from Style Tags
+            &.col-sl    { width: 8%; }
+            &.col-desc  { width: 32%; text-align: left; padding-left: 15px; }
+            &.col-qty   { width: 10%; }
+            &.col-hsn-sac {width: 10%;}
+            &.col-unit  { width: 10%; }
+            &.col-price { width: 15%; }
+            &.col-total { width: 15%; }
+        }
+
+        tbody td {
+            background-color: #F8F9FA !important;
+            border: 2px solid #FFFFFF !important; // Creates the clean white grid lines
+            padding: 14px 10px;
+            font-size: 13px;
+            color: #333;
+            vertical-align: middle;
+
+            &.cell-desc {
+                text-align: left;
+                padding-left: 15px;
+            }
+
+            .tax-tag {
+                font-size: 10px;
+                color: #888;
+                font-style: italic;
+                margin-top: 4px;
+                display: block;
+            }
+
+            &.cell-bold {
+                font-weight: 800;
+                color: #000;
+                background-color: #F8F9FA !important; // Subtle highlight for total column
+            }
+        }
+    }
+}
+
+    /* TOTALS: Elegant sizing */
+    .bottom-section {
+        page-break-inside: avoid;
+        margin-top: 30px;
+        align-items: end;
+
+
+    .totals-wrapper {
+        display: block;
+        width: 100%;
+        
+        .totals-display {
+            width: 40%; 
+            margin-left: auto; 
+            border-collapse: collapse;
+
+            td {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .lbl {
+                color: #666;
+                text-align: left;
+            }
+
+            .val {
+                text-align: right;
+                font-weight: 600;
+                color: #222;
+            }
+
+            .grand-total-box {
+                .lbl-total {
+                    font-weight: 800;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    padding-top: 15px;
+                }
+                .val-total {
+                    font-weight: 900;
+                    font-size: 16px;
+                    padding-top: 15px;
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    /* Separate Narration Section Below */
+    .narration-section {
+        page-break-inside: avoid;
+        width: 100%;
+        border-top: 1px solid #eee; /* Subtle separator */
+        padding-top: 10px;
+
+        .pill-label {
+            width: 140px;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .content-text {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+            text-align: justify;
+        }
+    }
+
+        .thanks-note h5 {
+            font-weight: 900;
+            font-size: 16px;
+            color: #2D2D2D;
+            margin-bottom: 20px;
+        }
+
+        .pill-label {
+            background-color: #FFCC00 !important;
+            padding: 4px 15px;
+            font-weight: 800;
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .content-text {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .totals-display {
+            width: 100%;
+            td { padding: 6px 0; font-size: 14px; }
+            .lbl { color: #888; font-weight: 500; }
+            .val { text-align: right; font-weight: 600; }
+
+            .grand-total-box {
+                border-top: 2px solid #2D2D2D;
+                td {
+                    padding: 12px 0 !important;
+                    font-size: 18px !important; // Smaller, more elegant total
+                    font-weight: 900;
+                }
+                .lbl { color: #000; text-transform: uppercase; }
+            }
+        }
+    }
+
+    /* FOOTER ACCENT BAR */
+    .payment-accent-container {
+        page-break-inside: avoid;
+        margin-top: 10px;
+
+        .payment-wrapper {
+            display: table !important;
+            width: 100% !important;
+            table-layout: fixed !important;
+            background-color: #FDFDFD;
+            border: 1px solid #EEE;
+            border-left: 4px solid #FFCC00;
+        }
+
+        .payment-meta, .words-section, .total-section {
+            display: table-cell !important;
+            vertical-align: middle;
+            padding: 15px 20px;
+        }
+
+        .payment-meta { width: 30%; border-right: 1px solid #EEE; }
+        .words-section { width: 45%; }
+        .total-section { 
+            width: 25%; 
+            background-color: #2D2D2D !important; 
+            color: #FFFFFF !important; 
+            text-align: right; 
+        }
+
+        .meta-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #AAA;
+            margin-bottom: 3px;
+        }
+
+        .meta-value { font-size: 13px; font-weight: 700; }
+        .words-value { font-size: 13px; font-style: italic; color: #777; }
+        .total-value { font-size: 16px; font-weight: 900; }
+    }
+}

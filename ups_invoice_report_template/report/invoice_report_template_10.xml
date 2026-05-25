@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="custom_invoice_report_10">
+    <t t-call="ups_invoice_report_template.external_layout_invoice_custom">
+        <t t-set="primary" t-value="res_company.invoice_primary_color or '#1F7F6C'"/>
+        <t t-set="secondary" t-value="res_company.invoice_secondary_color or '' "/>
+        <t t-set="header" t-value="res_company.invoice_header_color or '' "/>
+        
+        <t t-set="r" t-value="int((header or '#EBE7E2')[1:3], 16)"/>
+        <t t-set="g" t-value="int((header or '#EBE7E2')[3:5], 16)"/>
+        <t t-set="b" t-value="int((header or '#EBE7E2')[5:7], 16)"/>
+        <t t-set="th_bg" t-value="'rgba(%s, %s, %s, 0.3)' % (r, g, b) if header else '#333333'"/> 
+        <t t-set="o" t-value="doc.with_context(lang=lang)" />
+        
+        <div class="page invoice_modern_premium">
+            <div class="header-card" t-attf-style="background-color: {{ primary }};">
+                <div class="row align-items-center">
+                    <div class="col-7">
+                        <span class="invoice-tag">OFFICIAL INVOICE</span>
+                        <h1 class="invoice-number" t-field="o.name"/>
+                        <div class="status-pill-wrap">
+                            <span t-attf-class="status-pill #{'pill-posted' if o.state == 'posted' else 'pill-draft'}">
+                                <t t-esc="o.state.upper()"/>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-5 text-end">
+                        <div class="brand-container">
+                            <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" class="logo-img"/>
+                            <div class="company-name-header" t-field="res_company.name"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row info-strip-grid">
+                    <div class="col-3 info-col">
+                        <label>BILLED TO</label>
+                        <div class="val-bold" t-field="o.partner_id.name"/>
+                    </div>
+                    <div class="col-3 info-col">
+                        <label>DATE</label>
+                        <div class="val" t-field="o.invoice_date" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/>
+                    </div>
+                    <div class="col-3 info-col">
+                        <label>DUE BY</label>
+                        <div class="val" t-field="o.invoice_date_due" t-options='{"widget": "date", "format": "dd MMM yyyy"}'/>
+                    </div>
+                    <div class="col-3 info-col text-end">
+                        <label>REFERENCE</label>
+                        <div class="val" t-field="o.payment_reference"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="address-container-box">
+                <div class="row ">
+                    <div class="col-6 address-side-left">
+                        <div class="address-inner">
+                            <label class="address-label">FROM</label>
+                            <div class="address-content">
+                                <strong class="entity-name" t-field="res_company.name"/>
+                                <div t-field="res_company.partner_id" 
+                                     t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                <div class="vat-info" t-if="res_company.vat">
+                                    <!-- GSTIN: <span t-field="res_company.vat"/> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="address-inner">
+                            <label class="address-label">BILL TO</label>
+                            <div class="address-content">
+                                <strong class="entity-name" t-field="o.partner_id.name"/>
+                                <div t-field="o.partner_id" 
+                                     t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                <div class="vat-info" t-if="o.partner_id.vat">
+                                    GSTIN: <span t-field="o.partner_id.vat"/>
+                                </div>
+                                <div class="vat-info" t-if="o.l10n_in_state_id">
+                                    Place of Supply: <span t-field="o.l10n_in_state_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-body">
+                <table class="table-premium table-borderless">
+                    <thead>
+                        <tr>
+                            <th class="text-start" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">DESCRIPTION</th>
+                            <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">HSN</th>
+                            <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">QTY</th>
+                            <th class="text-end" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">UNIT PRICE</th>
+                            <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">Taxes</th>
+                            <th class="text-end" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.invoice_line_ids" t-as="line">
+                            <tr t-attf-style="background-color: {{ (line_index % 2 != 0) and ('rgba(%s, %s, %s, 0.1)' % (r, g, b)) or 'transparent' }} !important;">
+                                <td class="text-start">
+                                    <div class="item-main" t-field="line.product_id.name"/>
+                                    <div class="item-sub" t-field="line.name"/>
+                                </td>
+                                <td class="text-center"><span t-field="line.product_id.l10n_in_hsn_code"/></td>
+                                <td class="text-center"><strong><span t-field="line.quantity"/></strong></td>
+                                <td class="text-end"><span t-field="line.price_unit"/></td>
+                                <td class="text-center">
+                                    <t t-foreach="line.tax_ids" t-as="tax" t-enumerate="i">
+                                        <t t-if="i"> + </t>
+                                        <span t-esc="tax.name"/>
+                                    </t>
+                                </td>
+                                <td class="text-end"><strong><span t-field="line.price_subtotal"/></strong></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <div class="summary-container">
+
+                    <div class="totals-wrapper">
+                                <table class="totals-display table-borderless">
+                                    <tr>
+                                        <td class="lbl">Untaxed Amount</td>
+                                        <td class="val"><span t-field="o.amount_untaxed"/></td>
+                                    </tr>
+                                    <t t-set="tax_totals" t-value="o.tax_totals"/>
+                                    <t t-foreach="tax_totals['subtotals']" t-as="subtotal">
+                                        <t t-foreach="subtotal['tax_groups']" t-as="tax_group">
+                                            <tr class="tax-row">
+                                                <td class="lbl" t-esc="tax_group['group_name']"/>
+                                                <td class="val" t-esc="tax_group['tax_amount_currency']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <tr class="grand-total-box" t-attf-style="border-top: 2px solid {{ header }};">
+                                        <td class="lbl-total">Total</td>
+                                        <td class="val-total"><span t-field="o.amount_total"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                    <div class="terms-col">
+                            <div class="hsn-summary">
+                                <h6 t-attf-style="color: {{ primary }};">TAX BREAKDOWN (HSN)</h6>
+                                <t t-set="hsn_summary" t-value="o._l10n_in_get_hsn_summary_table()"/>
+                                <t t-if="hsn_summary">
+                                    <div name="l10n_in_hsn_summary" class="mt-3">
+                                        <table class="table-premium table-sm table-borderless col-6">
+                                            <thead>
+                                                <th t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">HSN/SAC</th>
+                                                <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">Quantity</th>
+                                                <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">Rate %</th>
+                                                <th class="text-center" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">Taxable Value</th>
+                                                <th class="text-center" t-if="hsn_summary['has_gst']" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">SGST</th>
+                                                <th class="text-center" t-if="hsn_summary['has_gst']" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">CGST</th>
+                                                <th class="text-center" t-if="hsn_summary['has_igst']" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">IGST</th>
+                                                <th class="text-center" t-if="hsn_summary['has_cess']" t-attf-style="color: {{ header or '#ffffff' }} !important; background-color: {{ th_bg }} !important;">CESS</th>
+                                            </thead>
+                                            <tr t-foreach="hsn_summary['items']" t-as="item" >
+                                                <td t-esc="item['l10n_in_hsn_code']"/>
+                                                <td class="text-center">
+                                                    <span t-esc="item['quantity']"/>
+                                                    <span t-if="hsn_summary['display_uom']">(<t t-esc="item['uom_name']"/>)</span>
+                                                </td>
+                                                <td class="text-center" t-esc="item['rate']"/>
+                                                <td class="text-center">
+                                                    <span t-esc="item['amount_untaxed']"
+                                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center" t-if="hsn_summary['has_gst']">
+                                                    <span t-esc="item['tax_amount_sgst']"
+                                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center" t-if="hsn_summary['has_gst']">
+                                                    <span t-esc="item['tax_amount_cgst']"
+                                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center" t-if="hsn_summary['has_igst']">
+                                                    <span t-esc="item['tax_amount_igst']"
+                                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                                <td class="text-center" t-if="hsn_summary['has_cess']">
+                                                    <span t-esc="item['tax_amount_cess']"
+                                                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+
+                </div>
+
+                <div class="row no-gutters footer-section-unified">
+                    <div class="col-7 payment-side">
+                        <div class="payment-inner">
+                            <div class="remark-item">
+                                <label t-attf-style="color: {{ primary }}">AMOUNT IN WORDS</label>
+                                <div class="val-text text-uppercase">
+                                    <span t-esc="o.currency_id.amount_to_text(o.amount_total)"/>
+                                </div>
+                            </div>
+
+                            <t t-if="o.narration">
+                                <div class="remark-item">
+                                    <label t-attf-style="color: {{ primary }}">Terms &amp; Condition</label>
+                                    <div class="val-text">
+                                        <span t-field="o.narration"/>
+                                        <t t-if="not o.narration">Standard payment terms apply.</t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-5 totals-side">
+                        <div class="totals-inner">
+                            <div class="row no-gutters">
+                                <div class="col-6 summary-box border-end">
+                                    <span class="summary-label" t-attf-style="color: {{ primary }}">PAYMENT TERMS</span>
+                                    <div class="summary-value">
+                                        <span t-field="o.invoice_payment_term_id.name"/>
+                                        <t t-if="not o.invoice_payment_term_id">Immediate</t>
+                                    </div>
+                                </div>
+                                <div class="col-6 summary-box">
+                                    <span class="summary-label" t-attf-style="color: {{ primary }}">REFERENCE</span>
+                                    <div class="summary-value">
+                                        <span t-field="o.payment_reference"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="total-highlight-row" t-attf-style="background-color: {{ primary }};">
+                                <span class="total-label">TOTAL AMOUNT PAYABLE</span>
+                                <div class="total-amount-value">
+                                    <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</template>
+
+     <template id="report_invoice_10">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ups_invoice_report_template.custom_invoice_report_10"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

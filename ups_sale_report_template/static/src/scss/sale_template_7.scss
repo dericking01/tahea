@@ -1,0 +1,196 @@
+.sale_order_7 {
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    
+    .sale-order-info {
+            margin-bottom: 30px;
+            padding: 0;
+            position: relative;
+            
+            // Fixes color rendering for PDF engines
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+
+            // Defines the area the background must fill
+            min-height: 1100px; 
+            width: 100%; 
+            display: block;
+
+            background-color: #ffffff; 
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                }
+
+            .sale-order-header {
+                page-break-inside: avoid;
+                padding: 30px 40px;
+                border-bottom: solid 1px #e9e9e9;
+            }
+
+.minimal_brand_row {
+    display: table !important; // Replaces flex for PDF stability
+    width: auto;
+    border-collapse: collapse;
+    background: transparent;
+
+    .logo_cell {
+        display: table-cell;
+        vertical-align: middle;
+        padding-right: 15px;
+        background: transparent;
+
+        img {
+            max-height: 45px; // Moved from inline XML to SCSS
+            width: auto;
+            display: block;
+            background-color: transparent !important;
+        }
+    }
+
+    .brand_text_box {
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 15px;
+        border-left: 1px solid #e2e8f0; /* Your exact thin divider */
+        text-align: left;
+        
+        .name_row {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .location_row {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 2px;
+            font-weight: 500;
+            white-space: nowrap; // Prevents the city/country from breaking to new lines
+        }
+    }
+}
+
+    .sale-order-title h1 {
+        color: #535353;
+        font-weight: 600;
+        font-size: 22px;
+        margin: 0;
+    }
+
+    .sale-order-top {
+        page-break-inside: avoid;
+        padding: 30px 40px;
+        font-size: 14px;
+    }
+
+    .inv-title-1 {
+        font-weight: 600;
+        font-size: 15px;
+        color: #535353;
+        margin-bottom: 5px;
+        text-align: justify;
+    }
+
+    .invo-addr-1 {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .sale-order-center {
+        padding: 10px 40px 30px;
+    }
+
+    .sale-order-table {
+        width: 100%;
+        margin-bottom: 0;
+        
+        thead.bg-active {
+            background-color: #f3f3f3 !important;
+        }
+
+        th {
+            font-size: 14px;
+            font-weight: bold;
+            color: #525252;
+            padding: 12px;
+            border: none !important;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        td {
+            font-size: 13px;
+            padding: 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0 !important;
+        }
+    }
+
+
+.terms-condition-block{
+    text-align: justify;
+    padding-right: 30px;
+}
+
+    .terms-condition-box-7 {
+        padding: 15px;
+        background-color: #fcfcfc;
+        border: 1px solid #f0f0f0;
+        border-radius: 4px;
+        min-height: 100px;
+        page-break-inside: avoid;
+
+        .terms-text {
+            font-size: 13px;
+            color: #777;
+            line-height: 1.5;
+        }
+    }
+
+    .summary-table-7 {
+        margin-top: 0;
+        
+        td {
+            padding: 8px 12px !important;
+            border: none !important;
+            font-size: 13px;
+        }
+
+        .grand-total-row {
+            td {
+                font-size: 15px;
+                color: #333;
+                border-top: 1px solid #ddd !important;
+                padding: 12px !important;
+            }
+        }
+    }
+
+    /* Fixed table display for alignment */
+    .sale-order-table {
+        margin-bottom: 0px !important;
+    }
+
+    .item-desc-1 span {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .sale-order-bottom {
+        page-break-inside: avoid;
+        padding: 30px 40px;
+        background: #fafafa;
+        border-top: 1px solid #e9e9e9;
+    }
+
+    .f-w-600 {
+        font-weight: 600;
+    }
+
+    
+}

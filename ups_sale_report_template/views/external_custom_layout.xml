@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="external_layout_custom">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+        <t t-if="not company" t-set="company" t-value="res_company"/>
+
+        <t t-set="layout_background_url"
+           t-value="'data:image/png;base64,%s' % company.watermark.decode('utf-8') if company.watermark else ''"/>
+
+        <div class="header">
+            <div t-if="layout_background_url" 
+                 t-attf-style="position: fixed; 
+                               top: 350px; 
+                               left: 0; 
+                               width: 100%; 
+                               height: 500px; 
+                               background-image: url('{{ layout_background_url }}'); 
+                               background-repeat: no-repeat; 
+                               background-position: center; 
+                               background-size: contain;">
+            </div>
+        </div>
+
+        <div class="article o_report_layout_background" 
+             t-att-data-oe-model="o and o._name" 
+             t-att-data-oe-id="o and o.id">
+            <t t-out="0"/>
+        </div>
+
+        <div class="footer sale-order-footer">
+            <div class="footer-highlight-bar"></div>
+            <div class="footer-table">
+                <div class="footer-col">
+                    <div class="footer-item">
+                        <span class="icon-wrapper"><i class="fa fa-phone"/></span>
+                        <span t-field="company.phone"/>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-item">
+                        <span class="icon-wrapper"><i class="fa fa-envelope"/></span>
+                        <span t-field="company.email"/>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-item">
+                        <span class="icon-wrapper"><i class="fa fa-globe"/></span>
+                        <span t-field="company.website"/>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-2 small text-muted">
+                <span class="page"/> / <span class="topage"/>
+            </div>
+        </div>
+    </template>
+</odoo>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_so_custom_9">
+        <t t-call="ups_sale_report_template.external_layout_custom">
+        <t t-set="primary" t-value="res_company.report_primary_color"/>
+        <t t-set="secondary" t-value="res_company.report_secondary_color"/>
+        <t t-set="header" t-value="res_company.report_header_color"/>
+        <t t-set="r" t-value="int((header or '#1f4acb')[1:3], 16)"/>
+        <t t-set="g" t-value="int((header or '#1f4acb')[3:5], 16)"/>
+        <t t-set="b" t-value="int((header or '#1f4acb')[5:7], 16)"/>
+
+        <t t-set="r1" t-value="int((secondary or '#f2f5ff')[1:3], 16)"/>
+        <t t-set="g1" t-value="int((secondary or '#f2f5ff')[3:5], 16)"/>
+        <t t-set="b1" t-value="int((secondary or '#f2f5ff')[5:7], 16)"/>
+
+
+            <t t-foreach="docs" t-as="doc">
+                <div class="page sale_order_9">
+
+                        <div class="sale-order-inner">
+
+                            <div class="sale-top-header">
+                                <table class="header_table table-borderless">
+                                    <tr>
+                                        <td class="header_left">
+                                            <div class="branding_flex">
+                                                <div class="logo_box">
+                                                    <img t-if="doc.company_id.logo" t-att-src="image_data_uri(doc.company_id.logo)" alt="logo"/>
+                                                </div>
+                                                <div class="details_box">
+                                                    <h4 t-field="doc.company_id.name"/>
+                                                    <div class="location">
+                                                        <i class="fa fa-map-marker"/> <span t-field="doc.company_id.city"/>, <span t-field="doc.company_id.state_id.name"/>
+                                                        <div class="country" t-field="doc.company_id.country_id.name"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="header_right">
+                                            <h1 t-attf-style="color: {{primary or '#1f4acb'}}">Sale Order</h1>
+                                            <p>Order Number: <span t-field="doc.name"/></p>
+                                            <p>Order Date: <span t-field="doc.date_order" t-options='{"widget": "date"}'/></p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="sale-info" t-attf-style="background-color: rgba({{ r1 }}, {{ g1 }}, {{ b1 }}, 0.12); ">
+                                <div class="row">
+                                    <div class="col-6 mb-4">
+                                        <h4 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Customer</h4>
+                                        <div t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address", "name", "email"], "no_marker": True}'/>
+                                    </div>
+                                    <div class="col-6 mb-4 text-end">
+                                        <h4 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Billing Address</h4>
+                                        <div t-field="doc.company_id.partner_id" t-options='{
+                                        "widget": "contact",
+                                        "fields": ["name", "address"],
+                                        "no_marker": True }'/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h4 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Expiration Date</h4>
+                                        <p t-field="doc.validity_date"/>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <h4 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Payment Terms</h4>
+                                        <p t-field="doc.payment_term_id.name"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="order-summary">
+                                <table class="table sale-table table-borderless">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-start" t-attf-style="color:{{ header or '#333333' }}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Description</th>
+                                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Price</th>
+                                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Quantity</th>
+                                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Taxes</th>
+                                            <th class="text-end" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Totals</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="doc.order_line" t-as="line">
+                                            <tr>
+                                                <td class="text-start">
+                                                    <span t-field="line.name"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.price_unit"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-field="line.product_uom_qty"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-out="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <span t-field="line.price_subtotal"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td colspan="4" class="text-end">SubTotal</td>
+                                            <td class="text-end"><span t-field="doc.amount_untaxed"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="text-end">Tax</td>
+                                            <td class="text-end"><span t-field="doc.amount_tax"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="text-end fw-bold">Grand Total</td>
+                                            <td class="text-end fw-bold"><span t-field="doc.amount_total"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="sale-information" t-attf-style="background-color: rgba({{ r1 }}, {{ g1 }}, {{ b1 }}, 0.12); ">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h3 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Payment Info</h3>
+                                        <p>Please use <strong t-field="doc.name"/> as reference.</p>
+                                    </div>
+                                    <div class="col-6 info-column">
+                                        <h4 class="inv-title-1" t-attf-style="color: {{secondary or '#1f4acb'}}">Terms and Conditions</h4>
+                                        <p class="text-muted" t-field="doc.note"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_sale_order_template_9">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ups_sale_report_template.report_so_custom_9" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

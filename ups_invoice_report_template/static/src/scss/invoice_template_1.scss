@@ -1,0 +1,230 @@
+.invoice_page_1 {
+    padding: 0;
+    margin: 0;
+
+    // Global rule for tables to prevent rows splitting
+    tr {
+        page-break-inside: avoid;
+    }
+    
+    .layout-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+   .sidebar-left {
+    width: 250px;
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    vertical-align: top;
+    padding: 30px 20px;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+
+    // The Fix: White container for dark logos
+    .logo-container {
+        page-break-inside: avoid;
+        background: #ffffff;
+        padding: 15px;
+        border-radius: 8px; // Softens the look
+        margin-bottom: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); // Subtle depth
+
+        .logo-box img {
+            max-width: 100%;
+            height: auto;
+            max-height: 80px; // Keeps logo size consistent
+            display: block;
+        }
+    }
+
+    .company-info-block {
+        page-break-inside: avoid;
+        margin-bottom: 40px;
+        .company_name {
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        p { 
+            margin-bottom: 2px; 
+            color: rgba(255, 255, 255, 0.8); 
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    }
+
+    .meta-block {
+        page-break-inside: avoid;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        
+        .meta-item {
+            margin-bottom: 15px;
+            strong {
+                display: block;
+                font-size: 10px;
+                letter-spacing: 1px;
+                margin-bottom: 2px;
+            }
+            span {
+                font-size: 14px;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .sidebar-footer {
+        margin-top: 60px;
+        text-align: center;
+        h2 { 
+            font-weight: 900; 
+            font-size: 20px;
+            margin: 0; 
+        }
+        p { 
+            font-size: 10px; 
+            letter-spacing: 2px; 
+            margin-top: 5px;
+        }
+    }
+}
+
+    .state_header_container {
+    text-align: right;   
+
+    .header-logo-wrapper {
+        display: inline-block;
+        text-align: right;
+
+        .status-container {
+            display: block;
+
+            .status-badge {
+                padding: 4px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            /* State Specific Colors */
+            .state-draft {
+                background-color: #E9ECEF !important;
+                color: #495057 !important;
+                border: 1px solid #CED4DA;
+            }
+
+            .state-posted {
+                background-color: #D4EDDA !important; /* Soft Green */
+                color: #155724 !important;
+                border: 1px solid #C3E6CB;
+            }
+
+            .state-cancel {
+                background-color: #F8D7DA !important; /* Soft Red */
+                color: #721C24 !important;
+                border: 1px solid #F5C6CB;
+            }
+
+            .state-default {
+                background-color: #D1ECF1 !important; /* Soft Blue */
+                color: #0C5460 !important;
+            }
+        }
+    }
+}
+
+    .company_name{
+        color: #f5deb3;
+    }
+
+    // Right Content
+    .main-right {
+        vertical-align: top;
+        padding: 40px 0 40px 30px;
+        
+        .display-1 {
+            font-size: 65px;
+            font-weight: 100;
+            color: #444;
+            margin-bottom: 16px;
+        }
+        .address-table {
+            width: 100%;
+            margin-bottom: 30px;
+            font-size: 12px;
+        }
+    }
+
+    .payment-term-left-box-style{
+        padding-right: 40px;
+    }
+
+    .terms-block{
+        page-break-inside: avoid;
+        text-align: justify;
+        font-size: 14px;
+        width: 700px;
+    }
+
+    // Info Bar
+    .info-bar-table {
+        width: 100%;
+        border: 1px solid #333;
+        margin-bottom: 20px;
+        
+        th {
+            background-color: #333 !important;
+            color: white !important;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px;
+            text-align: center;
+        }
+        td {
+            padding: 12px;
+            text-align: center;
+            font-size: 11px;
+            border-right: 1px solid #eee;
+        }
+    }
+
+    // Lines Table
+    .invoice-lines-zebra {
+        width: 100%;
+        th {
+            background-color: #333 !important;
+            color: white !important;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8f8f8 !important;
+        }
+        td {
+            padding: 12px 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+    }
+
+    // Totals & Signature
+    .totals-table-final {
+        page-break-inside: avoid;
+        width: 100%;
+        td { padding: 5px; font-weight: bold; font-size: 14px; }
+        .grand-total-row {
+            background-color: #f4f4f4 !important;
+            font-size: 16px;
+            border-top: 2px solid #333;
+        }
+    }
+}

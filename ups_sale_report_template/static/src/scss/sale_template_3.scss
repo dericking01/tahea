@@ -1,0 +1,189 @@
+.sale_order_3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; /* Increased base font */
+    color: #1e293b;
+
+    .fs-12 { font-size: 12px; }
+    .fs-15 { font-size: 15px; }
+    .fs-16 { font-size: 16px; }
+    .color-muted { color: #64748b; }
+
+/* Branding Styles */
+.main_logo {
+    max-height: 70px;
+    width: auto;
+}
+
+.company_location {
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    strong {
+        font-size: 14px;
+        color: #1e293b;
+    }
+}
+
+/* Title & Status */
+.report-title {
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 38px; /* Slightly larger for impact */
+    margin: 0;
+    letter-spacing: -1px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 15px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-top: 10px;
+    text-transform: uppercase;
+    
+    &.confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+}
+
+/* Reference Box Improvement */
+.ref-box {
+    page-break-inside: avoid;
+    border-radius: 0 0 8px 8px; /* Rounded bottom only if using top border */
+    padding: 15px 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    
+    td { 
+        padding: 6px 0; 
+        font-size: 12px;
+        color: #475569;
+    }
+    
+    .text-uppercase {
+        color: #94a3b8;
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+}
+
+.address-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    page-break-inside: avoid;
+
+    /* Fixed Dimensions */
+    height: auto;      /* Forced identical height for both cards */
+    width: 100%;        
+    display: block;
+    overflow: hidden;   /* Ensures text doesn't spill out if too long */
+    
+    .card-label {
+        background-color: #f8fafc;
+        padding: 12px 15px;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 13px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .address-content {
+        padding: 18px 15px;
+        line-height: 1.6;
+        font-size: 15px;
+        
+        .fs-16 { 
+            font-size: 17px !important;
+            margin-bottom: 8px !important;
+            display: block;
+            font-weight: bold;
+        }
+
+        div, span { 
+            display: block; 
+            margin-bottom: 2px; 
+        }
+    }
+}
+
+    .table-f3 {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        thead th {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 15px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            &:first-child { border-radius: 8px 0 0 0; }
+            &:last-child { border-radius: 0 8px 0 0; }
+        }
+
+        tbody tr {
+            page-break-inside: avoid;
+        }
+
+        tbody td {
+            padding: 18px 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+    }
+
+.terms-section {
+    background-color: #f8fafc;
+    border-left: 5px solid #1e293b;
+    padding: 25px !important;
+    border-radius: 0 8px 8px 0;
+    text-align: justify;
+    
+    min-height: 140px; 
+    height: auto; 
+    
+    font-size: 17px;        
+    line-height: 1.6;
+    display: block;
+    
+    page-break-inside: avoid;
+    overflow: hidden; 
+}
+
+.table-totals {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    page-break-inside: avoid;
+
+
+    td {
+        padding: 12px 20px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 15px;     
+    }
+
+    .total-final {
+        background-color: #1e293b;
+        color: #ffffff !important;
+        font-weight: 800;
+        
+        td {
+            font-size: 16px; 
+            padding: 15px 20px;
+            border: none;
+        }
+        
+    }
+}
+
+
+}

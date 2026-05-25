@@ -1,0 +1,192 @@
+.invoice_page_3 {
+    $navy: #0a4a5a;
+    $light-bg: #f8f9fa;
+
+    /* Top Bar Styling */
+    .top-bar-navy {
+        page-break-inside: avoid;
+        .layout-table {
+            width: 100%;
+            border-collapse: collapse;
+            .bar-thick { height: 8px; background-color: $navy !important; width: 30%; }
+            .bar-text { 
+                width: 13%; font-weight: 900; color: $navy; letter-spacing: 4px; 
+                font-size: 20px; text-align: center; text-transform: uppercase;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    /* Status Pill - New for Odoo 18 */
+    .status-pill-small {
+        page-break-inside: avoid;
+        padding: 3px 12px !important;
+        font-size: 13px !important;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border-radius: 50px !important;
+        margin-left: 10px;
+        vertical-align: middle;
+        display: inline-block;
+        
+        &.status-posted {
+            background-color: rgba(22, 163, 74, 0.1) !important; /* Soft Green */
+            color: #16a34a !important;
+            border: 1px solid rgba(22, 163, 74, 0.2);
+        }
+        &.status-draft {
+            background-color: #f1f5f9 !important; /* Soft Slate */
+            color: #475569 !important;
+            border: 1px solid #e2e8f0;
+        }
+        &.status-cancel {
+            background-color: #fef2f2 !important; /* Soft Red */
+            color: #991b1b !important;
+            border: 1px solid #fee2e2;
+        }
+        &.status-default {
+            background-color: #f5f3ff !important; /* Soft Purple */
+            color: #5b21b6 !important;
+            border: 1px solid #ede9fe;
+        }
+    }
+
+    .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #888;
+        letter-spacing: 1.5px;
+        margin-bottom: 5px;
+    }
+
+    .brand-name {
+        page-break-inside: avoid;
+        color: $navy;
+        font-weight: 800;
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .contact-details {
+        page-break-inside: avoid;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #555;
+    }
+
+    /* Logo & Meta Box Alignment */
+    .meta-col {
+        vertical-align: top;
+        width: 35%;
+
+        .header-logo-container {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+            text-align: right;
+            img {
+                max-height: 75px;
+                width: auto;
+                display: inline-block;
+            }
+        }
+    }
+
+    .invoice-meta-box {
+        page-break-inside: avoid;
+        text-align: right;
+        background: rgba(0,0,0,0.03); /* Very subtle box effect */
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+    .table-invoice-meta {
+        margin-left: auto;
+        border-collapse: collapse;
+        width: 100%;
+
+        td {
+            padding: 4px 0;
+            font-size: 14px;
+        }
+
+        .meta-label {
+            text-align: left;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            text-align: right;
+            font-weight: 700;
+            color: #000;
+        }
+    }
+
+    /* Table Improvements */
+    .table-items {
+        border-collapse: collapse;
+        margin-top: 20px;
+        thead th {
+            background-color: $navy !important;
+            color: white !important;
+            padding: 12px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+        }
+        tbody tr {
+            page-break-inside: avoid;
+            td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+            vertical-align: top;
+        }
+    }
+    }
+
+    .payment-box {
+        page-break-inside: avoid;
+        text-align: justify; /* Changed from justify for better professional readability */
+        font-size: 13px;
+        color: #444;
+        padding-right: 60px;
+    }
+
+    .terms-box{
+        page-break-inside: avoid;
+        font-size: 14px;
+    }
+
+    .section-header-custom {
+        page-break-inside: avoid;
+        color: $navy;
+        font-size: 13px;
+        font-weight: 800;
+        border-bottom: 2px solid $navy;
+        padding-bottom: 4px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        width: 400px
+    }
+
+    .table-calculation {
+        page-break-inside: avoid;
+        font-size: 13px;
+        tr td { padding: 6px 0; }
+        .final-amount-highlight {
+            page-break-inside: avoid;
+            background-color: $navy !important;
+            td {
+                color: white !important;
+                font-weight: 800;
+                font-size: 18px;
+                padding: 12px 10px !important;
+            }
+        }
+    }
+}

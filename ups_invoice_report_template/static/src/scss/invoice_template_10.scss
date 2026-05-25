@@ -1,0 +1,297 @@
+.invoice_modern_premium {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #333;
+    padding: 0 !important;
+    page-break-inside: avoid;
+
+    // Header Dashboard
+    .header-card {
+        page-break-inside: avoid;
+        padding: 20px 30px;
+        border-radius: 0 0 40px 40px;
+        color: white;
+        margin-bottom: 5px;
+
+        .invoice-tag {
+            font-size: 10px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .invoice-number {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 900;
+            margin: 5px 0;
+            letter-spacing: -1px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .brand-container {
+            .logo-img {
+                max-height: 55px;
+                background: white;
+                padding: 8px;
+                border-radius: 12px;
+            }
+            .company-name-header {
+                font-weight: 700;
+                margin-top: 10px;
+                font-size: 14px;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    .info-strip-grid {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        
+        .info-col {
+            label {
+                display: block;
+                font-size: 13px;
+                font-weight: bold;
+                text-transform: uppercase;
+                margin-bottom: 3px;
+                color: rgba(255, 255, 255, 0.8);
+            }
+            .val-bold {
+                font-size: 14px;
+                font-weight: 800;
+            }
+            .val {
+                font-size: 13px;
+            }
+        }
+    }
+
+    /* The Address Box Design */
+    .address-container-box {
+        page-break-inside: avoid;
+        margin: 0px 40px 10px 40px; /* Pulls box up into the header area */
+        background: #FFFFFF;
+        border-radius: 15px;
+        
+        /* Divider between left and right */
+        .address-side-left {
+            border-right: 1px solid #F0F0F0;
+        }
+
+        .address-inner {
+            padding: 20px;
+
+            .address-label {
+                display: block;
+                font-size: 14px;
+                font-weight: 800;
+                margin-bottom: 10px;
+                letter-spacing: 1px;
+            }
+
+            .address-content {
+                font-size: 12px;
+                color: #444444;
+                line-height: 1.5;
+
+                .entity-name {
+                    font-size: 15px;
+                    color: #000000;
+                    display: block;
+                    margin-bottom: 5px;
+                }
+
+                .vat-info {
+                    margin-top: 8px;
+                    font-weight: bold;
+                    color: #666666;
+                }
+            }
+        }
+    }
+
+    // Modern Table Styling
+    .content-body {
+
+        .table-premium {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+
+            thead th {
+                padding: 15px;
+                font-size: 13px;
+                font-weight: 800;
+                text-transform: uppercase;
+                border-bottom: 2px solid #eee;
+            }
+
+            tbody tr {
+                page-break-inside: avoid;
+                background: #fdfdfd;
+                td {
+                    padding: 18px 15px;
+                    border-bottom: 1px solid #f1f1f1;
+                    font-size: 13px;
+                }
+                .item-main { font-weight: 700; color: #111; }
+                .item-sub { font-size: 11px; color: #777; margin-top: 4px; }
+            }
+        }
+    }
+
+    // Summary & Totals
+    .summary-container {
+        page-break-inside: avoid;
+
+        .hsn-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            h6 { font-size: 11px; font-weight: 800; margin-bottom: 15px; }
+            .table-hsn-mini {
+                width: 100%;
+                font-size: 11px;
+                td { padding: 5px 0; border-bottom: 1px dashed #ddd; }
+            }
+        }
+
+    .totals-wrapper {
+        display: block;
+        width: 100%;
+        
+        .totals-display {
+            width: 40%; 
+            margin-left: auto; 
+            border-collapse: collapse;
+
+            td {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .lbl {
+                color: #666;
+                text-align: left;
+            }
+
+            .val {
+                text-align: right;
+                font-weight: 600;
+                color: #222;
+            }
+
+            .grand-total-box {
+                page-break-inside: avoid;
+                .lbl-total {
+                    font-weight: 800;
+                    font-size: 16px;
+                    text-transform: uppercase;
+                    padding-top: 15px;
+                }
+                .val-total {
+                    font-weight: 900;
+                    font-size: 20px;
+                    padding-top: 15px;
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    }
+.footer-section-unified {
+        margin-top: 20px;
+        border-top: 1px solid #EEEEEE;
+        page-break-inside: avoid;
+        
+        /* Left Column Styling */
+        .payment-side {
+            background: #F9F9F9;
+            border-bottom: 1px solid #EEEEEE;
+            page-break-inside: avoid;
+
+            
+            .payment-inner {
+                padding: 30px 40px;
+                
+                label {
+                    display: block;
+                    font-size: 13px;
+                    font-weight: 800;
+                    letter-spacing: 1.5px;
+                    margin-bottom: 8px;
+                }
+                
+                .val-text {
+                    font-size: 11px;
+                    color: #555555;
+                    line-height: 1.6;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        /* Right Column Styling */
+        .totals-side {
+            background: #F9F9F9;
+            padding: 10px;
+            page-break-inside: avoid;
+
+            
+            .summary-box {
+                padding: 20px;
+                
+                .summary-label {
+                    display: block;
+                    font-size: 12px;
+                    font-weight: 800;
+                    letter-spacing: 1px;
+                    margin-bottom: 5px;
+                    text-transform: uppercase;
+                }
+                
+                .summary-value {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #333333;
+                }
+
+                &.border-end {
+                    border-right: 1px solid #EEEEEE;
+                }
+            }
+
+            .total-highlight-row {
+                margin-top: 30px;
+                padding: 5px 20px;
+                color: #FFFFFF;
+                text-align: center;
+
+                .total-label {
+                    display: block;
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 2px;
+                    margin-bottom: 10px;
+                }
+
+                .total-amount-value {
+                    font-size: 28px;
+                    font-weight: 900;
+                }
+            }
+        }
+    }
+}
