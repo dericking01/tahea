@@ -25,7 +25,7 @@
 		- Reduce customization effort with ready-made templates
 	""",
 	"depends" : [
-		"base","account","ups_base_report_template"
+		"base","account","ups_base_report_template","stock"
 	],
 
 	"data" : [
@@ -43,6 +43,7 @@
         "report/invoice_report_template_10.xml",
         "report/invoice_report_inherit.xml",
         "report/invoice_reports.xml",
+		"report/stock_delivery.xml",
 	],
     
 	"assets": {
