@@ -84,6 +84,7 @@
                             <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">S No</th>
                             <th class="text-left" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Product</th>
                             <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Quantity</th>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">UOM</th>
                             <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Unit Price</th>
                             <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Taxes</th>
                             <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Total</th>
@@ -104,6 +105,9 @@
 
                                     <td class="text-center">
                                         <span t-esc="int(line.product_uom_qty)"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.product_uom"/>
                                     </td>
                                     <td class="text-center">
                                         <span t-field="line.price_unit"/>
