@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_sales_visit" model="ir.sequence">
+        <field name="name">Sales Visit</field>
+        <field name="code">sales.visit</field>
+        <field name="prefix">SV/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Tree View -->
+        <record id="view_sales_visit_tree" model="ir.ui.view">
+            <field name="name">sales.visit.tree</field>
+            <field name="model">sales.visit</field>
+            <field name="arch" type="xml">
+                <list
+                    decoration-success="visit_status == 'completed'"
+                    decoration-info="visit_status == 'planned'"
+                    decoration-danger="visit_status == 'cancelled'"
+                    decoration-warning="visit_status == 'postponed'"
+                >
+
+                    <field name="name"/>
+                    <field name="sales_rep_id"/>
+                    <field name="facility_id"/>
+                    <field name="plan_date"/>
+                    <field name="visit_date"/>
+                    <field name="visit_status"/>
+
+                </list>
+            </field>
+        </record>
+
+                <!-- Professional Form View -->
+                <record id="view_sales_visit_form" model="ir.ui.view">
+                    <field name="name">sales.visit.form.professional</field>
+                    <field name="model">sales.visit</field>
+                    <field name="arch" type="xml">
+                        <form string="Sales Visit">
+
+                            <!-- ================= HEADER ================= -->
+                            <header>
+                                <button name="action_complete"
+                                        type="object"
+                                        string="Complete"
+                                        class="btn-primary"
+                                        invisible="visit_status != 'planned'"/>
+
+                                <button name="action_postpone"
+                                        type="object"
+                                        string="Postpone"
+                                        class="btn-secondary"
+                                        invisible="visit_status != 'planned'"/>
+
+                                <button name="action_cancel"
+                                        type="object"
+                                        string="Cancel"
+                                        class="btn-danger"
+                                        invisible="visit_status == 'cancelled'"/>
+
+                                 <button name="action_create_lead"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            string="Create Lead/Opportunity"
+                                            invisible="visit_status != 'completed'"/>
+
+                                <button name="action_create_ticket"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        string="Create Complaints"
+                                        invisible="visit_status != 'completed'"/>
+                                                            
+
+                                <field name="visit_status"
+                                    widget="statusbar"
+                                    statusbar_visible="planned,completed,postponed,cancelled"/>
+                            </header>
+
+                            <sheet>
+                                    <div class="oe_button_box" name="button_box">
+
+                                        <button name="action_view_calendar"
+                                                type="object"
+                                                class="oe_stat_button"
+                                                icon="fa-calendar"
+                                                invisible="not calendar_event_id">
+
+                                            <field name="calendar_event_id" invisible="1"/>
+
+                                            <div class="o_stat_info">
+                                                <span class="o_stat_value">
+                                                    <field name="calendar_event_id" readonly="1"/>
+                                                </span>
+                                                <span class="o_stat_text">Meeting</span>
+                                            </div>
+
+                                        </button>
+                                        <button name="action_view_lead"
+                                                type="object"
+                                                class="oe_stat_button"
+                                                icon="fa-star"
+                                                invisible="not lead_id">
+                                            <span class="o_stat_text">Open Lead</span>
+                                        </button>
+                                        <button name="action_view_ticket"
+                                                type="object"
+                                                class="oe_stat_button"
+                                                icon="fa-life-ring"
+                                                invisible="not ticket_id">
+                                            <span class="o_stat_text">Open Ticket</span>
+                                        </button>
+
+                                    </div>
+
+                                    
+
+                                <!-- ================= TITLE ================= -->
+                                <div class="oe_title">
+                                    <h1>
+                                        <field name="name" readonly="1"/>
+                                    </h1>
+                                    <div class="text-muted">
+                                        Daily Sales Visit Activity
+                                    </div>
+                                </div>
+
+                                <!-- ================= MAIN INFO ================= -->
+                                <group string="Visit Information" col="2">
+                                    <group>
+                                        <field name="sales_rep_id"/>
+                                        <field name="region"/>
+                                        <field name="facility_id"/>
+                                        <field name="facility_type"/>
+                                        <field name="objective"/>
+                                    </group>
+
+                                    <group>
+                                        <field name="plan_date"/>
+                                        <field name="visit_date"/>
+                                    </group>
+                                </group>
+
+                                <!-- ================= NOTEBOOK TABS ================= -->
+                                <notebook>
+
+                                    <!-- Meeting Details Tab -->
+                                    <page string="Meeting Details">
+                                        <group col="2">
+                                            <group>
+                                                <field name="person_met"/>
+                                                <field name="designation"/>
+                                                <field name="decision_maker"/>
+                                            </group>
+
+                                            <group>
+                                                <field name="phone"/>
+                                                <field name="email"/>
+                                            </group>
+                                        </group>
+                                    </page>
+
+                                    <!-- Equipment Tab -->
+                                    <page string="Current Equipment">
+                                        <group>
+                                            <field name="current_equipment"/>
+                                        </group>
+                                    </page>
+
+                                    <!-- Notes Tab -->
+                                    <page string="Internal Notes">
+                                        <field name="notes" nolabel="1" placeholder="Write visit summary, feedback, next action plan..."/>
+                                    </page>
+
+                                </notebook>
+
+                            </sheet>
+
+                            <chatter/>
+
+                        </form>
+                    </field>
+                </record>
+
+                <!-- Cancel Wizard -->
+            <record id="view_sales_visit_cancel_wizard" model="ir.ui.view">
+                <field name="name">sales.visit.cancel.wizard.form</field>
+                <field name="model">sales.visit.cancel.wizard</field>
+                <field name="arch" type="xml">
+                    <form string="Cancel Visit">
+                        <group>
+                            <field name="reason"/>
+                        </group>
+                        <footer>
+                            <button name="action_confirm"
+                                    type="object"
+                                    string="Confirm"
+                                    class="btn-danger"/>
+                            <button string="Close"
+                                    class="btn-secondary"
+                                    special="cancel"/>
+                        </footer>
+                    </form>
+                </field>
+            </record>
+
+            <!-- Postpone Wizard -->
+            <record id="view_sales_visit_postpone_wizard" model="ir.ui.view">
+                <field name="name">sales.visit.postpone.wizard.form</field>
+                <field name="model">sales.visit.postpone.wizard</field>
+                <field name="arch" type="xml">
+                    <form string="Postpone Visit">
+                        <group>
+                            <field name="reason"/>
+                        </group>
+                        <footer>
+                            <button name="action_confirm"
+                                    type="object"
+                                    string="Confirm"
+                                    class="btn-primary"/>
+                            <button string="Close"
+                                    class="btn-secondary"
+                                    special="cancel"/>
+                        </footer>
+                    </form>
+                </field>
+            </record>
+       
+
+    <!-- Action -->
+    <record id="action_sales_visit" model="ir.actions.act_window">
+        <field name="name">Daily Sales Tracker</field>
+        <field name="res_model">sales.visit</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_sales_visit_report_wizard" model="ir.actions.act_window">
+        <field name="name">Sales Visit Report</field>
+        <field name="res_model">sales.visit.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_sales_root"
+              name="Sales Tracker"
+              sequence="10"/>
+
+    <menuitem id="menu_sales_visit"
+              name="Daily Visits"
+              parent="menu_sales_root"
+              action="action_sales_visit"
+              sequence="10"/>
+    
+    <menuitem id="menu_sales_visit_report"
+          name="Visit Report"
+          parent="menu_sales_root"
+          action="action_sales_visit_report_wizard"
+          sequence="50"/>
+
+</odoo>

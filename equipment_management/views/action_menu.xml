@@ -1,0 +1,92 @@
+<odoo>
+
+    <!-- ===================== -->
+    <!-- EQUIPMENT ACTION -->
+    <!-- ===================== -->
+    <record id="action_equipment" model="ir.actions.act_window">
+        <field name="name">Equipment</field>
+        <field name="res_model">equipment.management</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- MANUFACTURER ACTION -->
+    <!-- ===================== -->
+    <record id="action_manufacturer" model="ir.actions.act_window">
+        <field name="name">Manufacturers</field>
+        <field name="res_model">equipment.manufacturer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- MODEL ACTION -->
+    <!-- ===================== -->
+    <record id="action_model" model="ir.actions.act_window">
+        <field name="name">Models</field>
+        <field name="res_model">equipment.model</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- REGION ACTION -->
+    <!-- ===================== -->
+    <record id="action_region" model="ir.actions.act_window">
+        <field name="name">Regions</field>
+        <field name="res_model">equipment.region</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- TRACKING ACTION -->
+    <!-- ===================== -->
+    <record id="action_tracking" model="ir.actions.act_window">
+        <field name="name">Equipment Tracking</field>
+        <field name="res_model">equipment.tracking</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ===================== -->
+    <!-- ROOT MENU -->
+    <!-- ===================== -->
+    <menuitem id="menu_equipment_root"
+              name="Equipment Management"
+              sequence="10"
+              web_icon="fa-tools"/>
+
+    <!-- Sub Menus -->
+    <menuitem id="menu_equipment"
+              name="Equipment"
+              parent="menu_equipment_root"
+              sequence="2"/>
+    
+    <menuitem id="menu_equipment_sub"
+              name="Equipment"
+              parent="menu_equipment"
+              action="action_equipment"
+              sequence="1"/>
+
+    <menuitem id="menu_manufacturer"
+              name="Manufacturers"
+              parent="menu_equipment"
+              action="action_manufacturer"
+              sequence="2"/>
+
+    <menuitem id="menu_model"
+              name="Models"
+              parent="menu_equipment"
+              action="action_model"
+              sequence="3"/>
+
+    <menuitem id="menu_region"
+              name="Regions"
+              parent="menu_equipment_root"
+              action="action_region"
+              sequence="5"/>
+
+    <menuitem id="menu_tracking"
+              name="Equipment Tracking"
+              parent="menu_equipment_root"
+              action="action_tracking"
+              sequence="1"/>
+
+</odoo>

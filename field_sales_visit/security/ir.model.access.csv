@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_visit_user,sales.visit user,model_sales_visit,base.group_user,1,1,1,0
+access_sales_visit_cancel_wizard,sales.visit.cancel.wizard,model_sales_visit_cancel_wizard,base.group_user,1,1,1,0
+access_sales_visit_postpone_wizard,sales.visit.postpone.wizard,model_sales_visit_postpone_wizard,base.group_user,1,1,1,0
+access_sales_visit_report_wizard,sales.visit.report.wizard,model_sales_visit_report_wizard,base.group_user,1,1,1,0

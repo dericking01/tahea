@@ -1,0 +1,239 @@
+<odoo>
+
+    
+
+    <record id="seq_equipment_tracking" model="ir.sequence">
+        <field name="name">Equipment Tracking</field>
+        <field name="code">equipment.tracking</field>
+        <field name="prefix">EQT/</field>
+        <field name="padding">4</field>
+    </record>
+
+
+    <!-- ========================= -->
+    <!-- EQUIPMENT TRACKING TREE -->
+    <!-- ========================= -->
+    <record id="view_equipment_tracking_tree" model="ir.ui.view">
+        <field name="name">equipment.tracking.tree</field>
+        <field name="model">equipment.tracking</field>
+        <field name="arch" type="xml">
+            <list string="Equipment Tracking">
+                <field name="name"/>
+                <field name="equipment_name"/>
+                <field name="serial_number"/>
+                <field name="model_id"/>
+                <field name="manufacturer_id"/>
+                <field name="customer_id"/>
+                <field name="region_id"/>
+                <field name="business_model"/>
+                <field name="warranty_status"/>
+                <field name="ppm_status"/>
+            </list>
+        </field>
+    </record>
+
+
+        <record id="view_equipment_tracking_form" model="ir.ui.view">
+        <field name="name">equipment.tracking.form</field>
+        <field name="model">equipment.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Equipment Tracking">
+                <header>
+                    <button name="action_create_ticket"
+                            type="object"
+                            string="Create Ticket"
+                            class="btn-primary"
+                            icon="fa-ticket"/>
+
+                    <button name="action_create_sales_order"
+                            type="object"
+                            string="Create Sales Order"
+                            class="btn-primary"
+                            icon="fa-shopping-cart"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_tickets"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-ticket">
+                            <field name="ticket_count" widget="statinfo" string="Tickets"/>
+                        </button>
+                        <button name="action_view_sales_orders"
+                                type="object"
+                                string="Sales Orders"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="sale_order_count" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!-- ===================== -->
+                    <!-- HEADER (SEQUENCE) -->
+                    <!-- ===================== -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- ===================== -->
+                    <!-- EQUIPMENT SUMMARY -->
+                    <!-- ===================== -->
+                    <group string="Equipment Information">
+                        <group>
+                            <field name="equipment_id" options="{'no_create': True}"/>
+                            <field name="serial_number" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="model_id" readonly="1"/>
+                            <field name="manufacturer_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <!-- ===================== -->
+                        <!-- CUSTOMER TAB -->
+                        <!-- ===================== -->
+                        <page string="Customer Information">
+                            <group>
+                                <group>
+                                    <field name="customer_id"/>
+                                    <field name="business_model"/>
+                                    <field name="region_id"/>
+                                    <field name="district"/>
+                                </group>
+                                <group>
+                                    <field name="user_contact_name"/>
+                                    <field name="user_contact_number"/>
+                                    <field name="user_email"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ===================== -->
+                        <!-- INSTALLATION TAB -->
+                        <!-- ===================== -->
+                        <page string="Installation &amp; Training">
+                            <group>
+                                <field name="installation_date"/>
+                                <field name="training_date"/>
+                                <field name="engineer_name"/>
+                                <field name="specialist_name"/>
+                                <field name="encore_assigned"/>
+                            </group>
+                        </page>
+
+                        <!-- ===================== -->
+                        <!-- WARRANTY TAB -->
+                        <!-- ===================== -->
+                        <page string="Warranty">
+                            <group>
+                                <field name="warranty_months"/>
+                                <field name="warranty_expiry_date" readonly="1"/>
+                                <field name="warranty_status" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Training &amp; Installation Attachments">
+                            <field name="attachment_training"
+                                widget="many2many_binary"/>
+                        </page>
+
+                        <!-- ===================== -->
+                        <!-- PPM TAB -->
+                        <!-- ===================== -->
+                        <page string="PPM Management">
+                            <group>
+                                <field name="last_ppm_date"/>
+                                <field name="next_ppm_months"/>
+                                <field name="next_ppm_date" readonly="1"/>
+                                <field name="ppm_status" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="PPM History">
+                                <field name="ticket_history_ids">
+                                    <list>
+                                        <field name="ticket_name"/>
+                                        <field name="closed_date"/>
+                                        <field name="stage_name"/>
+                                        <field name="description"/>
+                                    </list>
+                                </field>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+                <chatter/>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================= -->
+    <!-- REGION TREE -->
+    <!-- ========================= -->
+    <record id="view_region_tree" model="ir.ui.view">
+        <field name="name">equipment.region.tree</field>
+        <field name="model">equipment.region</field>
+        <field name="arch" type="xml">
+            <list string="Regions">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- ========================= -->
+    <!-- REGION FORM -->
+    <!-- ========================= -->
+    <record id="view_region_form" model="ir.ui.view">
+        <field name="name">equipment.region.form</field>
+        <field name="model">equipment.region</field>
+        <field name="arch" type="xml">
+            <form string="Region">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_helpdesk_ticket_form_inherit_equipment" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.inherit.equipment</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="complainer"/>
+                <field name="customer_followup"/>
+            </xpath>
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="equipment_tracking_id"/>
+                <field name="equipment_serial" readonly="1"/>
+                <field name="equipment_model_id" readonly="1"/>
+                <field name="manufacturer_id" readonly="1"/>
+                <field name="reagent_batch"/>
+                <field name="software"/>
+                <field name="initial_troubleshoot"/>
+                <field name="troubleshoot_explanation"
+                        invisible="initial_troubleshoot != 'yes'"
+                        required="initial_troubleshoot == 'yes'"/>
+                <field name="incident"/>
+            </xpath>
+               <notebook position="inside">
+                    <page string="CAPA Form">
+                        <field name="capa_template"/>
+                    </page>
+                </notebook>
+
+        </field>
+    </record>
+
+</odoo>
