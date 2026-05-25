@@ -1,0 +1,218 @@
+.invoice_page_9 {
+    font-family: 'Arial', sans-serif;
+    color: #444;
+    padding: 0 !important;
+    position: relative;
+
+    $primary-blue: #1a3a4d;
+    $accent-blue: #7fb4cc;
+
+    // The dark blue sidebar on the left
+    .sidebar-accent {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        background-color: $primary-blue;
+    }
+
+    .main-content {
+        margin-left: 80px;
+    }
+
+   .header-section {
+    page-break-inside: avoid;
+    margin-bottom: 50px;
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 20px;
+
+    .header-layout-table {
+        width: 100%;
+        border-collapse: collapse;
+        
+        td { vertical-align: middle; }
+    }
+
+    /* Premium Logo Box */
+    .logo-container {
+        background: #ffffff;
+        display: inline-block;
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f1f1;
+
+        .logo-box img {
+            max-height: 60px;
+            width: auto;
+            display: block;
+        }
+    }
+
+    /* Modern Invoice Title */
+    .invoice-title {
+        font-size: 55px; /* Slightly adjusted for better balance */
+        font-weight: 950;
+        margin: 0;
+        line-height: 0.9;
+        letter-spacing: -1px; /* Tighter spacing looks more premium */
+        text-transform: uppercase;
+    }
+
+    /* Status Pill Styling */
+    .status-pill-container {
+        margin-top: 5px;
+        
+        .status-pill {
+            display: inline-block;
+            padding: 6px 16px !important;
+            font-size: 10px !important; /* Slightly smaller for an elegant look */
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 800;
+            border-radius: 50px !important;
+            border: 1px solid transparent; /* Placeholder for borders */
+            vertical-align: middle;
+
+            /* Logic-Based Color Palettes */
+            &.status-posted {
+                background-color: #f0fdf4 !important; /* Mint Green tint */
+                color: #166534 !important;
+                border-color: #bbf7d0 !important;
+            }
+            
+            &.status-draft {
+                background-color: #f8fafc !important; /* Slate tint */
+                color: #475569 !important;
+                border-color: #e2e8f0 !important;
+            }
+
+            &.status-cancel {
+                background-color: #fef2f2 !important; /* Rose tint */
+                color: #991b1b !important;
+                border-color: #fee2e2 !important;
+            }
+
+            &.status-default {
+                background-color: #f5f3ff !important; /* Indigo tint */
+                color: #5b21b6 !important;
+                border-color: #ede9fe !important;
+            }
+        }
+    }
+}
+
+    .address-section {
+        page-break-inside: avoid;
+        label {
+            display: block;
+            color: $accent-blue;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .address-details {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .meta-info {
+            color: $accent-blue;
+            font-size: 16px;
+        }
+    }
+
+    .table-custom {
+        border-collapse: collapse;
+        thead {
+            background-color: $primary-blue;
+            color: white;
+            th {
+                padding: 12px;
+                border: none !important;
+                font-size: 12px;
+                letter-spacing: 1px;
+                color: #ffffff;
+                font-weight: bold;
+            }
+        }
+        tbody {
+            tr {
+                page-break-inside: avoid;
+                background-color: #f8f9fa;
+                td {
+                    padding: 12px;
+                    border: 2px solid white !important;
+                    font-size: 13px;
+                }
+                &:nth-child(even) {
+                    background-color: #eef2f5;
+                }
+            }
+        }
+    }
+
+    .payment-column{
+        padding-right: 30px;
+    }
+
+    .payment-box{
+        page-break-inside: avoid;
+        text-align: justify;
+        padding-right: 40px;
+        font-size: 14px;
+    }
+
+    .terms-section{
+        page-break-inside: avoid;
+        text-align: justify;
+        width: 700px;
+    }
+
+    .footer-section {
+        label {
+            color: $accent-blue;
+            font-weight: bold;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .bank-acc { font-size: 14px; letter-spacing: 1px; }
+        .terms-text { font-size: 11px; color: #666; line-height: 1.5; }
+    }
+
+    .totals-table {
+        page-break-inside: avoid;
+        border-radius: 12px;
+        background-color: #eef2f5; // Light grey background from image
+        width: 100%;
+        border-collapse: collapse;
+        
+        td {
+            padding: 10px 15px !important;
+            font-size: 13px;
+        }
+
+        .text-muted {
+            color: #666 !important;
+            letter-spacing: 0.5px;
+        }
+
+        .val {
+            color: #1a3a4d;
+        }
+
+        .grand-total-row {
+            border-top: 1px solid #cbd5e0 !important; // Thin line before Total
+            border-radius: 12px;
+
+            
+            td {
+                font-size: 16px;
+                color: #ffffff;
+                padding-top: 15px !important;
+            }
+        }
+    }
+
+}

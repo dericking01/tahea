@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="report_so_custom_2">
+    <t t-call="ups_sale_report_template.external_layout_custom">
+        <t t-set="primary" t-value="res_company.report_primary_color"/>
+        <t t-set="secondary" t-value="res_company.report_secondary_color"/>
+        <t t-set="header" t-value="res_company.report_header_color"/>
+        <t t-set="r" t-value="int((header or '#333333')[1:3], 16)"/>
+        <t t-set="g" t-value="int((header or '#333333')[3:5], 16)"/>
+        <t t-set="b" t-value="int((header or '#333333')[5:7], 16)"/>
+        <t t-set="r1" t-value="int((secondary or '#f8f9fa')[1:3], 16)"/>
+        <t t-set="g1" t-value="int((secondary or '#f8f9fa')[3:5], 16)"/>
+        <t t-set="b1" t-value="int((secondary or '#f8f9fa')[5:7], 16)"/>
+
+
+        <t t-foreach="docs" t-as="order">
+            <div class="page sale_order_2">
+                
+                <div class="report_header clearfix" t-attf-style="border-bottom: 2px solid {{ primary or '#333'}};">
+    <div class="branding_side">
+        <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" class="company_logo"/>
+        <div class="company_content">
+            <strong class="company_name" t-field="res_company.name"/>
+            <div class="location_bar">
+                <span t-field="res_company.city"/>, 
+                <span t-if="res_company.state_id" t-field="res_company.state_id.name"/>, 
+                <span t-field="res_company.country_id.name"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="title_box">
+        <h2 class="report_title" t-attf-style="color: {{ primary or '#333'}};">Proforma Invoice</h2>
+        <span class="order_number" t-field="order.name"/>
+    </div>
+</div>
+
+                <table class="order_meta_table table-borderless">
+                    <tr>
+                        <td t-if="order.date_order">
+                            <span class="meta_label">Order Date:</span>
+                            <span class="meta_value" t-field="order.date_order" t-options='{"widget": "date"}'/>
+                        </td>
+                         <td t-if="order.date_order">
+                            <span class="meta_label">Expiration Date:</span>
+                            <span class="meta_value" t-field="order.validity_date" t-options='{"widget": "date"}'/>
+                        </td>
+                        <td t-if="order.user_id">
+                            <span class="meta_label">Salesperson:</span>
+                            <span class="meta_value" t-field="order.user_id.name"/>
+                        </td>
+                        <td t-if="order.client_order_ref">
+                            <span class="meta_label">Your Reference:</span>
+                            <span class="meta_value" t-field="order.client_order_ref"/>
+                        </td>
+                        <td t-if="not order.client_order_ref"></td>
+                    </tr>
+                </table>
+
+               <div class="address_row clearfix">
+                    <div class="address_card bill_to">
+                        <div class="addr_label" t-attf-style="color:{{ secondary or '#555' }}; background-color: rgba({{ r1 }}, {{ g1 }}, {{ b1 }}, 0.12); ">Invoicing Address</div>
+                        <div class="addr_content">
+                            <strong t-field="order.partner_id.name"/><br/>
+                            <div class="address_text" t-field="order.partner_id" 
+                                t-options='{"widget": "contact", "fields": ["address", "phone", "vat"], "no_marker": True}'/>
+                        </div>
+                    </div>
+
+                    <div class="address_card ship_to" t-if="order.partner_shipping_id">
+                        <div class="addr_label" t-attf-style="color:{{ secondary or '#555' }}; background-color: rgba({{ r1 }}, {{ g1 }}, {{ b1 }}, 0.12); ">Shipping Address</div>
+                        <div class="addr_content">
+                            <strong t-field="order.partner_shipping_id.name"/><br/>
+                            <div class="address_text" t-field="order.partner_shipping_id" 
+                                t-options='{"widget": "contact", "fields": ["address", "phone", "vat"], "no_marker": True}'/>
+                        </div>
+                    </div>
+                </div>
+
+               <table class="custom_table_modern table-borderless mt-4">
+                    <thead>
+                        <tr>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">S No</th>
+                            <th class="text-left" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Product</th>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Quantity</th>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Unit Price</th>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Taxes</th>
+                            <th class="text-center" t-attf-style="color:{{ header or '#333333'}}; background-color: rgba({{ r }}, {{ g }}, {{ b }}, 0.12); ">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="order.order_line" t-as="line">
+                            <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type">
+                                    <td class="text-center index_col">
+                                        <span t-esc="line_index + 1"/>
+                                    </td>
+                                    
+                                    <td class="description_col">
+                                        <div class="prod_name" t-field="line.product_id.name"/>
+                                        <div class="prod_desc" t-field="line.name" t-if="line.name != line.product_id.name"/>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span t-esc="int(line.product_uom_qty)"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.price_unit"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                                    </td>
+                                    <td class="text-center font-weight-bold">
+                                        <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+
+                <div class="summary_section">
+                    <div class="summary_wrapper">
+                        <div class="terms_column">
+                            <div class="terms_box" t-if="order.note">
+                                <div class="totals_title" t-attf-style="color:{{ secondary }}; background-color: rgba({{ r1 }}, {{ g1 }}, {{ b1 }}, 0.12); " >Terms &amp; Conditions</div>
+                                <div class="terms_content">
+                                    <span t-field="order.note"/>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="totals_column">
+                        <table class="totals_table table-borderless">
+                            <tr class="amount_row">
+                                <td class="total_label">Subtotal</td>
+                                <td class="total_value">
+                                    <span t-field="order.amount_untaxed" 
+                                        t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="amount_row">
+                                <td class="total_label">Taxes</td>
+                                <td class="total_value">
+                                    <span t-field="order.amount_tax" 
+                                        t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="grand_total">
+                                <td colspan="2">
+                                    <div class="grand_total_container">
+                                        <span class="total_label">Total Amount</span>
+                                        <span class="total_value">
+                                            <span t-field="order.amount_total" t-attf-style="color: {{ primary or '#FFFFFF'}};"
+                                                t-options='{"widget": "monetary", "display_currency": order.currency_id}'/>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </t>
+    </t>
+</template>
+
+    <template id="report_sale_order_template_2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ups_sale_report_template.report_so_custom_2" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

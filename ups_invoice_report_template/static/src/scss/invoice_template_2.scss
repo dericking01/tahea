@@ -1,0 +1,191 @@
+.invoice_page_2 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #333333;
+    font-size: 13px;
+
+    .invoice_header_container {
+        page-break-inside: avoid;
+        width: 100%;
+        margin-bottom: 40px;
+        border-collapse: collapse;
+
+        .header-left-column {
+            vertical-align: bottom; /* Aligns text to the bottom of the logo level */
+            padding-bottom: 10px;
+        }
+
+        .header-right-column {
+            text-align: right;
+            vertical-align: top;
+            width: 200px; /* Constraints logo width */
+        }
+
+        .title-wrapper {
+            border-left: 6px solid #D6CEC6; /* Your soft vertical bar */
+            padding-left: 20px;
+            
+            .invoice_main_title {
+                font-size: 30px;
+                font-weight: 800;
+                color: #1a1a1a;
+                margin: 0 0 8px 0;
+                line-height: 1;
+
+                .invoice_num {
+                    color: #777777;
+                    font-weight: 300;
+                    margin-left: 5px;
+                }
+            }
+        }
+
+        .status-pill-wrapper {
+            .status-pill-style {
+                padding: 4px 12px !important;
+                font-size: 10px !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-radius: 50px !important;
+                display: inline-block;
+
+                &.status-posted {
+                    background-color: #f0fdf4 !important; /* Soft Green */
+                    color: #166534 !important;
+                    border: 1px solid #bbf7d0;
+                }
+                &.status-draft {
+                    background-color: #f8fafc !important; /* Soft Blue/Grey */
+                    color: #475569 !important;
+                    border: 1px solid #e2e8f0;
+                }
+                &.status-cancel {
+                    background-color: #fef2f2 !important; /* Soft Red */
+                    color: #991b1b !important;
+                    border: 1px solid #fee2e2;
+                }
+                &.status-default {
+                    background-color: #f5f3ff !important; /* Soft Purple */
+                    color: #5b21b6 !important;
+                    border: 1px solid #ede9fe;
+                }
+            }
+        }
+
+        .logo-wrapper img {
+            max-height: 55px; /* Adjust based on your logo shape */
+            width: auto;
+            display: block;
+            margin-left: auto;
+        }
+    }
+
+
+
+.invoice_page_2_label {
+    color: #888888;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.inv2-block {
+    page-break-inside: avoid;
+    margin-bottom: 15px;     /* spacing between grouped content sections */
+}
+
+.inv2-line {
+    margin-bottom: 6px;      /* spacing between each line */
+}
+
+.inv-left-border{
+    border-left: 2px solid #888888;
+    padding-left: 25px;   
+}
+
+
+    .invoice_page_2_table {
+        tr {
+            page-break-inside: avoid; /* Prevents a single row from splitting across pages */
+        }
+
+        thead th {
+            background-color: #EBE7E2;
+            border: none;
+            color: #555;
+            text-transform: none;
+            font-weight: 600;
+            padding: 12px 8px;
+        }
+        tbody td {
+            border-bottom: 1px solid #EEEEEE;
+            padding: 10px 8px;
+        }
+    }
+
+    .invoice_page_2_total_row {
+        page-break-inside: avoid;
+        border-top: 2px solid #333;
+        td {
+            padding-top: 15px !important;
+        }
+    }
+
+    .terms-condition-block{
+        page-break-inside: avoid;
+        padding-right: 40px;
+        text-align: justify;
+    }
+
+    // footer
+    .invoice_footer_container {
+        margin-top: 30px;
+        width: 100%;
+    }
+
+    .invoice_footer_table {
+        page-break-inside: avoid;
+        width: 100%;
+        background-color: #DCD5CE;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+        table-layout: fixed;          // ensures equal-width cells
+    }
+
+    .footer_cell {
+        page-break-inside: avoid;
+        width: 25%;
+        vertical-align: top;
+        text-align: left;
+        border-left:5px solid #ffffff; // vertical separator between columns
+        padding: 15px 20px;
+
+        &:first-child {
+            border-left: none;       // no left border for first column
+        }
+    }
+
+    .footer_inner {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer_cell small {
+        display: block;
+        color: #555;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+
+    .footer_cell span {
+        font-size: 13px;
+        color: #000;
+        font-weight: bold;
+        word-wrap: break-word;
+    }
+
+}

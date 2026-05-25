@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_so_custom_10">
+        <t t-call="ups_sale_report_template.external_layout_custom">
+        <t t-set="primary" t-value="res_company.report_primary_color"/>
+        <t t-set="secondary" t-value="res_company.report_secondary_color"/>
+        <t t-set="header" t-value="res_company.report_header_color"/>
+
+            <t t-foreach="docs" t-as="doc">
+                <div class="page sale_order_10">
+
+                    <div class="sale-order-info" t-attf-style=" background-image: url('#{image_data_uri(doc.company_id.report_background) if doc.company_id.report_background else '/ups_sale_report_template/static/src/img/background_so10.png'}') !important;
+                   background-repeat: no-repeat !important;
+                   background-position: auto !important;
+                   background-size: contain !important;
+                   min-height: 1100px;">
+                        
+                        <div class="sale-header border-shadow-bg">
+                            <div class="row align-items-center">
+                               <div class="col-6 branding-section">
+                                    <div class="branding-container">
+                                        <div class="logo-holder">
+                                            <img t-if="doc.company_id.logo" 
+                                                t-att-src="image_data_uri(doc.company_id.logo)" 
+                                                alt="logo"/>
+                                        </div>
+
+                                        <div class="details-holder">
+                                            <div class="biz-name" t-field="doc.company_id.name"/>
+                                            <div class="biz-loc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="sale-contact-list ms-auto">
+                                        <h1>Contact Us</h1>
+                                        <ul>
+                                            <li><i class="fa fa-map-marker" t-attf-style="color:{{primary or '#11bbb0'}}"></i> <span t-field="doc.company_id.city"/>, <span t-field="doc.company_id.country_id.name"/></li>
+                                            <li><i class="fa fa-envelope" t-attf-style="color:{{primary or '#11bbb0'}}"></i> <span t-field="doc.company_id.email"/></li>
+                                            <li><i class="fa fa-phone" t-attf-style="color:{{primary or '#11bbb0'}}"></i> <span t-field="doc.company_id.phone"/></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sale-top border-shadow-bg">
+                            <div class="row align-items-end mb-4">
+                                <div class="col-6">
+                                    <h1 class="sale-main-name">SALE ORDER</h1>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <h2 class="sale-bold-text">Order No: <span t-field="doc.name"/></h2>
+                                    <p class="sale-text-muted mb-0">Date: <span t-field="doc.date_order" t-options='{"widget": "date"}'/></p>
+                                    <p class="sale-text-muted mb-0">Expiration: <span t-field="doc.validity_date" t-options='{"widget": "date"}'/></p>
+                                </div>
+                            </div>
+                            <hr class="sale-horizontal-divider"/>
+                            <div class="row pt-2">
+                                <div class="col-6">
+                                    <h4 class="sale-title-label" t-attf-style="color:{{primary or '#11bbb0'}}">Customer</h4>
+                                    <h2 class="sale-bold-text mb-2" t-field="doc.partner_id.name"/>
+                                    <div class="sale-text-muted" t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address", "email"], "no_marker": True}'/>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <h4 class="sale-title-label" t-attf-style="color:{{primary or '#11bbb0'}}">Invoicing Address</h4>
+                                    <h2 class="sale-bold-text mb-2" t-field="doc.company_id.partner_id.name"/>
+                                    <div class="sale-text-muted" t-field="doc.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sale-center border-shadow-bg sale-table-container"> 
+                            <table class="sale-default-table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th class="text-start col-desc" t-attf-style="color:{{header or '#11bbb0'}}">Description</th>
+                                        <th class="text-center" t-attf-style="color:{{header or '#11bbb0'}}">Qty</th>
+                                        <th class="text-center" t-attf-style="color:{{header or '#11bbb0'}}">Price</th>
+                                        <th class="text-center" t-attf-style="color:{{header or '#11bbb0'}}">Taxes</th>
+                                        <th class="text-end col-total" t-attf-style="color:{{header or '#11bbb0'}}">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="line">
+                                        <tr>
+                                            <td class="text-start col-desc"><span t-field="line.name"/></td>
+                                            <td class="text-center"><span t-field="line.product_uom_qty"/></td>
+                                            <td class="text-center"><span t-field="line.price_unit"/></td>
+                                            <td class="text-center">
+                                                <span t-esc="', '.join(map(lambda x: x.name, line.tax_id))"/>
+                                            </td>
+                                            <td class="text-end col-total">
+                                                <span t-field="line.price_subtotal"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr class="total-row">
+                                        <tr>
+                                            <td colspan="4" class="text-end">SubTotal</td>
+                                            <td class="text-end"><span t-field="doc.amount_untaxed"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="text-end">Tax</td>
+                                            <td class="text-end"><span t-field="doc.amount_tax"/></td>
+                                        </tr>
+                                        <td colspan="4" class="text-end"><strong>Total Amount</strong></td>
+                                        <td class="text-end total-amount-cell">
+                                            <h4 class="m-0 fw-bold" t-field="doc.amount_total" t-attf-style="color:{{header or '#11bbb0'}}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="sale-bottom border-shadow-bg">
+                            <div class="row">
+                                <div class="col-7 terms-column">
+                                    <h3 class="sale-title-label" t-attf-style="color:{{secondary or '#11bbb0'}}">Terms &amp; Conditions</h3>
+                                    <p class="sale-text-muted small" t-field="doc.note"/>
+                                </div>
+                                <div class="col-5">
+                                    <div class="sale-payment-info-block ms-auto text-end">
+                                        <h3 class="sale-title-label" t-attf-style="color:{{secondary or '#11bbb0'}}">Payment Info</h3>
+                                        <ul class="sale-payment-list">
+                                            <li><strong t-attf-style="color:{{secondary or '#11bbb0'}}">Payment Terms:</strong> <span t-field="doc.payment_term_id.name"/></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_sale_order_template_10">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ups_sale_report_template.report_so_custom_10" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

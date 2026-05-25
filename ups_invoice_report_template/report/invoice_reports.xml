@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_invoice_custom" model="report.paperformat">
+        <field name="name">A4 - Invoice Custom Size</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+
+        <!-- Margins -->
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+
+        <!-- Header handling -->
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+
+        <!-- Rendering -->
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="True"/>
+    </record>
+
+
+<record id="invoice_template_1" model="ir.actions.report">
+    <field name="name">Invoice Template 1</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_custom_1</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_custom_1</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_2" model="ir.actions.report">
+    <field name="name">Invoice Template 2</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_2</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_2</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_3" model="ir.actions.report">
+    <field name="name">Invoice Template 3</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_3</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_3</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_4" model="ir.actions.report">
+    <field name="name">Invoice Template 4</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_4</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_4</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_5" model="ir.actions.report">
+    <field name="name">Invoice Template 5</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_5</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_5</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_6" model="ir.actions.report">
+    <field name="name">Invoice Template 6</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_6</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_6</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_7" model="ir.actions.report">
+    <field name="name">Invoice Template 7</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_7</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_7</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_8" model="ir.actions.report">
+    <field name="name">Invoice Template 8</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_8</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_8</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_9" model="ir.actions.report">
+    <field name="name">Invoice Template 9</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_9</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_9</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+   <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+<record id="invoice_template_10" model="ir.actions.report">
+    <field name="name">Invoice Template 10</field>
+    <field name="model">account.move</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">ups_invoice_report_template.report_invoice_10</field>
+    <field name="report_file">ups_invoice_report_template.report_invoice_10</field>
+    <field name="print_report_name">(object._get_report_base_filename())</field>
+    <field name="paperformat_id" ref="ups_invoice_report_template.paperformat_invoice_custom"/>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+</record>
+
+</odoo>

@@ -1,0 +1,160 @@
+.sale_order_4 {
+    font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
+    color: #2c3e50;
+    margin-top: 0;
+
+    .report_header_modern {
+        page-break-inside: avoid;
+
+        .header_logo {
+            max-height: 85px;
+            width: auto;
+        }
+        .location_card {
+            .company_name_bold {
+                font-size: 16px;
+                font-weight: 800;
+                text-transform: uppercase;
+                color: #1a252f;
+            }
+            .address_line {
+                font-size: 11px;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        }
+        .header-details {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .doc-type-label {
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            font-size: 42px;
+            letter-spacing: -1.5px;
+        }
+        .doc-number {
+            font-size: 20px;
+            font-weight: 300;
+            color: #475569;
+            margin: 5px 0 0 0;
+            padding-left: 15px;
+        }
+        .meta-data-box {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 4px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            page-break-inside: avoid;
+
+            .meta_row {
+                display: block;
+                margin-bottom: 8px;
+                overflow: hidden;
+                width: 100%;
+                
+                &:last-child { margin-bottom: 0; }
+
+                .meta_label {
+                    float: left;
+                    font-size: 10px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    color: #94a3b8;
+                    letter-spacing: 1px;
+                }
+                .meta_value {
+                    float: right;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+            }
+        }
+    }
+
+    .address-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #95a5a6;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+        text-align: justify;
+        padding-right: 20px;
+
+    }
+
+    .address-card {
+        padding-left: 10px;
+        line-height: 1.6;
+        .partner-name {
+            font-size: 1.1rem;
+            color: #1a252f;
+        }
+    }
+
+    .modern-table {
+        border-collapse: separate;
+        border-spacing: 0 2px;
+        width: 100%;
+
+        thead th {
+            border: none;
+            padding: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            &:first-child { border-radius: 6px 0 0 6px; }
+            &:last-child { border-radius: 0 6px 6px 0; }
+        }
+
+        tbody tr {
+            page-break-inside: avoid;
+
+            td {
+                padding: 12px;
+                vertical-align: middle;
+                font-size: 13px;
+                border-top: none;
+            }
+            &:nth-child(even) {
+                background-color: #fafbfc;
+            }
+            &.line-section {
+                background-color: #f8f9fa !important;
+                td { color: #2c3e50; font-weight: bold; }
+            }
+        }
+    }
+
+    .totals-box {
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        page-break-inside: avoid;
+
+        .total-row {
+            font-size: 1.4rem;
+        }
+        .total-amount {
+            font-weight: 800;
+        }
+    }
+
+    .term-column{
+        padding-right: 30px;
+    }
+
+    .terms-section {
+        page-break-inside: avoid;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: justify;
+        padding-right: 20px;
+    }
+}

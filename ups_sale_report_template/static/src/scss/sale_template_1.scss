@@ -1,0 +1,271 @@
+.sale_order_1 {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 14px;
+    color: #2c3e50;
+    line-height: 1.4;
+    width: 100%;
+
+
+    
+
+    /* Clearfix to prevent layout collapse in PDF */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+.report_header {
+    page-break-inside: avoid;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    @extend .clearfix;
+
+    .brand_area {
+        float: left;
+        width: 70%;
+
+        .logo_wrapper {
+            float: left;
+            margin-right: 15px;
+            img {
+                max-height: 65px;
+                width: auto;
+                display: block;
+            }
+        }
+
+        .company_info {
+            float: left;
+            border-left: 1px solid #e2e8f0; /* Soft vertical divider */
+            padding-left: 15px;
+            padding-top: 10px;
+            
+            .company_name {
+                font-size: 20px;
+                font-weight: 800;
+                color: #0f172a;
+                line-height: 1;
+                display: block;
+                letter-spacing: -0.5px;
+            }
+            .company_details {
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: #64748b;
+                margin-top: 8px;
+            }
+        }
+    }
+
+    .doc_info {
+        float: right;
+        width: 30%;
+        text-align: right;
+
+        h2 {
+            font-weight: 900;
+            margin: 0 0 5px 0;
+            font-size: 26px;
+            text-transform: uppercase;
+        }
+
+        .order_pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            
+            .order_number {
+                font-size: 14px;
+                font-weight: bold;
+                color: #ffffff; /* Contrast text against the primary color */
+            }
+        }
+    }
+}
+
+.custom_table_modern thead th{
+    font-size: 12px;
+    font-weight: bold;
+    padding: 15px;
+}
+
+    /* --- Metadata --- */
+    .meta_grid {
+        page-break-inside: avoid;
+        display: table;
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+        border-collapse: collapse;
+
+        .meta_item {
+            display: table-cell;
+            padding: 10px 15px;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: top;
+            width: 25%;
+
+            &:last-child { border-right: none; }
+
+            label {
+                display: block;
+                font-size: 10px;
+                text-transform: uppercase;
+                color: #94a3b8;
+                font-weight: bold;
+            }
+            span {
+                font-weight: 700;
+                font-size: 14px;
+            }
+        }
+    }
+
+    /* --- Addresses --- */
+    .address_container {
+        page-break-inside: avoid;
+        @extend .clearfix;
+        margin-bottom: 30px;
+
+        .address_card {
+            float: left;
+            width: 48%;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 110px;
+
+            &.ship_to { float: right; }
+
+            .addr_label {
+                font-size: 14px;
+                font-weight: 800;
+                color: #e91e63;
+                display: block;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+            }
+            .partner_name {
+                font-size: 16px;
+                font-weight: bold;
+                display: block;
+                margin-bottom: 5px;
+            }
+        }
+    }
+
+    /* --- Table --- */
+    .table_main {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+
+        thead tr {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact;
+            
+            th {
+                padding: 12px 10px;
+                text-transform: uppercase;
+                font-size: 12px;
+                text-align: left;
+            }
+        }
+
+        tbody tr {
+            page-break-inside: avoid;
+            border-bottom: 1px solid #f1f5f9;
+            
+            td {
+                padding: 12px 10px;
+                
+                .prod_name { font-weight: bold; display: block; }
+                .prod_desc { font-size: 12px; color: #64748b; }
+            }
+        }
+
+        .text-center { text-align: center !important; }
+    }
+
+    /* --- Summary & Totals --- */
+    .footer_container {
+        page-break-inside: avoid;
+        @extend .clearfix;
+        margin-top: 20px;
+        page-break-inside: avoid;
+
+        .notes_section {
+            float: left;
+            width: 55%;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: justify;
+
+            .notes_label {
+                font-size: 11px;
+                font-weight: bold;
+                color: #94a3b8;
+                text-transform: uppercase;
+                display: block;
+                margin-bottom: 5px;
+            }
+        }
+
+        .totals_section {
+            float: right;
+            width: 38%;
+
+            .total_row {
+                @extend .clearfix;
+                padding: 8px 0;
+                border-bottom: 1px solid #f1f5f9;
+
+                span:first-child { float: left; font-weight: bold; }
+                span:last-child { float: right; }
+
+                &.grand_total {
+                    border-bottom: none;
+                    margin-top: 10px;
+                    padding: 15px;
+                    background-color: #f8fafc !important;
+                    border: 2px solid !important;
+                    font-size: 20px;
+                    font-weight: 900;
+                    border-radius: 4px;
+                    -webkit-print-color-adjust: exact;
+                }
+            }
+        }
+    }
+
+    /* --- Signatures --- */
+    .signature_area {
+        page-break-inside: avoid;
+        @extend .clearfix;
+        margin-top: 60px;
+
+        .sig_block {
+            float: left;
+            width: 200px;
+            text-align: center;
+
+            &.customer { float: right; }
+
+            .sig_line {
+                border-top: 2px solid #1e293b;
+                margin-bottom: 8px;
+            }
+            span {
+                font-size: 11px;
+                text-transform: uppercase;
+                font-weight: bold;
+                color: #64748b;
+            }
+        }
+    }
+
+}

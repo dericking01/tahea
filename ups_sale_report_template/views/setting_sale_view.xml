@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherit_custom_report_sale_block" model="ir.ui.view">
+        <field name="name">inherit.custom.report.sale.block</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="ups_base_report_template.inherit_config_setting_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//app[@name='custom_report_settings']" position="inside">
+                <block title="Sales Report Settings" invisible="not ups_custom_report">
+
+                    <!-- Sale Template Selection -->
+                    <setting string="Sale Template" help="Select template for sale report">
+                        <field name="templates"/>
+                    </setting>
+
+                    <!-- Selection of Colors for Template -->
+                    <setting string="Select Colors for Template">
+                        <group>
+                            <row>
+                                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <span>Primary Color:</span>
+                                    <field name="report_primary_color" widget="color" string="Primary Color"/>
+                                </div>
+                            </row>
+
+                            <group>
+                                <row>
+                                   <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <span>Secondary Color:</span>
+                                    <field name="report_secondary_color" widget="color" string="Secondary Color"/>
+                                </div>
+                                </row>
+                            </group>
+
+                             <group>
+                                <row>
+                                   <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <span>Header Color:</span>
+                                    <field name="report_header_color" widget="color" string="Header Color"/>
+                                </div>
+                                </row>
+                            </group>
+
+
+                            <group>
+                                <row>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span>Watermark Image:</span>
+                                        <field name="watermark" widget="watermark"/>
+                                    </div>
+                                </row>
+                            </group>
+
+                            <group>
+                                <row>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span>Background  Image:</span>
+                                        <field name="report_background" widget="image"/>
+                                    </div>
+                                </row>
+                            </group>
+                        </group>
+
+                        <group>
+                            <row>
+                                <button name="reset_template_colors" 
+                                type="object" 
+                                class="btn btn-secondary btn-sm position-relative ms-2 o_custom_colors" 
+                                title="Reset to default colors" invisible="not (report_primary_color or report_secondary_color or report_header_color)"> 
+                                <i class="fa fa-repeat"/> Reset
+                                </button>
+                            </row>
+                        </group>
+                    </setting>
+
+                </block>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,274 @@
+.invoice_page_8 {
+    $navy: #1a344d;
+    $table-stripe: #f4f7f9;
+
+    padding: 0;
+    font-family: Arial, sans-serif;
+
+    .invoice_header {
+        page-break-inside: avoid;
+        padding: 50px 60px;
+        min-height: 180px;
+
+        .header_wrapper_table {
+            width: 100%;
+            border-collapse: collapse;
+
+            td {
+                vertical-align: middle;
+            }
+        }
+
+        .brand_side {
+            width: 55%;
+
+            .logo_badge {
+                background: #fff;
+                padding: 12px 18px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+                margin-bottom: 25px;
+                width: 250px;
+
+                img {
+                    max-height: 50px;
+                    display: block;
+                }
+            }
+
+            .title_group {
+                padding-left: 25px;
+
+                .main_title {
+                    font-size: 55px;
+                    font-weight: 900;
+                    margin: 0;
+                    line-height: 0.85;
+                    letter-spacing: -2px;
+                    text-transform: uppercase;
+                }
+
+                .status-pill-wrapper {
+                    .status-pill-style {
+                        padding: 4px 12px !important;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: inline-block;
+
+                        &.status-posted {
+                            background-color: #f0fdf4 !important; /* Soft Green */
+                            color: #166534 !important;
+                            border: 1px solid #bbf7d0;
+                        }
+                        &.status-draft {
+                            background-color: #f8fafc !important; /* Soft Blue/Grey */
+                            color: #475569 !important;
+                            border: 1px solid #e2e8f0;
+                        }
+                        &.status-cancel {
+                        background-color: #fef2f2 !important; /* Soft Red */
+                        color: #991b1b !important;
+                        border: 1px solid #fee2e2;
+                        }
+                        &.status-default {
+                            background-color: #f5f3ff !important; /* Soft Purple */
+                            color: #5b21b6 !important;
+                            border: 1px solid #ede9fe;
+                        }
+                    }
+                }
+            }
+        }
+
+        .info_side {
+            width: 45%;
+            text-align: right;
+
+            .co_name {
+                font-size: 24px;
+                font-weight: 800;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+            }
+
+            .co_details {
+                font-size: 15px;
+                line-height: 1.6;
+                color: #444;
+            }
+        }
+    }
+
+    .gst-place-box {
+            page-break-inside: avoid;
+            border-left: 3px solid #002E5D; 
+            padding-left: 15px;
+            margin-top: 15px;
+            padding-top: 5px;
+
+            .tax-line {
+                font-size: 13px;
+                line-height: 1.4;
+                display: block;
+
+                .tax-label {
+                    font-weight: 800;
+                    color: #666;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-right: 5px;
+                }
+
+                .tax-value {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #2D2D2D;
+                }
+            }
+        }
+
+    .info_grid {
+        page-break-inside: avoid;
+        padding: 30px;
+
+        .info-node {
+            vertical-align: top;
+            padding: 0 25px;
+
+            &.bill-to-node { width: 45%; padding-left: 0; }
+            &.date-node { width: 30%; }
+            &.number-node { width: 25%; padding-right: 0; }
+        }
+
+        .grid-label {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .partner-name-bold {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .partner-address-muted {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .ref-box {
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: left;
+            color: #fff;
+        }
+    }
+
+    .clm_table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            background-color: $navy;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        tbody tr{
+            page-break-inside: avoid;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: $table-stripe;
+        }
+    }
+
+.bank_box {
+    page-break-inside: avoid;
+    background-color: #f6f9fc;   /* soft neutral */
+    border-left: 4px solid $navy;
+    padding: 22px 24px;
+    border-radius: 10px;
+    color: #333;
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: $navy;
+        margin-bottom: 14px;
+    }
+
+    .bank_content {
+        font-size: 13px;
+        line-height: 1.6;
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #000;
+            font-weight: 700;
+        }
+    }
+}
+
+/* TOTALS TABLE */
+.table_totals {
+    page-break-inside: avoid;
+    width: 85%;
+    float: right;
+    border-collapse: collapse;
+
+    tr {
+        border-bottom: 1px solid #e6e6e6;
+    }
+
+    .lbl {
+        font-size: 13px;
+        font-weight: 600;
+        color: #444;
+        padding: 6px 0;
+    }
+
+    .val {
+        font-size: 13px;
+        text-align: right;
+        color: #000;
+        padding: 6px 0;
+    }
+
+    .total_row {
+        border-top: 2px solid $navy;
+        border-bottom: none;
+
+        .lbl,
+        .val {
+            font-size: 16px;
+            font-weight: 800;
+            color: $navy;
+            padding-top: 12px;
+        }
+    }
+}
+
+    .footer_text {
+        page-break-inside: avoid;
+        font-size: 16px;
+        color: #7f8c8d;
+    }
+}
