@@ -1,0 +1,39 @@
+
+<odoo>
+<template id="report_delivery_document_inherit_signature"
+          inherit_id="stock.report_delivery_document">
+
+    <xpath expr="//div[@class='page']" position="inside">
+
+        <div style="margin-top: 50px;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:50%; text-align:center;">
+                        <strong>Prepared By</strong>
+                        <br/><br/><br/><br/>
+                        ___________________________
+                    </td>
+
+                    <td style="width:50%; text-align:center;">
+                        <strong>Received By</strong>
+                        <br/><br/><br/><br/>
+                        ___________________________
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding-top:10px; text-align:center;">
+                        Date: __________________
+                    </td>
+
+                    <td style="padding-top:10px; text-align:center;">
+                        Date: __________________
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </xpath>
+
+</template>
+</odoo>
