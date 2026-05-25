@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_equipment_management,access.equipment.management,model_equipment_management,,1,1,1,0
+access_equipment_manufacturer,access.equipment.manufacturer,model_equipment_manufacturer,,1,1,1,0
+access_equipment_model,access.equipment.model,model_equipment_model,,1,1,1,0
+access_equipment_region,access.equipment.region,model_equipment_region,,1,1,1,0
+access_equipment_tracking,access.equipment.tracking,model_equipment_tracking,,1,1,1,0
+access_equipment_ticket_history_user,equipment.ticket.history.user,model_equipment_ticket_history,,1,1,1,0

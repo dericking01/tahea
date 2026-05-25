@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_sales_visit_report_wizard_form" model="ir.ui.view">
+        <field name="name">sales.visit.report.wizard.form</field>
+        <field name="model">sales.visit.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Sales Visit Report">
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="visit_status"/>
+                </group>
+                <footer>
+                    <button name="action_export_excel"
+                            type="object"
+                            string="Export Excel"
+                            class="btn-success"/>
+                    <button string="Cancel"
+                            special="cancel"
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    
+</odoo>
