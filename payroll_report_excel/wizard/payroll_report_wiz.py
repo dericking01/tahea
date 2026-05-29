@@ -68,9 +68,10 @@ class PayrollReportExcelWiz(models.TransientModel):
             worksheet.write(row, 3, 'Employee Bank', cell_text_format)
             worksheet.write(row, 4, 'Account Number', cell_text_format)
             worksheet.write(row, 5, 'Payslip Ref', cell_text_format)
+            worksheet.write(row, 6, 'Analytic Account', cell_text_format)
 
             row_set = row
-            col = 6
+            col = 7
 
             for vals in res:
                 worksheet.write(row, col, vals[0], cell_text_format)
@@ -81,7 +82,7 @@ class PayrollReportExcelWiz(models.TransientModel):
                 ('date_from', '=', self.from_date),
                 ('date_to', '=', self.date_end),
             ])
-            colm = 6
+            colm = 7
 
             for payslip in payslip_ids:
                 emp = payslip.employee_id
@@ -91,6 +92,7 @@ class PayrollReportExcelWiz(models.TransientModel):
                 worksheet.write(row, 3, emp.bank_account_id.bank_id.name or '', cell_text_format_new)
                 worksheet.write(row, 4, emp.bank_account_id.acc_number or '', cell_text_format_new)
                 worksheet.write(row, 5, payslip.number or '', cell_text_format_new)
+                worksheet.write(row, 6, payslip.contract_id.analytic_account_id.name or '', cell_text_format_new)
 
                 col = colm
                 for vals in res:
