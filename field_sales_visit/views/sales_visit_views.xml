@@ -171,6 +171,27 @@
                                         <field name="notes" nolabel="1" placeholder="Write visit summary, feedback, next action plan..."/>
                                     </page>
 
+                                    <!-- Opportunities Tab -->
+                                    <page string="Opportunities">
+                                        <field name="opportunity_ids" nolabel="1">
+                                            <list editable="bottom">
+                                                <field name="name" string="Opportunity"/>
+                                                <field name="opportunity_type"/>
+                                                <field name="budget"/>
+                                                <field name="source_of_funds"/>
+                                                <field name="execution_method"/>
+                                                <field name="challenges_remarks"/>
+                                                <field name="support_needed"/>
+                                                <field name="action_points"/>
+                                                <field name="next_followup_date"/>
+                                                <field name="followup_method"/>
+                                                <field name="expected_closing_date"/>
+                                                <field name="deal_value"/>
+                                                <field name="lead_status"/>
+                                            </list>
+                                        </field>
+                                    </page>
+
                                 </notebook>
 
                             </sheet>
