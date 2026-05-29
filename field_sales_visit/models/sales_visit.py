@@ -111,6 +111,16 @@ class SalesVisit(models.Model):
     notes = fields.Text(string="Notes")
 
     # =====================================================
+    # OPPORTUNITIES
+    # =====================================================
+
+    opportunity_ids = fields.One2many(
+        "sales.visit.opportunity",
+        "visit_id",
+        string="Opportunities",
+    )
+
+    # =====================================================
     # CALENDAR INTEGRATION
     # =====================================================
 
@@ -324,3 +334,72 @@ Region: {record.region or ''}
                     "description": description,
                 })
                 record.calendar_event_id = event.id
+
+
+class SalesVisitOpportunity(models.Model):
+    _name = "sales.visit.opportunity"
+    _description = "Sales Visit Opportunity Line"
+
+    visit_id = fields.Many2one(
+        "sales.visit",
+        string="Visit",
+        required=True,
+        ondelete="cascade",
+    )
+
+    name = fields.Char(string="Opportunity", required=True)
+
+    opportunity_type = fields.Selection(
+        [
+            ("replacement", "Replacement"),
+            ("new_purchase", "New Purchase"),
+            ("service_contract", "Service Contract"),
+            ("consumables", "Consumables"),
+        ],
+        string="Opportunity Type",
+    )
+
+    budget = fields.Float(string="Budget (USD/TZS)")
+
+    source_of_funds = fields.Char(string="Source of Funds")
+
+    execution_method = fields.Selection(
+        [
+            ("tender", "Tender"),
+            ("placement", "Placement"),
+            ("direct_purchase", "Direct Purchase"),
+        ],
+        string="Opportunity Execution Method",
+    )
+
+    challenges_remarks = fields.Text(string="Challenges/Remarks")
+
+    support_needed = fields.Text(string="Support Needed")
+
+    action_points = fields.Text(string="Action Points")
+
+    next_followup_date = fields.Date(string="Next Follow-up Date")
+
+    followup_method = fields.Selection(
+        [
+            ("call", "Call"),
+            ("email", "Email"),
+            ("visit", "Visit"),
+            ("demo", "Demo"),
+        ],
+        string="Follow-up Method",
+    )
+
+    expected_closing_date = fields.Date(string="Expected Closing Date")
+
+    deal_value = fields.Float(string="Deal Value (TZS)")
+
+    lead_status = fields.Selection(
+        [
+            ("open", "Open"),
+            ("negotiation", "Negotiation"),
+            ("won", "Won"),
+            ("lost", "Lost"),
+        ],
+        string="Lead Status",
+    )
