@@ -29,8 +29,10 @@ class FuelLog(models.Model):
         selection=[
             ('not_paid', 'Not Paid'),
             ('in_payment', 'In Payment'),
-            ('paid', 'Paid')
-        ],
+            ('partial', 'Partially Paid'),
+            ('paid', 'Paid'),
+            ('reversed', 'Reversed'),
+            ],
         compute='_compute_vendor_bill_payment_status',
         store=True
     )
