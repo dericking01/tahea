@@ -1,0 +1,147 @@
+<odoo>
+    <!-- Transport Booking Sequence -->
+        <record id="seq_fleet_transport_booking" model="ir.sequence">
+            <field name="name">Fleet Transport Booking</field>
+            <field name="code">fleet.transport.booking</field>
+            <field name="prefix">BOOK/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+            <field name="implementation">standard</field>
+        </record>
+    
+
+        <!-- CALENDAR VIEW -->
+    <record id="view_fleet_transport_booking_calendar" model="ir.ui.view">
+        <field name="name">fleet.transport.booking.calendar</field>
+        <field name="model">fleet.transport.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Transport Bookings"
+                      date_start="booking_date"
+                      date_stop="end_date"
+                      color="state">
+
+                <field name="name"/>
+                <field name="state"/>
+
+            </calendar>
+        </field>
+    </record>
+
+    <!-- TREE VIEW -->
+    <record id="view_fleet_transport_booking_tree" model="ir.ui.view">
+        <field name="name">fleet.transport.booking.tree</field>
+        <field name="model">fleet.transport.booking</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="booking_date"/>
+                <field name="end_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+       
+        <!-- FORM VIEW -->
+        <record id="view_fleet_transport_booking_form" model="ir.ui.view">
+            <field name="name">fleet.transport.booking.form</field>
+            <field name="model">fleet.transport.booking</field>
+            <field name="arch" type="xml">
+                <form string="Transport Booking">
+
+                    <!-- HEADER -->
+                    <header>
+
+                        <button name="action_submit"
+                                string="Submit"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'draft'"/>
+
+                        <button name="action_approve"
+                                string="Approve"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'submitted'"/>
+
+                        <button name="action_confirm"
+                                string="Confirm"
+                                type="object"
+                                class="btn-warning"
+                                invisible="state != 'approved'"/>
+
+                        <button name="action_start"
+                                string="Start"
+                                type="object"
+                                invisible="state != 'confirmed'"/>
+
+                        <button name="action_done"
+                                string="Done"
+                                type="object"
+                                class="btn-success"
+                                invisible="state != 'in_progress'"/>
+
+                        <button name="action_cancel"
+                                string="Cancel"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state in ('done','cancelled')"/>
+
+                        <field name="state" widget="statusbar"
+                            statusbar_visible="draft,submitted,approved,confirmed,in_progress,done"/>
+
+                    </header>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="booking_date"/>
+                                <field name="end_date"/>
+                            </group>
+
+                            <group>
+                                <field name="from_location"/>
+                                <field name="to_location"/>
+                                <field name="purpose"/>
+                            </group>
+                        </group>
+
+                        <!-- VEHICLE LINES -->
+                        <notebook>
+                            <page string="Vehicles">
+                                <field name="line_ids">
+                                    <list editable="bottom">
+                                        <field name="vehicle_id"/>
+                                        <field name="notes"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+
+                    <chatter/>
+
+                </form>
+            </field>
+        </record>
+
+    
+        <record id="action_fleet_transport_booking" model="ir.actions.act_window">
+            <field name="name">Transport Bookings</field>
+            <field name="res_model">fleet.transport.booking</field>
+            <field name="view_mode">list,calendar,form</field>
+            <field name="domain">[('state','=','approved')]</field>
+        </record>
+
+    <!-- MENU -->
+    <menuitem id="menu_fleet_transport_root"
+              name="Transport"/>
+
+    <menuitem id="menu_fleet_transport_booking"
+              name="Bookings"
+              parent="menu_fleet_transport_root"
+              action="action_fleet_transport_booking"/>
+
+</odoo>
