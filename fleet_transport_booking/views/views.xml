@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="fleet_transport_booking.list">
+      <field name="name">fleet_transport_booking list</field>
+      <field name="model">fleet_transport_booking.fleet_transport_booking</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="fleet_transport_booking.action_window">
+      <field name="name">fleet_transport_booking window</field>
+      <field name="res_model">fleet_transport_booking.fleet_transport_booking</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="fleet_transport_booking.action_server">
+      <field name="name">fleet_transport_booking server</field>
+      <field name="model_id" ref="model_fleet_transport_booking_fleet_transport_booking"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="fleet_transport_booking" id="fleet_transport_booking.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="fleet_transport_booking.menu_1" parent="fleet_transport_booking.menu_root"/>
+    <menuitem name="Menu 2" id="fleet_transport_booking.menu_2" parent="fleet_transport_booking.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="fleet_transport_booking.menu_1_list" parent="fleet_transport_booking.menu_1"
+              action="fleet_transport_booking.action_window"/>
+    <menuitem name="Server to list" id="fleet_transport_booking" parent="fleet_transport_booking.menu_2"
+              action="fleet_transport_booking.action_server"/>
+-->
+  </data>
+</odoo>
