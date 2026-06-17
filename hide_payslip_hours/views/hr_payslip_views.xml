@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Hide 'Number of Hours' column in worked days lines -->
-    <record id="hr_payslip_worked_days_tree_hide_hours" model="ir.ui.view">
-        <field name="name">hr.payslip.worked.days.tree.hide.number.of.hours</field>
-        <field name="model">hr.payslip.worked.days</field>
-        <field name="inherit_id" ref="hr_payroll.hr_payslip_worked_days_view"/>
+
+    <record id="hide_payslip_hours_column" model="ir.ui.view">
+        <field name="name">hide.payslip.hours.column</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='number_of_hours']" position="attributes">
-                <attribute name="column_invisible">1</attribute>
+
+            <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']"
+                   position="attributes">
+                <attribute name="column_invisible">True</attribute>
             </xpath>
+
         </field>
     </record>
+
 </odoo>
