@@ -1,10 +1,14 @@
-<record id="view_hr_payslip_form_hide_hours" model="ir.ui.view">
-    <field name="name">hr.payslip.form.hide.number.of.hours</field>
-    <field name="model">hr.payslip</field>  <!-- the model of the form -->
-    <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']" position="attributes">
-            <attribute name="column_invisible">1</attribute>
-        </xpath>
-    </field>
-</record>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_payslip_form_hide_hours" model="ir.ui.view">
+        <field name="name">hr.payslip.form.hide.number.of.hours</field>
+        <field name="model">hr.payslip</field>  <!-- Form view's model -->
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <!-- Target the field inside the list -->
+            <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
