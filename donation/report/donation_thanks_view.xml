@@ -5,17 +5,134 @@
   License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 -->
 <odoo>
+    <template id="report_donation_thanks_document">
+        <t t-call="web.internal_layout">
+            <div class="page">
+                <!-- Donor address block -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <strong><t t-esc="o.partner_id.name"/></strong><br/>
+                        <t t-if="o.partner_id.street">
+                            <t t-esc="o.partner_id.street"/><br/>
+                        </t>
+                        <t t-if="o.partner_id.street2">
+                            <t t-esc="o.partner_id.street2"/><br/>
+                        </t>
+                        <t t-if="o.partner_id.zip or o.partner_id.city">
+                            <t t-esc="o.partner_id.zip"/>&#160;<t t-esc="o.partner_id.city"/><br/>
+                        </t>
+                        <t t-if="o.partner_id.state_id">
+                            <t t-esc="o.partner_id.state_id.name"/><br/>
+                        </t>
+                        <t t-if="o.partner_id.country_id">
+                            <t t-esc="o.partner_id.country_id.name"/>
+                        </t>
+                    </div>
+                    <div class="col-6 text-right">
+                        <h4>
+                            <span>Donation </span>
+                            <span t-field="o.number"/>
+                        </h4>
+                        <p>
+                            <strong>Date: </strong>
+                            <span t-field="o.donation_date"/>
+                        </p>
+                        <t t-if="o.state == 'draft'">
+                            <span class="badge badge-pill badge-warning">Draft</span>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Donation lines table -->
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Product</th>
+                            <th class="text-right">Qty</th>
+                            <th class="text-right">Unit Price</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.line_ids" t-as="line">
+                            <tr>
+                                <td>
+                                    <span t-field="line.product_id"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.quantity"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.unit_price"/>
+                                    <span t-field="o.currency_id"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.amount"/>
+                                    <span t-field="o.currency_id"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right">
+                                <strong>Total</strong>
+                            </td>
+                            <td class="text-right">
+                                <strong>
+                                    <span t-field="o.amount_total"/>
+                                    <span t-field="o.currency_id"/>
+                                </strong>
+                            </td>
+                        </tr>
+                        <t t-if="o.tax_receipt_total and o.tax_receipt_total != o.amount_total_company_currency">
+                            <tr>
+                                <td colspan="3" class="text-right">Tax Receipt Eligible Amount</td>
+                                <td class="text-right">
+                                    <span t-field="o.tax_receipt_total"/>
+                                    <span t-field="o.company_currency_id"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tfoot>
+                </table>
+
+                <!-- Extra info -->
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <t t-if="o.payment_mode_id">
+                            <p><strong>Payment Mode: </strong><span t-field="o.payment_mode_id"/></p>
+                        </t>
+                        <t t-if="o.payment_ref">
+                            <p><strong>Payment Reference: </strong><span t-field="o.payment_ref"/></p>
+                        </t>
+                        <t t-if="o.campaign_id">
+                            <p><strong>Campaign: </strong><span t-field="o.campaign_id"/></p>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Thanks template text -->
+                <t t-if="o.thanks_template_id and o.thanks_template_id.text">
+                    <div class="mt-4">
+                        <p t-field="o.thanks_template_id.text"/>
+                    </div>
+                </t>
+                <t t-if="o.thanks_template_id and o.thanks_template_id.image">
+                    <div class="mt-2 text-center">
+                        <img t-att-src="'/web/image/donation.thanks.template/%s/image' % o.thanks_template_id.id"
+                             style="max-width:100%;max-height:200px;"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
     <template id="report_donation_thanks">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="web.internal_layout">
-                        <div class="page">
-                                <div
-                            t-field="o.partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
-                        />
-                        </div>
-                </t>
+                <t t-call="donation.report_donation_thanks_document"
+                   t-lang="o.partner_id.lang"/>
             </t>
         </t>
     </template>
