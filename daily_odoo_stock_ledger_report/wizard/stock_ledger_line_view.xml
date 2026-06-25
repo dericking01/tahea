@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_stock_ledger_line_tree" model="ir.ui.view">
+        <field name="name">stock.ledger.line.list</field>
+        <field name="model">stock.ledger.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="product_id"/>
+                <field name="date"/>
+                <field name="from_location"/>
+                <field name="to_location"/>
+                <field name="in_qty"
+                   decoration-success="in_qty &gt; 0"/>
+                <field name="out_qty"
+                   decoration-danger="out_qty &gt; 0"/>
+                <field name="transaction_type"
+                       decoration-success="transaction_type == 'in'"
+                       decoration-danger="transaction_type == 'out'"/>
+                <field name="balance"/>
+            </list>
+        </field>
+    </record>
+</odoo>
