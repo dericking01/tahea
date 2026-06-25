@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!-- Add Location column to participations list view -->
+    <record id="survey_user_input_view_tree_location" model="ir.ui.view">
+        <field name="name">survey.user_input.view.list.location</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_tree"/>
+        <field name="arch" type="xml">
+            <!-- Insert Location after the email column -->
+            <field name="email" position="after">
+                <field name="location_answer" string="Location" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Add Location to participation form view banner (the title group) -->
+    <record id="survey_user_input_view_form_location" model="ir.ui.view">
+        <field name="name">survey.user_input.view.form.location</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Location field in the right column group, after the email field -->
+            <field name="email" position="after">
+                <field name="location_answer" string="Location"/>
+            </field>
+        </field>
+    </record>
+
+</data>
+</odoo>
