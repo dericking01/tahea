@@ -28,5 +28,17 @@
         </field>
     </record>
 
+    <!-- Add Location to Group By in participations search view -->
+    <record id="survey_user_input_view_search_location" model="ir.ui.view">
+        <field name="name">survey.user_input.view.search.location</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_search"/>
+        <field name="arch" type="xml">
+            <filter name="group_by_partner" position="after">
+                <filter string="Location" name="group_by_location" domain="[]" context="{'group_by': 'location_answer'}"/>
+            </filter>
+        </field>
+    </record>
+
 </data>
 </odoo>

@@ -9,7 +9,7 @@ class SurveyUserInput(models.Model):
     location_answer = fields.Char(
         string='Location',
         compute='_compute_location_answer',
-        store=False,
+        store=True,
     )
 
     @api.depends('user_input_line_ids.question_id', 'user_input_line_ids.skipped',
