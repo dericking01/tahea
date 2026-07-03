@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="daily_odoo_stock_ledger_report.StockLedgerListView" t-inherit="web.ListRenderer" t-inherit-mode="primary">
+        <xpath expr="//div[hasclass('o_list_renderer')]" position="before">
+            <StockLedgerDashboard />
+        </xpath>
+    </t>
+
+    <t t-name="daily_odoo_stock_ledger_report.StockLedgerDashboard">
+        <div t-out="dashboardHtml" />
+    </t>
+</templates>

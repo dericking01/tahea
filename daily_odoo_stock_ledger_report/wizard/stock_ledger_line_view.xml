@@ -1,0 +1,42 @@
+<odoo>
+    <record id="view_stock_ledger_line_tree" model="ir.ui.view">
+        <field name="name">stock.ledger.line.list</field>
+        <field name="model">stock.ledger.line</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0" js_class="stock_ledger_dashboard_list">
+                <field name="date"/>
+                <field name="from_location"/>
+                <field name="to_location"/>
+                <field name="in_qty"/>
+                <field name="out_qty"/>
+                <field name="transaction_type" 
+                       widget="badge" 
+                       decoration-info="transaction_type == 'opening'"
+                       decoration-success="transaction_type == 'in'"
+                       decoration-danger="transaction_type == 'out'"/>
+                <field name="balance"/>
+                <field name="location_balances_html" widget="html" string="Balance per location"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_stock_ledger_line_search" model="ir.ui.view">
+        <field name="name">stock.ledger.line.search</field>
+        <field name="model">stock.ledger.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Stock Ledger">
+                <field name="from_location"/>
+                <field name="to_location"/>
+                <field name="from_warehouse"/>
+                <field name="to_warehouse"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="From (Location)" name="group_from_location" context="{'group_by': 'from_location'}"/>
+                    <filter string="To (Location)" name="group_to_location" context="{'group_by': 'to_location'}"/>
+                    <filter string="From (Warehouse)" name="group_from_warehouse" context="{'group_by': 'from_warehouse'}"/>
+                    <filter string="To (Warehouse)" name="group_to_warehouse" context="{'group_by': 'to_warehouse'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
