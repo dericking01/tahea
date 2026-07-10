@@ -31,20 +31,32 @@ class ResUsers(models.Model):
     def write(self, vals):
         """
          Write method for the ResUsers model.
-         Ensure the menu will not remain hidden after removing it from the list.
-           """
+         Ensure the menu/journal will not remain hidden after removing it from the list.
+        """
         res = super(ResUsers, self).write(vals)
         for record in self:
+            # Sync hidden menus
             for menu in record.hide_menu_ids:
                 menu.write({
                     'restrict_user_ids': [fields.Command.link(record.id)]
                 })
-            # Handle unlinked menus (removed from hide_menu_ids)
             previous_menus = self.env['ir.ui.menu'].search(
                 [('restrict_user_ids', 'in', [record.id])])
             removed_menus = previous_menus - record.hide_menu_ids
             for menu in removed_menus:
                 menu.write({
+                    'restrict_user_ids': [fields.Command.unlink(record.id)]
+                })
+            # Sync hidden journals
+            for journal in record.hide_journal_ids:
+                journal.write({
+                    'restrict_user_ids': [fields.Command.link(record.id)]
+                })
+            previous_journals = self.env['account.journal'].search(
+                [('restrict_user_ids', 'in', [record.id])])
+            removed_journals = previous_journals - record.hide_journal_ids
+            for journal in removed_journals:
+                journal.write({
                     'restrict_user_ids': [fields.Command.unlink(record.id)]
                 })
         return res
@@ -63,6 +75,9 @@ class ResUsers(models.Model):
         'ir.ui.menu', string="Hidden Menu",
         store=True, help='Select menu items that need to '
                          'be hidden to this user.')
+    hide_journal_ids = fields.Many2many(
+        'account.journal', string="Hidden Journals",
+        store=True, help='Select journals that need to be hidden from this user.')
     is_admin = fields.Boolean(compute=_get_is_admin, string="Is Admin",
                               help='Check if the user is an admin.')
 

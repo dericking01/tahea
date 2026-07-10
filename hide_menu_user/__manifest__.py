@@ -29,7 +29,7 @@
     'company': 'Cybrosys Techno Solutions',
     'maintainer': 'Cybrosys Techno Solutions',
     'website': "https://www.cybrosys.com",
-    'depends': ['base'],
+    'depends': ['base', 'account'],
     'data': [
         'security/security.xml',
         'views/res_users_views.xml',

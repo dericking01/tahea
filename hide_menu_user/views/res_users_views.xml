@@ -12,6 +12,11 @@
                         <field name="hide_menu_ids"/>
                     </list>
                 </page>
+                <page string="Hide Journals" invisible="is_admin">
+                    <list>
+                        <field name="hide_journal_ids"/>
+                    </list>
+                </page>
             </xpath>
             <field name="name" position="after">
                 <field name="is_admin" invisible="1"/>
