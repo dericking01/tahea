@@ -3,6 +3,8 @@ import re
 from odoo import models, fields
 from odoo.exceptions import UserError
 
+BILL_NAME_RE = re.compile(r'^BILL/(\d{4})/(\d{2})/(\d+)$')
+
 
 class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
@@ -30,6 +32,31 @@ class ApprovalRequest(models.Model):
         store=True,
         readonly=True
     )
+
+    # =====================================================
+    # HELPER: NEXT VENDOR BILL SEQUENCE (BILL/YYYY/MM/NNNN)
+    # =====================================================
+
+    def _get_next_bill_name(self):
+        today = fields.Date.today()
+        prefix = f"BILL/{today.year:04d}/{today.month:02d}/"
+
+        last_move = self.env['account.move'].search(
+            [
+                ('company_id', '=', self.env.company.id),
+                ('name', '=like', f"{prefix}%"),
+            ],
+            order='name desc',
+            limit=1,
+        )
+
+        next_number = 1
+        if last_move:
+            match = BILL_NAME_RE.match(last_move.name)
+            if match:
+                next_number = int(match.group(3)) + 1
+
+        return f"{prefix}{next_number:04d}"
 
     # =====================================================
     # ACTION: CREATE VENDOR BILL (CONTACT AS VENDOR)
@@ -74,6 +101,7 @@ class ApprovalRequest(models.Model):
 
         bill_vals = {
             'partner_id': vendor_partner.id,
+            'name': self._get_next_bill_name(),
             'invoice_date': fields.Date.today(),
             'ref': self.name,
             'invoice_origin': self.name,
