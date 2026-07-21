@@ -32,7 +32,7 @@ class ApprovalRequest(models.Model):
     )
 
     # =====================================================
-    # ACTION: CREATE VENDOR BILL (REQUESTOR AS VENDOR)
+    # ACTION: CREATE VENDOR BILL (CONTACT AS VENDOR)
     # =====================================================
 
     def action_create_vendor_bill(self):
@@ -48,9 +48,9 @@ class ApprovalRequest(models.Model):
         if not self.request_owner_id:
             raise UserError("Approval Request has no Requestor.")
 
-        if not self.request_owner_id.partner_id:
+        if not self.partner_id:
             raise UserError(
-                "The Requestor must have a Contact set on the user form."
+                "Please set a Contact on the Approval Request before creating the Vendor Bill."
             )
 
         if not self.analytic_account_id:
@@ -61,9 +61,9 @@ class ApprovalRequest(models.Model):
         if not self.amount:
             raise UserError("Approval amount is missing.")
 
-        # ---------------- REQUESTOR AS VENDOR ----------------
+        # ---------------- CONTACT AS VENDOR ----------------
 
-        requestor_partner = self.request_owner_id.partner_id
+        vendor_partner = self.partner_id
 
         # ---------------- CLEAN DESCRIPTION ----------------
 
@@ -73,14 +73,15 @@ class ApprovalRequest(models.Model):
         # ---------------- BILL VALUES ----------------
 
         bill_vals = {
-            'partner_id': requestor_partner.id,
+            'partner_id': vendor_partner.id,
             'invoice_date': fields.Date.today(),
             'ref': self.name,
             'invoice_origin': self.name,
             'invoice_user_id': self.request_owner_id.id,
             'narration': (
                 f"Reimbursement created from Approval: {self.name}\n"
-                f"Requestor/Vendor: {requestor_partner.name}"
+                f"Requestor: {self.request_owner_id.name}\n"
+                f"Vendor: {vendor_partner.name}"
             ),
             'invoice_line_ids': [(0, 0, {
                 'name': line_description,
