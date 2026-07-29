@@ -62,27 +62,27 @@
                     </div>
 
                     <div style="display:flex; flex-wrap:wrap; width:100%; font-size:12px; color:#333;">
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_no">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_no">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Truck Reg Number</span>
                             <strong t-field="o.vehicle_no"/>
                         </div>
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.trailer_no">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.trailer_no">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Trailer Number</span>
                             <strong t-field="o.trailer_no"/>
                         </div>
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_driver_name">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_driver_name">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver Name</span>
                             <strong t-field="o.vehicle_driver_name"/>
                         </div>
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.license_driver">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.license_driver">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver License</span>
                             <strong t-field="o.license_driver"/>
                         </div>
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.driver_contact_number">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.driver_contact_number">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Contact No</span>
                             <strong t-field="o.driver_contact_number"/>
                         </div>
-                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.corresponding_company">
+                        <div style="width:33.33%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.corresponding_company">
                             <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Transporter Name</span>
                             <strong t-field="o.corresponding_company"/>
                         </div>
