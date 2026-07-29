@@ -79,7 +79,7 @@ class EquipmentTracking(models.Model):
         string="Serial Number",
         related="equipment_id.serial_number",
         store=True,
-        readonly=True
+        readonly=False
     )
 
     model_id = fields.Many2one(
@@ -87,15 +87,15 @@ class EquipmentTracking(models.Model):
         string="Model",
         related="equipment_id.model_id",
         store=True,
-        readonly=True
+        readonly=False
     )
 
     manufacturer_id = fields.Many2one(
         'equipment.manufacturer',
         string="Manufacturer",
-        related="equipment_id.manufacturer_id",
+        related="equipment_id.model_id.manufacturer_id",
         store=True,
-        readonly=True
+        readonly=False
     )
 
     customer_id = fields.Many2one(
