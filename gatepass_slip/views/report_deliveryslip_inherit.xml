@@ -35,13 +35,16 @@
             <xpath expr="//table[@name='stock_move_line_table']" position="after">
 
                 <div style="
-                    margin-top:22px;
-                    margin-bottom:22px;
-                    padding:16px 20px;
+                    width:100%;
+                    box-sizing:border-box;
+                    margin-top:18px;
+                    margin-bottom:18px;
+                    padding:14px 18px;
                     background:#f9f9f9;
                     border:1px solid #e6e6e6;
                     border-left:4px solid #c9a227;
                     border-radius:6px;
+                    overflow:hidden;
                     page-break-inside:avoid;
                 ">
 
@@ -52,35 +55,35 @@
                         text-transform:uppercase;
                         color:#2c3e50;
                         border-bottom:1px solid #ddd;
-                        padding-bottom:8px;
-                        margin-bottom:12px;
+                        padding-bottom:6px;
+                        margin-bottom:10px;
                     ">
                         Vehicle Information
                     </div>
 
-                    <div class="row" style="font-size:12.5px; color:#333;">
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.vehicle_no">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Truck Reg Number</span>
+                    <div style="display:flex; flex-wrap:wrap; width:100%; font-size:12px; color:#333;">
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_no">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Truck Reg Number</span>
                             <strong t-field="o.vehicle_no"/>
                         </div>
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.trailer_no">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Trailer Number</span>
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.trailer_no">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Trailer Number</span>
                             <strong t-field="o.trailer_no"/>
                         </div>
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.vehicle_driver_name">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver Name</span>
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.vehicle_driver_name">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver Name</span>
                             <strong t-field="o.vehicle_driver_name"/>
                         </div>
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.license_driver">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver License</span>
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.license_driver">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Driver License</span>
                             <strong t-field="o.license_driver"/>
                         </div>
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.driver_contact_number">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Contact No</span>
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.driver_contact_number">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Contact No</span>
                             <strong t-field="o.driver_contact_number"/>
                         </div>
-                        <div class="col-6" style="margin-bottom:10px;" t-if="o.corresponding_company">
-                            <span style="display:block; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Transporter Name</span>
+                        <div style="width:50%; box-sizing:border-box; padding:0 10px 8px 0; word-wrap:break-word; overflow-wrap:break-word;" t-if="o.corresponding_company">
+                            <span style="display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:0.4px; color:#8a8a8a;">Transporter Name</span>
                             <strong t-field="o.corresponding_company"/>
                         </div>
                     </div>
@@ -93,26 +96,26 @@
                  signature block (if any) so the printed slip always carries both -->
             <xpath expr="//div[@name='signature']" position="after">
 
-                <div class="row" style="margin-top:50px; page-break-inside:avoid;">
+                <div style="display:flex; flex-wrap:wrap; width:100%; box-sizing:border-box; margin-top:50px; page-break-inside:avoid;">
 
-                    <div class="col-6" style="text-align:center;">
-                        <div style="border-top:1px solid #2c3e50; margin:0 24px; padding-top:8px;">
+                    <div style="width:50%; box-sizing:border-box; padding:0 24px; text-align:center;">
+                        <div style="border-top:1px solid #2c3e50; padding-top:8px;">
                             <strong style="font-size:12px; letter-spacing:0.5px; text-transform:uppercase; color:#2c3e50;">
                                 Supplier Signature
                             </strong>
                         </div>
-                        <div style="margin:22px 24px 0 24px; font-size:11px; color:#8a8a8a; border-top:1px dotted #ccc; padding-top:4px;">
+                        <div style="margin-top:22px; font-size:11px; color:#8a8a8a; border-top:1px dotted #ccc; padding-top:4px;">
                             Name &amp; Date
                         </div>
                     </div>
 
-                    <div class="col-6" style="text-align:center;">
-                        <div style="border-top:1px solid #2c3e50; margin:0 24px; padding-top:8px;">
+                    <div style="width:50%; box-sizing:border-box; padding:0 24px; text-align:center;">
+                        <div style="border-top:1px solid #2c3e50; padding-top:8px;">
                             <strong style="font-size:12px; letter-spacing:0.5px; text-transform:uppercase; color:#2c3e50;">
                                 Receiver Signature
                             </strong>
                         </div>
-                        <div style="margin:22px 24px 0 24px; font-size:11px; color:#8a8a8a; border-top:1px dotted #ccc; padding-top:4px;">
+                        <div style="margin-top:22px; font-size:11px; color:#8a8a8a; border-top:1px dotted #ccc; padding-top:4px;">
                             Name &amp; Date
                         </div>
                     </div>
