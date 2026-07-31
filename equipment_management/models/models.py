@@ -168,8 +168,19 @@ class EquipmentTracking(models.Model):
     def name_get(self):
         result = []
         for rec in self:
-            result.append((rec.id, rec.equipment_name or rec.name))
+            if rec.equipment_name:
+                result.append((rec.id, f"{rec.equipment_name} ({rec.name})"))
+            else:
+                result.append((rec.id, rec.name))
         return result
+
+    @api.depends('name', 'equipment_name')
+    def _compute_display_name(self):
+        for rec in self:
+            if rec.equipment_name:
+                rec.display_name = f"{rec.equipment_name} ({rec.name})"
+            else:
+                rec.display_name = rec.name
 
     def _compute_ticket_count(self):
         for rec in self:
