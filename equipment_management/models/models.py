@@ -165,6 +165,12 @@ class EquipmentTracking(models.Model):
     
     ticket_count = fields.Integer(compute="_compute_ticket_count")
 
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, rec.equipment_name or rec.name))
+        return result
+
     def _compute_ticket_count(self):
         for rec in self:
             rec.ticket_count = self.env['helpdesk.ticket'].search_count([
