@@ -9,6 +9,9 @@
             <xpath expr="//field[@name='order_line']//list/field[@name='product_uom_qty']" position="before">
                 <field name="qty_on_hand" string="Qty On Hand" optional="show"/>
             </xpath>
+            <xpath expr="//page[@name='other_information']//field[@name='user_id']" position="replace">
+                <field name="salesperson_employee_id" widget="many2one_avatar_employee" options="{'no_quick_create': True}"/>
+            </xpath>
         </field>
     </record>
 
