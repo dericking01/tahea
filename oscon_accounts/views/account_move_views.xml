@@ -16,6 +16,21 @@
         </field>
     </record>
 
+    <record id="view_in_invoice_tree_oscon_analytic" model="ir.ui.view">
+        <field name="name">account.move.list.in.oscon.analytic</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_in_invoice_tree"/>
+        <field name="mode">extension</field>
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <field name="oscon_analytic_account_ids"
+                       widget="many2many_tags"
+                       optional="show"
+                       groups="analytic.group_analytic_accounting"/>
+            </field>
+        </field>
+    </record>
+
     <record id="view_account_invoice_filter_oscon_analytic" model="ir.ui.view">
         <field name="name">account.invoice.select.oscon.analytic</field>
         <field name="model">account.move</field>
