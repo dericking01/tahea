@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_statement_invoice_report_wizard_form" model="ir.ui.view">
+        <field name="name">statement.invoice.report.wizard.form</field>
+        <field name="model">statement.invoice.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Custom Invoice Report">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Custom Invoice Report</h1>
+                        <p class="text-muted">
+                            Posted customer invoices, grouped by payment status
+                            and by Cash / Bank journal type.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate_pdf" type="object"
+                            string="Generate PDF" class="btn-primary"/>
+                    <button name="action_generate_xlsx" type="object"
+                            string="Generate Excel" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_statement_invoice_report_wizard" model="ir.actions.act_window">
+        <field name="name">Custom Invoice Report</field>
+        <field name="res_model">statement.invoice.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_statement_invoice_report"
+              name="Custom Invoice Report"
+              parent="account.account_reports_legal_statements_menu"
+              action="action_statement_invoice_report_wizard"
+              groups="account.group_account_readonly,account.group_account_invoice"
+              sequence="70"/>
+
+</odoo>

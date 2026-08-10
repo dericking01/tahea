@@ -1,0 +1,203 @@
+from odoo.exceptions import ValidationError
+from odoo.tests import tagged
+from odoo.tests.common import TransactionCase
+
+
+@tagged('post_install', '-at_install')
+class TestStatementInvoiceReport(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env.company
+        cls.partner = cls.env['res.partner'].create({'name': 'Test Customer'})
+        cls.bank_journal = cls.env['account.journal'].search(
+            [('type', '=', 'bank'), ('company_id', '=', cls.company.id)], limit=1)
+        cls.cash_journal = cls.env['account.journal'].search(
+            [('type', '=', 'cash'), ('company_id', '=', cls.company.id)], limit=1)
+        cls.income_account = cls.env['account.account'].search(
+            [('account_type', '=', 'income'), ('company_ids', 'in', cls.company.id)], limit=1)
+
+        # This demo database's Bank/Cash journals have no outstanding
+        # ("payment_account_id") account configured on their payment method
+        # lines, so registered payments never get their own journal entry
+        # posted/reconciled (they stay stuck 'in_process' with an empty
+        # move_id and the invoice residual never moves). That's a data-setup
+        # gap in this sandbox, not something this report's logic controls,
+        # so the fixture completes the configuration to get deterministic,
+        # realistic paid/partial states to assert against.
+        outstanding_account = cls.env['account.account'].create({
+            'name': 'Test Outstanding Account',
+            'code': 'TESTOUT01',
+            'account_type': 'asset_current',
+            'reconcile': True,
+        })
+        for journal in (cls.bank_journal, cls.cash_journal):
+            (journal.inbound_payment_method_line_ids | journal.outbound_payment_method_line_ids).write({
+                'payment_account_id': outstanding_account.id,
+            })
+
+    def _create_invoice(self, amount, invoice_date, move_type='out_invoice'):
+        return self.env['account.move'].create({
+            'move_type': move_type,
+            'partner_id': self.partner.id,
+            'invoice_date': invoice_date,
+            'date': invoice_date,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Test Line',
+                'quantity': 1,
+                'price_unit': amount,
+                'tax_ids': [(6, 0, [])],
+                'account_id': self.income_account.id,
+            })],
+        })
+
+    def _register_payment(self, invoice, amount, journal):
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move', active_ids=invoice.ids,
+        ).create({
+            'journal_id': journal.id,
+            'amount': amount,
+            'payment_date': invoice.invoice_date,
+        })
+        wizard.action_create_payments()
+
+    def test_01_domain_scope_excludes_draft_cancel_and_bills(self):
+        posted_inv = self._create_invoice(100, '2026-01-15')
+        posted_inv.action_post()
+
+        draft_inv = self._create_invoice(50, '2026-01-16')
+
+        cancel_inv = self._create_invoice(75, '2026-01-17')
+        cancel_inv.action_post()
+        cancel_inv.button_cancel()
+
+        bill = self._create_invoice(60, '2026-01-18', move_type='in_invoice')
+        bill.action_post()
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-01-01', 'date_to': '2026-01-31',
+        })
+        data = wizard._get_report_data()
+        names = [line['name'] for line in data['invoices']]
+
+        self.assertIn(posted_inv.name, names)
+        self.assertNotIn(draft_inv.name, names)
+        self.assertNotIn(cancel_inv.name, names)
+        self.assertNotIn(bill.name, names)
+        self.assertEqual(data['summary']['invoice_count'], 1)
+
+    def test_02_payment_state_and_journal_classification(self):
+        paid_bank = self._create_invoice(100, '2026-02-01')
+        paid_bank.action_post()
+        self._register_payment(paid_bank, 100, self.bank_journal)
+
+        paid_cash = self._create_invoice(200, '2026-02-02')
+        paid_cash.action_post()
+        self._register_payment(paid_cash, 200, self.cash_journal)
+
+        partial_bank = self._create_invoice(300, '2026-02-03')
+        partial_bank.action_post()
+        self._register_payment(partial_bank, 120, self.bank_journal)
+
+        not_paid = self._create_invoice(400, '2026-02-04')
+        not_paid.action_post()
+
+        # A bank-journal payment settles the invoice as 'in_payment' until
+        # the bank statement/transaction is reconciled (only cash and
+        # instant-post journals go straight to 'paid') -- both states fold
+        # into the report's "Paid" bucket via PAYMENT_STATE_BUCKETS.
+        self.assertIn(paid_bank.payment_state, ('paid', 'in_payment'))
+        self.assertEqual(paid_bank.statement_cash_bank_type, 'bank')
+        self.assertIn(paid_cash.payment_state, ('paid', 'in_payment'))
+        self.assertEqual(paid_cash.statement_cash_bank_type, 'cash')
+        self.assertEqual(partial_bank.payment_state, 'partial')
+        self.assertEqual(partial_bank.statement_cash_bank_type, 'bank')
+        self.assertEqual(not_paid.payment_state, 'not_paid')
+        self.assertEqual(not_paid.statement_cash_bank_type, 'other')
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-02-01', 'date_to': '2026-02-28',
+        })
+        data = wizard._get_report_data()
+
+        self.assertEqual(data['summary']['invoice_count'], 4)
+        self.assertAlmostEqual(data['summary']['total_amount'], 1000.0)
+        self.assertAlmostEqual(data['summary']['paid_amount'], 100 + 200 + 120)
+        self.assertAlmostEqual(data['summary']['outstanding_amount'], 180 + 400)
+
+        bank_row = next(r for r in data['breakdown_rows'] if r['label'] == 'Bank')
+        cash_row = next(r for r in data['breakdown_rows'] if r['label'] == 'Cash')
+        self.assertEqual(bank_row['count'], 2)
+        self.assertAlmostEqual(bank_row['amount'], 400.0)
+        self.assertEqual(cash_row['count'], 1)
+        self.assertAlmostEqual(cash_row['amount'], 200.0)
+
+        self.assertEqual(data['unclassified']['count'], 1)
+        self.assertAlmostEqual(data['unclassified']['amount'], 400.0)
+
+        total_row = data['breakdown_total']
+        # breakdown_total intentionally folds in the 'other'/unclassified
+        # bucket too, so it reconciles exactly with the global summary count.
+        self.assertEqual(total_row['count'], bank_row['count'] + cash_row['count'] + data['unclassified']['count'])
+        # breakdown_total already folds in the 'other' bucket, so it must
+        # reconcile exactly with the global summary total on its own.
+        self.assertAlmostEqual(total_row['amount'], data['summary']['total_amount'])
+
+    def test_03_mixed_journal_payment_dominant_type_no_double_count(self):
+        invoice = self._create_invoice(300, '2026-03-01')
+        invoice.action_post()
+        self._register_payment(invoice, 50, self.cash_journal)
+        self._register_payment(invoice, 200, self.bank_journal)
+
+        self.assertEqual(invoice.statement_cash_bank_type, 'bank')
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-03-01', 'date_to': '2026-03-31',
+        })
+        data = wizard._get_report_data()
+        total_row = data['breakdown_total']
+        self.assertEqual(total_row['count'], 1)
+        self.assertAlmostEqual(total_row['amount'], 300.0)
+
+    def test_04_date_range_validation(self):
+        with self.assertRaises(ValidationError):
+            self.env['statement.invoice.report.wizard'].create({
+                'date_from': '2026-05-10', 'date_to': '2026-05-01',
+            })
+
+    def test_05_empty_result_set(self):
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2099-01-01', 'date_to': '2099-01-31',
+        })
+        data = wizard._get_report_data()
+        self.assertEqual(data['summary']['invoice_count'], 0)
+        self.assertEqual(data['invoices'], [])
+        self.assertEqual(data['breakdown_total']['amount'], 0.0)
+
+    def test_06_pdf_generation(self):
+        invoice = self._create_invoice(150, '2026-04-01')
+        invoice.action_post()
+        self._register_payment(invoice, 150, self.bank_journal)
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-04-01', 'date_to': '2026-04-30',
+        })
+        # Odoo automatically falls back from wkhtmltopdf to a plain HTML
+        # render in test mode (test_enable) to avoid depending on the
+        # wkhtmltopdf binary in CI; what matters here is that the QWeb
+        # template itself renders without error for a populated dataset.
+        content, report_type = self.env['ir.actions.report']._render_qweb_pdf(
+            'custom_invoice_statement_report.action_report_statement_invoice', wizard.ids,
+        )
+        self.assertIn(report_type, ('pdf', 'html'))
+        self.assertTrue(content)
+
+    def test_07_xlsx_generation(self):
+        self._create_invoice(150, '2026-04-01').action_post()
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-04-01', 'date_to': '2026-04-30',
+        })
+        data = wizard._get_report_data()
+        xlsx_bytes = wizard._build_xlsx(data)
+        self.assertTrue(xlsx_bytes.startswith(b'PK'))
