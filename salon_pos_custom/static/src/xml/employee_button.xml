@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-inherit="point_of_sale.OrderWidget"
+       t-inherit-mode="extension">
+
+        <xpath expr="//div[contains(@class,'order-summary')]"
+               position="before">
+
+
+            <t t-if="!props.basic_receipt">
+
+                <div class="employee-selector p-2">
+
+                    <button
+                        class="button btn btn-light w-100"
+                        t-on-click="selectEmployee">
+
+                        <i class="fa fa-user me-2"/>
+
+                        Select Employee
+
+                    </button>
+
+                </div>
+
+            </t>
+
+
+        </xpath>
+
+    </t>
+
+</templates>

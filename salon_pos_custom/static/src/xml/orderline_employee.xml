@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-inherit="point_of_sale.Orderline"
+       t-inherit-mode="extension">
+
+        <xpath expr="//div[contains(@class,'product-name')]"
+               position="after">
+
+            <div class="text-muted small employee-line">
+
+                <t t-if="line.employee_name">
+
+                    <i class="fa fa-user"/>
+
+                    Employee:
+
+                    <t t-esc="line.employee_name"/>
+
+                </t>
+
+            </div>
+
+        </xpath>
+
+    </t>
+
+</templates>

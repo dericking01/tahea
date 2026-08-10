@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <menuitem
+        id="menu_employee_commission_report"
+        name="Employee Commission"
+        parent="point_of_sale.menu_point_rep"
+        sequence="10"
+    />
+
+</odoo>

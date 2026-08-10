@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="view_pos_order_line_inherit_employee" model="ir.ui.view">
+
+        <field name="name">pos.order.line.list.employee</field>
+
+        <field name="model">pos.order.line</field>
+
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_line"/>
+
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='product_id']" position="after">
+
+                <field name="employee_id" readonly="1"/>
+
+            </xpath>
+
+
+            <xpath expr="//field[@name='price_unit']" position="before">
+
+                <field name="commission_amount"
+                       readonly="1"
+                       widget="monetary"/>
+
+            </xpath>
+
+
+        </field>
+
+    </record>
+
+</odoo>

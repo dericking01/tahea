@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <template id="report_employee_commission_selected">
+
+        <t t-call="web.html_container">
+
+            <t t-call="web.external_layout">
+
+                <div class="page">
+
+                    <!-- ================================================= -->
+                    <!-- TITLE                                             -->
+                    <!-- ================================================= -->
+
+                    <div style="text-align:center; margin-bottom:20px;">
+
+                        <h2 style="
+                            margin:0;
+                            font-size:22px;
+                            font-weight:bold;
+                        ">
+                            Employee Commission Report
+                        </h2>
+
+                        <div style="
+                            margin-top:6px;
+                            font-size:11px;
+                            color:#555;
+                        ">
+                            Selected Employee Commission Records
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- REPORT INFORMATION                                -->
+                    <!-- ================================================= -->
+
+                    <table style="
+                        width:100%;
+                        margin-bottom:20px;
+                        font-size:11px;
+                    ">
+
+                        <tr>
+
+                            <td style="
+                                width:50%;
+                                padding:4px 0;
+                            ">
+
+                                <strong>Employees:</strong>
+
+                                <t t-set="employee_names"
+                                   t-value="', '.join(sorted(set(docs.mapped('employee_id.name'))))"/>
+
+                                <span t-esc="employee_names or 'All Employees'"/>
+
+                            </td>
+
+
+                            <td style="
+                                width:50%;
+                                text-align:right;
+                                padding:4px 0;
+                            ">
+
+                                <strong>Records:</strong>
+
+                                <span t-esc="len(docs)"/>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+
+                    <!-- ================================================= -->
+                    <!-- COMMISSION TABLE                                  -->
+                    <!-- ================================================= -->
+
+                    <table style="
+                        width:100%;
+                        border-collapse:collapse;
+                        font-size:10px;
+                    ">
+
+                        <thead>
+
+                            <tr style="
+                                background:#eeeeee;
+                                font-weight:bold;
+                            ">
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:left;
+                                ">
+                                    Employee
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:left;
+                                ">
+                                    Order
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:left;
+                                ">
+                                    Order Date
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:left;
+                                ">
+                                    Product
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:right;
+                                ">
+                                    Quantity
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:right;
+                                ">
+                                    Unit Price
+                                </th>
+
+
+                                <th style="
+                                    border:1px solid #999;
+                                    padding:7px;
+                                    text-align:right;
+                                ">
+                                    Commission
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <t t-foreach="docs"
+                               t-as="line">
+
+                                <tr>
+
+                                    <!-- ================================= -->
+                                    <!-- EMPLOYEE                           -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                    ">
+
+                                        <span t-esc="line.employee_id.name or ''"/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- ORDER                              -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                    ">
+
+                                        <span t-esc="
+                                            line.commission_order_id.name or ''
+                                        "/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- DATE                               -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                    ">
+
+                                        <span t-esc="
+                                            line.commission_date.strftime('%d/%m/%Y %H:%M:%S')
+                                            if line.commission_date
+                                            else ''
+                                        "/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- PRODUCT                            -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                    ">
+
+                                        <span t-esc="line.product_id.name or ''"/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- QUANTITY                           -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                        text-align:right;
+                                    ">
+
+                                        <span t-esc="'%.2f' % (line.qty or 0.0)"/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- UNIT PRICE                         -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                        text-align:right;
+                                    ">
+
+                                        <span t-esc="
+                                            '{:,.2f} TSh'.format(line.price_unit or 0.0)
+                                        "/>
+
+                                    </td>
+
+
+                                    <!-- ================================= -->
+                                    <!-- COMMISSION                         -->
+                                    <!-- ================================= -->
+
+                                    <td style="
+                                        border:1px solid #ccc;
+                                        padding:6px;
+                                        text-align:right;
+                                        font-weight:bold;
+                                    ">
+
+                                        <span t-esc="
+                                            '{:,.2f} TSh'.format(line.commission_amount or 0.0)
+                                        "/>
+
+                                    </td>
+
+                                </tr>
+
+                            </t>
+
+                        </tbody>
+
+
+                        <!-- ================================================= -->
+                        <!-- TOTAL                                             -->
+                        <!-- ================================================= -->
+
+                        <tfoot>
+
+                            <tr>
+
+                                <td colspan="6"
+                                    style="
+                                        border-top:2px solid #555;
+                                        padding:8px;
+                                        text-align:right;
+                                        font-weight:bold;
+                                    ">
+
+                                    TOTAL COMMISSION
+
+                                </td>
+
+
+                                <td style="
+                                    border-top:2px solid #555;
+                                    padding:8px;
+                                    text-align:right;
+                                    font-weight:bold;
+                                ">
+
+                                    <t t-set="total_commission"
+                                       t-value="sum(docs.mapped('commission_amount'))"/>
+
+                                    <span t-esc="
+                                        '{:,.2f} TSh'.format(total_commission)
+                                    "/>
+
+                                </td>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+
+                    <!-- ================================================= -->
+                    <!-- FOOTER NOTE                                       -->
+                    <!-- ================================================= -->
+
+                    <div style="
+                        margin-top:20px;
+                        font-size:9px;
+                        color:#666;
+                        text-align:right;
+                    ">
+
+                        Generated by Odoo
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

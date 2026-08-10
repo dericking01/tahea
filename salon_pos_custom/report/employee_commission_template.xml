@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <template id="employee_commission_template">
+
+        <t t-call="web.html_container">
+
+            <t t-call="web.external_layout">
+
+                <div class="page"
+                     style="
+                        font-family: Arial, Helvetica, sans-serif;
+                        font-size: 11px;
+                        color: #212529;
+                    ">
+
+                    <!-- ================================================= -->
+                    <!-- HEADER -->
+                    <!-- ================================================= -->
+
+                    <table style="
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                        border-bottom: 2px solid #343a40;
+                    ">
+
+                        <tr>
+
+                            <!-- TITLE -->
+
+                            <td style="
+                                width: 60%;
+                                padding: 0 0 12px 0;
+                                vertical-align: top;
+                            ">
+
+                                <div style="
+                                    font-size: 24px;
+                                    font-weight: bold;
+                                    line-height: 29px;
+                                    color: #212529;
+                                ">
+                                    Employee Commission Report
+                                </div>
+
+                                <div style="
+                                    margin-top: 5px;
+                                    font-size: 11px;
+                                    color: #777777;
+                                ">
+                                    Employee commission performance report
+                                </div>
+
+                            </td>
+
+
+                            <!-- REPORT DETAILS -->
+
+                            <td style="
+                                width: 40%;
+                                padding: 0 0 12px 0;
+                                vertical-align: top;
+                                text-align: right;
+                                font-size: 11px;
+                            ">
+
+                                <table style="
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                ">
+
+                                    <tr>
+
+                                        <td style="
+                                            padding: 3px 0;
+                                            text-align: right;
+                                            font-weight: bold;
+                                            color: #555555;
+                                        ">
+                                            Employee:
+                                        </td>
+
+                                        <td style="
+                                            padding: 3px 0 3px 8px;
+                                            text-align: right;
+                                        ">
+
+                                            <span t-if="selected_employee"
+                                                  t-esc="selected_employee"/>
+
+                                            <span t-if="not selected_employee">
+                                                All Employees
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+
+                                    <tr>
+
+                                        <td style="
+                                            padding: 3px 0;
+                                            text-align: right;
+                                            font-weight: bold;
+                                            color: #555555;
+                                        ">
+                                            From:
+                                        </td>
+
+                                        <td style="
+                                            padding: 3px 0 3px 8px;
+                                            text-align: right;
+                                        ">
+                                            <span t-esc="date_from"/>
+                                        </td>
+
+                                    </tr>
+
+
+                                    <tr>
+
+                                        <td style="
+                                            padding: 3px 0;
+                                            text-align: right;
+                                            font-weight: bold;
+                                            color: #555555;
+                                        ">
+                                            To:
+                                        </td>
+
+                                        <td style="
+                                            padding: 3px 0 3px 8px;
+                                            text-align: right;
+                                        ">
+                                            <span t-esc="date_to"/>
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+
+                    <!-- ================================================= -->
+                    <!-- EMPLOYEE SECTIONS -->
+                    <!-- ================================================= -->
+
+                    <t t-foreach="employees.values()" t-as="emp">
+
+                        <div style="
+                            page-break-inside: avoid;
+                            margin-bottom: 20px;
+                        ">
+
+                            <!-- ================================================= -->
+                            <!-- EMPLOYEE HEADER -->
+                            <!-- ================================================= -->
+
+                            <table style="
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 8px;
+                            ">
+
+                                <tr>
+
+                                    <td style="
+                                        background-color: #343a40;
+                                        color: #ffffff;
+                                        padding: 9px 11px;
+                                        font-size: 15px;
+                                        font-weight: bold;
+                                    ">
+
+                                        Employee:
+                                        <span t-esc="emp['name']"/>
+
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+
+                            <!-- ================================================= -->
+                            <!-- EMPLOYEE TABLE -->
+                            <!-- ================================================= -->
+
+                            <table style="
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: collapse;
+                                margin: 0;
+                                font-size: 11px;
+                                page-break-inside: auto;
+                            ">
+
+                                <!-- TABLE HEADER -->
+
+                                <thead style="
+                                    display: table-header-group;
+                                ">
+
+                                    <tr>
+
+                                        <th style="
+                                            width: 34%;
+                                            padding: 8px 7px;
+                                            background-color: #eeeeee;
+                                            border: 1px solid #cccccc;
+                                            text-align: left;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                        ">
+                                            Product
+                                        </th>
+
+
+                                        <th style="
+                                            width: 13%;
+                                            padding: 8px 5px;
+                                            background-color: #eeeeee;
+                                            border: 1px solid #cccccc;
+                                            text-align: center;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                        ">
+                                            Quantity
+                                        </th>
+
+
+                                        <th style="
+                                            width: 18%;
+                                            padding: 8px 5px;
+                                            background-color: #eeeeee;
+                                            border: 1px solid #cccccc;
+                                            text-align: right;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                        ">
+                                            Unit Price
+                                        </th>
+
+
+                                        <th style="
+                                            width: 18%;
+                                            padding: 8px 5px;
+                                            background-color: #eeeeee;
+                                            border: 1px solid #cccccc;
+                                            text-align: right;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                        ">
+                                            Total Amount
+                                        </th>
+
+
+                                        <th style="
+                                            width: 17%;
+                                            padding: 8px 5px;
+                                            background-color: #eeeeee;
+                                            border: 1px solid #cccccc;
+                                            text-align: right;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                        ">
+                                            Commission
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <!-- ================================================= -->
+                                <!-- TABLE BODY -->
+                                <!-- ================================================= -->
+
+                                <tbody>
+
+                                    <t t-foreach="emp['lines']" t-as="line">
+
+                                        <tr style="
+                                            page-break-inside: avoid;
+                                        ">
+
+                                            <!-- PRODUCT -->
+
+                                            <td style="
+                                                padding: 7px;
+                                                border: 1px solid #dddddd;
+                                                text-align: left;
+                                                vertical-align: middle;
+                                                word-wrap: break-word;
+                                                overflow-wrap: break-word;
+                                                font-size: 11px;
+                                            ">
+
+                                                <span t-field="line.product_id"/>
+
+                                            </td>
+
+
+                                            <!-- QUANTITY -->
+
+                                            <td style="
+                                                padding: 7px 5px;
+                                                border: 1px solid #dddddd;
+                                                text-align: center;
+                                                vertical-align: middle;
+                                                white-space: nowrap;
+                                                font-size: 11px;
+                                            ">
+
+                                                <span t-esc="'%.2f' % line.qty"/>
+
+                                            </td>
+
+
+                                            <!-- UNIT PRICE -->
+
+                                            <td style="
+                                                padding: 7px 5px;
+                                                border: 1px solid #dddddd;
+                                                text-align: right;
+                                                vertical-align: middle;
+                                                white-space: nowrap;
+                                                font-size: 11px;
+                                            ">
+
+                                                <span t-esc="'{:,.2f}'.format(
+                                                    line.price_unit
+                                                )"/>
+
+                                                <span style="
+                                                    font-size: 9px;
+                                                    color: #777777;
+                                                ">
+                                                    TSh
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- TOTAL AMOUNT -->
+
+                                            <td style="
+                                                padding: 7px 5px;
+                                                border: 1px solid #dddddd;
+                                                text-align: right;
+                                                vertical-align: middle;
+                                                white-space: nowrap;
+                                                font-size: 11px;
+                                            ">
+
+                                                <span t-esc="'{:,.2f}'.format(
+                                                    line.qty * line.price_unit
+                                                )"/>
+
+                                                <span style="
+                                                    font-size: 9px;
+                                                    color: #777777;
+                                                ">
+                                                    TSh
+                                                </span>
+
+                                            </td>
+
+
+                                            <!-- COMMISSION -->
+
+                                            <td style="
+                                                padding: 7px 5px;
+                                                border: 1px solid #dddddd;
+                                                text-align: right;
+                                                vertical-align: middle;
+                                                white-space: nowrap;
+                                                font-size: 11px;
+                                            ">
+
+                                                <span t-esc="'{:,.2f}'.format(
+                                                    line.commission_amount
+                                                )"/>
+
+                                                <span style="
+                                                    font-size: 9px;
+                                                    color: #777777;
+                                                ">
+                                                    TSh
+                                                </span>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </t>
+
+                                </tbody>
+
+
+                                <!-- ================================================= -->
+                                <!-- EMPLOYEE TOTAL -->
+                                <!-- ================================================= -->
+
+                                <tfoot>
+
+                                    <tr style="
+                                        page-break-inside: avoid;
+                                    ">
+
+                                        <td colspan="3"
+                                            style="
+                                                padding: 9px 7px;
+                                                border: 1px solid #cccccc;
+                                                background-color: #f3f3f3;
+                                                text-align: right;
+                                                font-size: 11px;
+                                                font-weight: bold;
+                                            ">
+
+                                            Employee Total
+
+                                        </td>
+
+
+                                        <td style="
+                                            padding: 9px 5px;
+                                            border: 1px solid #cccccc;
+                                            background-color: #f3f3f3;
+                                            text-align: right;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            white-space: nowrap;
+                                        ">
+
+                                            <span t-esc="'{:,.2f}'.format(
+                                                emp['total_price']
+                                            )"/>
+
+                                            <span style="
+                                                font-size: 9px;
+                                                color: #777777;
+                                            ">
+                                                TSh
+                                            </span>
+
+                                        </td>
+
+
+                                        <td style="
+                                            padding: 9px 5px;
+                                            border: 1px solid #cccccc;
+                                            background-color: #f3f3f3;
+                                            text-align: right;
+                                            font-size: 11px;
+                                            font-weight: bold;
+                                            white-space: nowrap;
+                                        ">
+
+                                            <span t-esc="'{:,.2f}'.format(
+                                                emp['total_commission']
+                                            )"/>
+
+                                            <span style="
+                                                font-size: 9px;
+                                                color: #777777;
+                                            ">
+                                                TSh
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tfoot>
+
+                            </table>
+
+                        </div>
+
+                    </t>
+
+
+                    <!-- ================================================= -->
+                    <!-- GRAND TOTAL -->
+                    <!-- ================================================= -->
+
+                    <div style="
+                        margin-top: 25px;
+                        page-break-inside: avoid;
+                    ">
+
+                        <table style="
+                            width: 100%;
+                            border-collapse: collapse;
+                            border-top: 2px solid #343a40;
+                        ">
+
+                            <tr>
+
+                                <td style="
+                                    width: 47%;
+                                    padding: 11px 7px;
+                                    font-size: 15px;
+                                    font-weight: bold;
+                                ">
+
+                                    GRAND TOTAL
+
+                                </td>
+
+
+                                <td style="
+                                    width: 18%;
+                                    padding: 11px 5px;
+                                    text-align: right;
+                                    font-size: 10px;
+                                    font-weight: bold;
+                                    color: #555555;
+                                ">
+
+                                    TOTAL AMOUNT
+
+                                </td>
+
+
+                                <td style="
+                                    width: 18%;
+                                    padding: 11px 5px;
+                                    text-align: right;
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                    white-space: nowrap;
+                                ">
+
+                                    <span t-esc="'{:,.2f}'.format(
+                                        grand_total_price
+                                    )"/>
+
+                                    <span style="
+                                        font-size: 9px;
+                                        color: #777777;
+                                    ">
+                                        TSh
+                                    </span>
+
+                                </td>
+
+
+                                <td style="
+                                    width: 17%;
+                                    padding: 11px 5px;
+                                    text-align: right;
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                    white-space: nowrap;
+                                ">
+
+                                    <span t-esc="'{:,.2f}'.format(
+                                        grand_total_commission
+                                    )"/>
+
+                                    <span style="
+                                        font-size: 9px;
+                                        color: #777777;
+                                    ">
+                                        TSh
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- FOOTER -->
+                    <!-- ================================================= -->
+
+                    <div style="
+                        margin-top: 25px;
+                        padding-top: 8px;
+                        border-top: 1px solid #dddddd;
+                        text-align: center;
+                        font-size: 9px;
+                        color: #888888;
+                    ">
+
+                        Employee Commission Report
+
+                        <span style="margin: 0 5px;">
+                            |
+                        </span>
+
+                        Generated by Odoo
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>

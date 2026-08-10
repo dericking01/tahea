@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="view_pos_order_form_inherit_employee_commission"
+            model="ir.ui.view">
+        <field name="name">pos.order.form.employee.commission</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id"
+               ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch"
+               type="xml">
+
+                                                 
+            <!-- =====================EMPLOYEE============================ -->
+
+            <xpath expr="//field[@name='lines']/list/field[@name='product_id']"
+                   position="after">
+
+                <field name="employee_id"/>
+
+            </xpath>
+
+
+            <!-- =======================COMMISSION========================== -->
+
+            <xpath expr="//field[@name='lines']/list/field[@name='price_unit']"
+                   position="before">
+
+                <field name="commission_amount"
+                       widget="monetary"/>
+
+            </xpath>
+
+
+        </field>
+
+    </record>
+
+
+    <!-- =========================EMPLOYEE COMMISSION LIST ================================ -->
+
+    <record id="view_pos_order_line_employee_commission_list"
+            model="ir.ui.view">
+        <field name="name">pos.order.line.employee.commission.list</field>
+        <field name="model">pos.order.line</field>
+        <field name="arch"
+               type="xml">
+            <list string="Employee Commission"
+                  create="false"
+                  edit="false"
+                  delete="false"
+                  duplicate="false">
+
+                <!-- =====================EMPLOYEE ============================ -->
+
+                <field name="employee_id"
+                       string="Employee"/>
+
+                <!-- ======================== ORDER========================= -->
+
+                <field name="commission_order_id"
+                       string="Order"/>
+
+                <!-- =======================ORDER DATE========================== -->
+
+                <field name="commission_date"
+                       string="Commision Order Date"/>
+
+
+                <!-- ======================PRODUCT =========================== -->
+
+                <field name="product_id"
+                       string="Product"/>
+
+
+                <!-- =========================QUANTITY======================== -->
+
+                <field name="qty"
+                       string="Quantity"
+                       sum="Total Quantity"/>
+
+                <!-- =========================UNIT PRICE======================== -->
+
+                <field name="price_unit"
+                       string="Unit Price"
+                       widget="monetary"/>
+
+                <!-- =========================COMMISSION======================== -->
+
+                <field name="commission_amount"
+                       string="Commission"
+                       widget="monetary"
+                       sum="Total Commission"/>
+
+
+                <!-- ========================CURRENCY========================= -->
+
+                <field name="currency_id"
+                       column_invisible="True"/>
+
+
+            </list>
+
+        </field>
+
+    </record>
+
+
+
+    <!-- ========================================================= -->
+    <!-- EMPLOYEE COMMISSION SEARCH                                -->
+    <!-- ========================================================= -->
+
+    <record id="view_pos_order_line_employee_commission_search"
+            model="ir.ui.view">
+        <field name="name">pos.order.line.employee.commission.search</field>
+        <field name="model">pos.order.line</field>
+        <field name="arch"
+               type="xml">
+            <search string="Employee Commission">
+
+
+                <!-- ================================================= -->
+                <!-- EMPLOYEE                                         -->
+                <!-- ================================================= -->
+
+                <field name="employee_id"
+                       string="Employee"/>
+
+
+                <!-- ================================================= -->
+                <!-- ORDER                                            -->
+                <!-- ================================================= -->
+
+                <field name="commission_order_id"
+                       string="Order"/>
+
+
+                <!-- ================================================= -->
+                <!-- PRODUCT                                          -->
+                <!-- ================================================= -->
+
+                <field name="product_id"
+                       string="Product"/>
+
+
+                <!-- ================================================= -->
+                <!-- ORDER DATE                                       -->
+                <!-- ================================================= -->
+
+                <field name="commission_date"
+                       string="Commission Order Date"/>
+
+
+                <!-- ================================================= -->
+                <!-- DATE FILTER                                      -->
+                <!-- ================================================= -->
+
+                <separator/>
+
+                <filter name="commission_date_filter"
+                        date="commission_date"
+                        string="Commission Order Date"/>
+
+
+                <!-- ================================================= -->
+                <!-- GROUP BY                                          -->
+                <!-- ================================================= -->
+
+                <group expand="0"
+                       string="Group By">
+
+
+                    <!-- ============================================= -->
+                    <!-- EMPLOYEE                                     -->
+                    <!-- ============================================= -->
+
+                    <filter name="group_employee"
+                            string="Employee"
+                            context="{
+                                'group_by': 'employee_id'
+                            }"/>
+
+
+                    <!-- ============================================= -->
+                    <!-- COMMISSION ORDER DATE                        -->
+                    <!-- ============================================= -->
+
+                    <filter name="group_order_date"
+                            string="Commission Order Date"
+                            context="{
+                                'group_by': 'commission_date'
+                            }"/>
+
+
+                    <!-- ============================================= -->
+                    <!-- PRODUCT                                     -->
+                    <!-- ============================================= -->
+
+                    <filter name="group_product"
+                            string="Product"
+                            context="{
+                                'group_by': 'product_id'
+                            }"/>
+
+
+                    <!-- ============================================= -->
+                    <!-- ORDER                                       -->
+                    <!-- ============================================= -->
+
+                    <filter name="group_order"
+                            string="Order"
+                            context="{
+                                'group_by': 'commission_order_id'
+                            }"/>
+
+
+                </group>
+
+
+            </search>
+
+        </field>
+
+    </record>
+
+
+
+    <!-- ========================================================= -->
+    <!-- EMPLOYEE COMMISSION ACTION                               -->
+    <!-- ========================================================= -->
+
+    <record id="action_employee_commission"
+            model="ir.actions.act_window">
+        <field name="name">Employee Commission</field>
+        <field name="res_model">pos.order.line</field>
+        <field name="view_mode">list</field>
+        <field name="view_id"
+               ref="view_pos_order_line_employee_commission_list"/>
+        <field name="search_view_id"
+               ref="view_pos_order_line_employee_commission_search"/>
+
+
+        <!-- ===================================================== -->
+        <!-- ONLY COMMISSION LINES                                 -->
+        <!-- ===================================================== -->
+
+        <field name="domain">
+            [
+                ('employee_id', '!=', False),
+                ('commission_amount', '>', 0)
+            ]
+        </field>
+
+
+    </record>
+
+
+
+    <!-- ========================================================= -->
+    <!-- EMPLOYEE COMMISSION MENU                                 -->
+    <!-- ========================================================= -->
+
+    <menuitem id="menu_employee_commission"
+              name="Employee Commission Orders"
+              parent="point_of_sale.menu_point_rep"
+              action="action_employee_commission"
+              sequence="50"/>
+
+
+</odoo>

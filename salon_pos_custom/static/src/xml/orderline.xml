@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-inherit="point_of_sale.Orderline"
+       t-inherit-mode="extension">
+
+
+        <!-- No custom employee display here -->
+        <!-- We use existing customerNote display from Odoo -->
+
+
+    </t>
+
+</templates>
