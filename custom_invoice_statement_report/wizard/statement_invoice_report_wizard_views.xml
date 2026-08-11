@@ -27,6 +27,10 @@
                             string="Generate PDF" class="btn-primary"/>
                     <button name="action_generate_xlsx" type="object"
                             string="Generate Excel" class="btn-secondary"/>
+                    <button name="action_change_report_layout" type="object"
+                            string="Change Report Layout" class="btn-link"
+                            groups="base.group_system"
+                            title="Pick a different logo/colors/layout for PDF reports company-wide, then generate this report with it."/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

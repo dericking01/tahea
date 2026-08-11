@@ -205,6 +205,25 @@ class StatementInvoiceReportWizard(models.TransientModel):
             'custom_invoice_statement_report.action_report_statement_invoice'
         ).report_action(self)
 
+    def action_change_report_layout(self):
+        """Open Odoo's native "Configure Document Layout" wizard on demand.
+
+        ``report_action()`` only shows this wizard automatically the first
+        time a company generates any PDF report (while
+        ``company.external_report_layout_id`` is unset); afterwards it is
+        remembered company-wide and every report, including this one, skips
+        straight to rendering. This button reopens the same native wizard
+        so users can change the branding/layout whenever they want, instead
+        of duplicating Odoo's layout picker. ``config=False`` skips the
+        automatic prompt (we are opening it explicitly here), and wiring
+        the plain report action into the configurator's context makes it
+        immediately (re)generate this PDF, with the new layout, once saved.
+        """
+        self.ensure_one()
+        report = self.env.ref('custom_invoice_statement_report.action_report_statement_invoice')
+        report_action = report.report_action(self, config=False)
+        return self.env['ir.actions.report']._action_configure_external_report_layout(report_action)
+
     def action_generate_xlsx(self):
         self.ensure_one()
         try:
