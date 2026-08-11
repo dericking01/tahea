@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_requisition_form_buyer_employee" model="ir.ui.view">
+        <field name="name">purchase.requisition.form.buyer.employee</field>
+        <field name="model">purchase.requisition</field>
+        <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="buyer_employee_id" string="Buyer" readonly="state != 'draft'" widget="many2one_avatar_employee" options="{'no_quick_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

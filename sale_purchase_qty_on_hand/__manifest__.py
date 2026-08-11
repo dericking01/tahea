@@ -14,21 +14,25 @@ inventory view.
 - Sales Order lines: quantity on hand in the order's warehouse.
 - Purchase Order lines: quantity on hand in the order's receiving warehouse.
 
-Also replaces the Sales Order "Salesperson" field with an employee picker:
+Also replaces the Sales Order "Salesperson" field, and the Purchase
+Agreement "Buyer" field, with an employee picker:
 
-- Any employee can be selected, not just internal users in the Sales group.
+- Any employee can be selected, not just internal users already in the
+  relevant security group.
 - If the employee has no login yet, one is created automatically (using
-  their work email) and granted Sales access, then set as Salesperson.
-- A note is logged in the order's chatter whenever a new login is created
-  this way.
+  their work email) and granted the relevant access, then set as
+  Salesperson / Buyer.
+- A note is logged in the record's chatter whenever a new login is
+  created this way.
 """,
     'category': 'Sales/Sales',
     'author': 'Odoo Custom Development',
     'license': 'LGPL-3',
-    'depends': ['sale_stock', 'purchase_stock', 'hr'],
+    'depends': ['sale_stock', 'purchase_stock', 'purchase_requisition', 'hr'],
     'data': [
         'views/sale_order_views.xml',
         'views/purchase_order_views.xml',
+        'views/purchase_requisition_views.xml',
     ],
     'installable': True,
     'application': False,
