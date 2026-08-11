@@ -15,6 +15,12 @@ class TestStatementInvoiceReport(TransactionCase):
             [('type', '=', 'bank'), ('company_id', '=', cls.company.id)], limit=1)
         cls.cash_journal = cls.env['account.journal'].search(
             [('type', '=', 'cash'), ('company_id', '=', cls.company.id)], limit=1)
+        cls.bank_journal_2 = cls.env['account.journal'].create({
+            'name': 'Selcom Bank',
+            'type': 'bank',
+            'code': 'TSLC',
+            'company_id': cls.company.id,
+        })
         cls.income_account = cls.env['account.account'].search(
             [('account_type', '=', 'income'), ('company_ids', 'in', cls.company.id)], limit=1)
 
@@ -32,7 +38,7 @@ class TestStatementInvoiceReport(TransactionCase):
             'account_type': 'asset_current',
             'reconcile': True,
         })
-        for journal in (cls.bank_journal, cls.cash_journal):
+        for journal in (cls.bank_journal, cls.bank_journal_2, cls.cash_journal):
             (journal.inbound_payment_method_line_ids | journal.outbound_payment_method_line_ids).write({
                 'payment_account_id': outstanding_account.id,
             })
@@ -133,6 +139,19 @@ class TestStatementInvoiceReport(TransactionCase):
         self.assertEqual(cash_row['count'], 1)
         self.assertAlmostEqual(cash_row['amount'], 200.0)
 
+        # Both bank invoices were settled through the same journal, so the
+        # per-journal drill-down should have exactly one row for it, and
+        # that row's totals must reconcile with the type-level bank_row.
+        bank_journal_rows = data['journal_rows']['bank']
+        self.assertEqual(len(bank_journal_rows), 1)
+        self.assertEqual(bank_journal_rows[0]['label'], self.bank_journal.name)
+        self.assertEqual(bank_journal_rows[0]['count'], bank_row['count'])
+        self.assertAlmostEqual(bank_journal_rows[0]['amount'], bank_row['amount'])
+
+        cash_journal_rows = data['journal_rows']['cash']
+        self.assertEqual(len(cash_journal_rows), 1)
+        self.assertEqual(cash_journal_rows[0]['label'], self.cash_journal.name)
+
         self.assertEqual(data['unclassified']['count'], 1)
         self.assertAlmostEqual(data['unclassified']['amount'], 400.0)
 
@@ -159,6 +178,50 @@ class TestStatementInvoiceReport(TransactionCase):
         total_row = data['breakdown_total']
         self.assertEqual(total_row['count'], 1)
         self.assertAlmostEqual(total_row['amount'], 300.0)
+
+    def test_03b_per_journal_breakdown_within_bank_type(self):
+        """Two different bank journals should each get their own row under
+        the 'Bank' type breakdown (e.g. distinguishing 'Bank' from 'Selcom
+        Bank'), summing back exactly to the type-level bank_row -- this is
+        the drill-down the report exists to provide."""
+        inv_main_bank = self._create_invoice(600, '2026-03-10')
+        inv_main_bank.action_post()
+        self._register_payment(inv_main_bank, 600, self.bank_journal)
+
+        inv_selcom_1 = self._create_invoice(200, '2026-03-11')
+        inv_selcom_1.action_post()
+        self._register_payment(inv_selcom_1, 200, self.bank_journal_2)
+
+        inv_selcom_2 = self._create_invoice(50, '2026-03-12')
+        inv_selcom_2.action_post()
+        self._register_payment(inv_selcom_2, 20, self.bank_journal_2)  # partial
+
+        self.assertEqual(inv_selcom_1.statement_settlement_journal_id, self.bank_journal_2)
+        self.assertEqual(inv_selcom_2.statement_settlement_journal_id, self.bank_journal_2)
+        self.assertEqual(inv_main_bank.statement_settlement_journal_id, self.bank_journal)
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_from': '2026-03-10', 'date_to': '2026-03-12',
+        })
+        data = wizard._get_report_data()
+        bank_row = next(r for r in data['breakdown_rows'] if r['label'] == 'Bank')
+        journal_rows = {r['label']: r for r in data['journal_rows']['bank']}
+
+        self.assertEqual(set(journal_rows), {self.bank_journal.name, self.bank_journal_2.name})
+
+        main_row = journal_rows[self.bank_journal.name]
+        self.assertEqual(main_row['count'], 1)
+        self.assertAlmostEqual(main_row['amount'], 600.0)
+
+        selcom_row = journal_rows[self.bank_journal_2.name]
+        self.assertEqual(selcom_row['count'], 2)
+        self.assertAlmostEqual(selcom_row['amount'], 250.0)
+        self.assertAlmostEqual(selcom_row['paid_amount'], 200.0)
+        self.assertAlmostEqual(selcom_row['partial_amount'], 50.0)
+
+        # Per-journal rows must reconcile exactly with the type-level row.
+        self.assertEqual(sum(r['count'] for r in journal_rows.values()), bank_row['count'])
+        self.assertAlmostEqual(sum(r['amount'] for r in journal_rows.values()), bank_row['amount'])
 
     def test_04_date_range_validation(self):
         with self.assertRaises(ValidationError):

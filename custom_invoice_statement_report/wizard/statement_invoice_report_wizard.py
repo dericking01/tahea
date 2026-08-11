@@ -85,9 +85,14 @@ class StatementInvoiceReportWizard(models.TransientModel):
         company_currency = self.company_id.currency_id
 
         # ---- DB-level aggregation: one query for the whole matrix -------
+        # Grouping by statement_settlement_journal_id (in addition to type
+        # and payment status) gives the per-journal drill-down -- e.g. how
+        # much of "Bank" is specifically "Selcom" vs. "CRDB" -- without a
+        # second query: the type-level rows are just this same data summed
+        # back up across journals.
         groups = AccountMove._read_group(
             domain,
-            groupby=['statement_cash_bank_type', 'payment_state'],
+            groupby=['statement_cash_bank_type', 'statement_settlement_journal_id', 'payment_state'],
             aggregates=['__count', 'amount_total_signed:sum', 'amount_residual_signed:sum'],
         )
 
@@ -96,20 +101,31 @@ class StatementInvoiceReportWizard(models.TransientModel):
             key: {bucket: _empty_bucket_totals() for bucket in ('paid', 'partial', 'not_paid', 'other')}
             for key in ('cash', 'bank', 'other')
         }
+        # journal_breakdown[cash_bank_type][journal][bucket] = {'count', 'amount'}
+        journal_breakdown = {'cash': {}, 'bank': {}}
         residual_by_type = {'cash': 0.0, 'bank': 0.0, 'other': 0.0}
 
-        for cash_bank_type, payment_state, count, total_signed, residual_signed in groups:
+        for cash_bank_type, journal, payment_state, count, total_signed, residual_signed in groups:
             bucket = PAYMENT_STATE_BUCKETS.get(payment_state, 'other')
             entry = breakdown[cash_bank_type][bucket]
             entry['count'] += count
             entry['amount'] += total_signed
             residual_by_type[cash_bank_type] += residual_signed
 
+            if journal:  # empty recordset for the 'other' bucket (no settlement journal)
+                journal_buckets = journal_breakdown[cash_bank_type].setdefault(
+                    journal, {b: _empty_bucket_totals() for b in ('paid', 'partial', 'not_paid', 'other')}
+                )
+                j_entry = journal_buckets[bucket]
+                j_entry['count'] += count
+                j_entry['amount'] += total_signed
+
         def _row(cash_bank_type):
             buckets = breakdown[cash_bank_type]
             count = sum(b['count'] for b in buckets.values())
             amount = sum(b['amount'] for b in buckets.values())
             return {
+                'key': cash_bank_type,
                 'label': self.env._(CASH_BANK_LABELS[cash_bank_type]),
                 'count': count,
                 'amount': amount,
@@ -119,9 +135,30 @@ class StatementInvoiceReportWizard(models.TransientModel):
                 'other_amount': buckets['other']['amount'],
             }
 
+        def _journal_row(journal, buckets):
+            count = sum(b['count'] for b in buckets.values())
+            amount = sum(b['amount'] for b in buckets.values())
+            return {
+                'label': journal.name,
+                'count': count,
+                'amount': amount,
+                'paid_amount': buckets['paid']['amount'],
+                'partial_amount': buckets['partial']['amount'],
+                'not_paid_amount': buckets['not_paid']['amount'],
+            }
+
         cash_row = _row('cash')
         bank_row = _row('bank')
         other_row = _row('other')
+
+        # Per-journal sub-rows for each type, biggest contributor first.
+        journal_rows = {
+            cash_bank_type: sorted(
+                (_journal_row(journal, buckets) for journal, buckets in journal_breakdown[cash_bank_type].items()),
+                key=lambda r: r['amount'], reverse=True,
+            )
+            for cash_bank_type in ('cash', 'bank')
+        }
         total_row = {
             'label': _("Total"),
             'count': cash_row['count'] + bank_row['count'] + other_row['count'],
@@ -161,7 +198,8 @@ class StatementInvoiceReportWizard(models.TransientModel):
         if invoices:
             invoices.fetch([
                 'name', 'invoice_date', 'partner_id', 'journal_id',
-                'statement_cash_bank_type', 'amount_total', 'amount_residual',
+                'statement_cash_bank_type', 'statement_settlement_journal_id',
+                'amount_total', 'amount_residual',
                 'payment_state', 'currency_id',
             ])
             for move in invoices:
@@ -172,6 +210,7 @@ class StatementInvoiceReportWizard(models.TransientModel):
                     'partner': move.partner_id.name or '',
                     'journal': move.journal_id.name or '',
                     'cash_bank_type': self.env._(CASH_BANK_LABELS[move.statement_cash_bank_type]),
+                    'settlement_journal': move.statement_settlement_journal_id.name or '',
                     'amount_total': move.amount_total,
                     'amount_paid': move.amount_total - move.amount_residual,
                     'amount_due': move.amount_residual,
@@ -191,6 +230,7 @@ class StatementInvoiceReportWizard(models.TransientModel):
             'generated_on': fields.Datetime.now(),
             'summary': summary,
             'breakdown_rows': [cash_row, bank_row],
+            'journal_rows': journal_rows,
             'breakdown_total': total_row,
             'unclassified': other_row,
             'invoices': invoice_lines,
@@ -283,6 +323,13 @@ class StatementInvoiceReportWizard(models.TransientModel):
         fmt_total_num = workbook.add_format({'bold': True, 'bg_color': '#D9E1F2', 'border': 1, 'num_format': '#,##0.00'})
         fmt_total_int = workbook.add_format({'bold': True, 'bg_color': '#D9E1F2', 'border': 1, 'num_format': '#,##0', 'align': 'center'})
         fmt_date = workbook.add_format({'border': 1, 'num_format': 'yyyy-mm-dd'})
+        # Payment-type subtotal (Cash / Bank) vs. its per-journal sub-rows
+        fmt_type_label = workbook.add_format({'bold': True, 'bg_color': '#DCE6F1', 'border': 1})
+        fmt_type_num = workbook.add_format({'bold': True, 'bg_color': '#DCE6F1', 'border': 1, 'num_format': '#,##0.00'})
+        fmt_type_int = workbook.add_format({'bold': True, 'bg_color': '#DCE6F1', 'border': 1, 'num_format': '#,##0', 'align': 'center'})
+        fmt_journal_label = workbook.add_format({'border': 1, 'indent': 2, 'font_color': '#404040'})
+        fmt_journal_num = workbook.add_format({'border': 1, 'num_format': '#,##0.00', 'font_color': '#404040'})
+        fmt_journal_int = workbook.add_format({'border': 1, 'num_format': '#,##0', 'align': 'center', 'font_color': '#404040'})
 
         currency_code = data['company_currency'].name
 
@@ -341,13 +388,26 @@ class StatementInvoiceReportWizard(models.TransientModel):
         header_row = row
         row += 1
         for r in data['breakdown_rows']:
-            ws.write(row, 0, r['label'], fmt_cell)
-            ws.write(row, 1, r['count'], fmt_cell_int)
-            ws.write(row, 2, r['amount'], fmt_cell_num)
-            ws.write(row, 3, r['paid_amount'], fmt_cell_num)
-            ws.write(row, 4, r['partial_amount'], fmt_cell_num)
-            ws.write(row, 5, r['not_paid_amount'], fmt_cell_num)
+            ws.write(row, 0, r['label'], fmt_type_label)
+            ws.write(row, 1, r['count'], fmt_type_int)
+            ws.write(row, 2, r['amount'], fmt_type_num)
+            ws.write(row, 3, r['paid_amount'], fmt_type_num)
+            ws.write(row, 4, r['partial_amount'], fmt_type_num)
+            ws.write(row, 5, r['not_paid_amount'], fmt_type_num)
             row += 1
+            # Only worth a drill-down once a type has more than one
+            # contributing journal; with a single one, the sub-row would
+            # just repeat the subtotal above it.
+            journal_rows_for_type = data['journal_rows'][r['key']]
+            if len(journal_rows_for_type) > 1:
+                for jr in journal_rows_for_type:
+                    ws.write(row, 0, jr['label'], fmt_journal_label)
+                    ws.write(row, 1, jr['count'], fmt_journal_int)
+                    ws.write(row, 2, jr['amount'], fmt_journal_num)
+                    ws.write(row, 3, jr['paid_amount'], fmt_journal_num)
+                    ws.write(row, 4, jr['partial_amount'], fmt_journal_num)
+                    ws.write(row, 5, jr['not_paid_amount'], fmt_journal_num)
+                    row += 1
         t = data['breakdown_total']
         ws.write(row, 0, t['label'], fmt_total_label)
         ws.write(row, 1, t['count'], fmt_total_int)
@@ -368,13 +428,13 @@ class StatementInvoiceReportWizard(models.TransientModel):
         # ================= Detail sheet =================
         ws2 = workbook.add_worksheet('Invoice Detail')
         ws2.hide_gridlines(2)
-        col_widths = [16, 12, 28, 16, 14, 14, 14, 14, 14, 10]
+        col_widths = [16, 12, 28, 16, 14, 16, 14, 14, 14, 14, 10]
         for i, w in enumerate(col_widths):
             ws2.set_column(i, i, w)
 
         headers2 = ["Invoice Number", "Invoice Date", "Customer", "Journal",
-                    "Journal Type", "Invoice Amount", "Amount Paid", "Amount Due",
-                    "Payment Status", "Currency"]
+                    "Journal Type", "Settlement Journal", "Invoice Amount", "Amount Paid",
+                    "Amount Due", "Payment Status", "Currency"]
         ws2.write_row(0, 0, headers2, fmt_header)
         r = 1
         for line in data['invoices']:
@@ -383,11 +443,12 @@ class StatementInvoiceReportWizard(models.TransientModel):
             ws2.write(r, 2, line['partner'], fmt_cell)
             ws2.write(r, 3, line['journal'], fmt_cell)
             ws2.write(r, 4, line['cash_bank_type'], fmt_cell)
-            ws2.write(r, 5, line['amount_total'], fmt_cell_num)
-            ws2.write(r, 6, line['amount_paid'], fmt_cell_num)
-            ws2.write(r, 7, line['amount_due'], fmt_cell_num)
-            ws2.write(r, 8, line['payment_status'], fmt_cell)
-            ws2.write(r, 9, line['currency'], fmt_cell)
+            ws2.write(r, 5, line['settlement_journal'], fmt_cell)
+            ws2.write(r, 6, line['amount_total'], fmt_cell_num)
+            ws2.write(r, 7, line['amount_paid'], fmt_cell_num)
+            ws2.write(r, 8, line['amount_due'], fmt_cell_num)
+            ws2.write(r, 9, line['payment_status'], fmt_cell)
+            ws2.write(r, 10, line['currency'], fmt_cell)
             r += 1
 
         if data['invoices']:

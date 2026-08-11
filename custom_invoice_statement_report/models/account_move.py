@@ -52,9 +52,23 @@ class AccountMove(models.Model):
              "exactly once and totals never get split/duplicated across "
              "rows. Ties are assigned to 'bank'.",
     )
+    statement_settlement_journal_id = fields.Many2one(
+        comodel_name='account.journal',
+        string="Statement Settlement Journal",
+        compute='_compute_statement_cash_bank_type',
+        store=True,
+        help="The specific Cash or Bank journal that actually settled this "
+             "invoice (e.g. 'Selcom', 'CRDB Bank'), computed with the exact "
+             "same dominant-amount logic as statement_cash_bank_type -- "
+             "this is that field's journal-level detail, letting the "
+             "Custom Invoice Report break Cash/Bank totals down per "
+             "journal, not just per type. Empty when "
+             "statement_cash_bank_type is 'other'.",
+    )
 
     @api.depends(
         'move_type',
+        'reconciled_payment_ids.journal_id',
         'reconciled_payment_ids.journal_id.type',
         'reconciled_payment_ids.amount',
     )
@@ -62,6 +76,7 @@ class AccountMove(models.Model):
         for move in self:
             if move.move_type != 'out_invoice':
                 move.statement_cash_bank_type = 'other'
+                move.statement_settlement_journal_id = False
                 continue
 
             relevant_payments = move.reconciled_payment_ids.filtered(
@@ -69,12 +84,20 @@ class AccountMove(models.Model):
             )
             if not relevant_payments:
                 move.statement_cash_bank_type = 'other'
+                move.statement_settlement_journal_id = False
                 continue
 
-            amount_by_type = {'cash': 0.0, 'bank': 0.0}
+            amount_by_journal = {}
             for payment in relevant_payments:
-                amount_by_type[payment.journal_id.type] += payment.amount
+                journal = payment.journal_id
+                amount_by_journal[journal] = amount_by_journal.get(journal, 0.0) + payment.amount
 
-            move.statement_cash_bank_type = (
-                'cash' if amount_by_type['cash'] > amount_by_type['bank'] else 'bank'
-            )
+            # Ties (equal cumulative amount) prefer a 'bank' journal, matching
+            # statement_cash_bank_type's documented tie-break rule.
+            dominant_journal = max(
+                amount_by_journal.items(),
+                key=lambda item: (item[1], item[0].type == 'bank'),
+            )[0]
+
+            move.statement_settlement_journal_id = dominant_journal
+            move.statement_cash_bank_type = dominant_journal.type
