@@ -1,11 +1,13 @@
 {
-    'name': 'Survey Location Answer',
-    'version': '18.0.1.0.0',
+    'name': 'Survey Participation Columns',
+    'version': '18.0.2.0.0',
     'category': 'Survey',
-    'summary': 'Displays the Location question answer on survey participations',
+    'summary': 'Configurable question-answer columns on survey participations',
     'author': 'Custom',
     'depends': ['survey'],
     'data': [
+        'security/ir.model.access.csv',
+        'views/survey_participation_column_views.xml',
         'views/survey_user_input_views.xml',
     ],
     'installable': True,

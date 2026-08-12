@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="survey_participation_column_view_list" model="ir.ui.view">
+        <field name="name">survey.participation.column.view.list</field>
+        <field name="model">survey.participation.column</field>
+        <field name="arch" type="xml">
+            <list string="Participation Columns" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="question_id" optional="show"/>
+                <field name="question_title"/>
+                <field name="active" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="survey_participation_column_view_form" model="ir.ui.view">
+        <field name="name">survey.participation.column.view.form</field>
+        <field name="model">survey.participation.column</field>
+        <field name="arch" type="xml">
+            <form string="Participation Column">
+                <sheet>
+                    <group>
+                        <group string="Display">
+                            <field name="name" placeholder="e.g. Location"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Question Matching">
+                            <field name="question_id"
+                                placeholder="Pick from existing questions…"/>
+                            <field name="question_title"
+                                placeholder="Or type a title manually"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>How it works:</strong>
+                        Select a question using the picker above (auto-fills the title),
+                        or type the question title directly. The match is
+                        <strong>case-insensitive</strong> and applies across all surveys.
+                        The answer recorded for that question will appear in the
+                        Participations list and on each participation's form.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="survey_participation_column_view_search" model="ir.ui.view">
+        <field name="name">survey.participation.column.view.search</field>
+        <field name="model">survey.participation.column</field>
+        <field name="arch" type="xml">
+            <search string="Search Participation Columns">
+                <field name="name"/>
+                <field name="question_title"/>
+                <separator/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_survey_participation_column" model="ir.actions.act_window">
+        <field name="name">Participation Columns</field>
+        <field name="res_model">survey.participation.column</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="survey_participation_column_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                No participation columns configured yet
+            </p>
+            <p>
+                Add a column to display a specific question's answer inside the
+                Participations list and on each participation's record.
+            </p>
+        </field>
+    </record>
+
+    <!-- Configuration parent menu (new, under Surveys root) -->
+    <menuitem name="Configuration"
+        id="menu_survey_custom_config"
+        parent="survey.menu_surveys"
+        sequence="99"
+        groups="survey.group_survey_manager"/>
+
+    <menuitem name="Participation Columns"
+        id="menu_survey_participation_columns"
+        parent="menu_survey_custom_config"
+        action="action_survey_participation_column"
+        sequence="10"
+        groups="survey.group_survey_manager"/>
+
+</data>
+</odoo>

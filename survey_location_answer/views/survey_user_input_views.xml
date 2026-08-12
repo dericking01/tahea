@@ -2,40 +2,48 @@
 <odoo>
 <data>
 
-    <!-- Add Location column to participations list view -->
-    <record id="survey_user_input_view_tree_location" model="ir.ui.view">
-        <field name="name">survey.user_input.view.list.location</field>
+    <!-- Participations list: add Key Answers column after email -->
+    <record id="survey_user_input_view_tree_key_answers" model="ir.ui.view">
+        <field name="name">survey.user_input.view.list.key_answers</field>
         <field name="model">survey.user_input</field>
         <field name="inherit_id" ref="survey.survey_user_input_view_tree"/>
         <field name="arch" type="xml">
-            <!-- Insert Location after the email column -->
             <field name="email" position="after">
-                <field name="location_answer" string="Location" optional="show"/>
+                <field name="configured_answers_summary" string="Key Answers" optional="show"/>
             </field>
         </field>
     </record>
 
-    <!-- Add Location to participation form view banner (the title group) -->
-    <record id="survey_user_input_view_form_location" model="ir.ui.view">
-        <field name="name">survey.user_input.view.form.location</field>
+    <!-- Participation form: show individual key answers before the notebook -->
+    <record id="survey_user_input_view_form_key_answers" model="ir.ui.view">
+        <field name="name">survey.user_input.view.form.key_answers</field>
         <field name="model">survey.user_input</field>
         <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add Location field in the right column group, after the email field -->
-            <field name="email" position="after">
-                <field name="location_answer" string="Location"/>
-            </field>
+            <notebook position="before">
+                <group string="Key Answers"
+                    invisible="not configured_answer_ids"
+                    name="group_key_answers">
+                    <field name="configured_answer_ids" nolabel="1">
+                        <list create="false" delete="false">
+                            <field name="column_name" string="Field"/>
+                            <field name="value" string="Answer"/>
+                        </list>
+                    </field>
+                </group>
+            </notebook>
         </field>
     </record>
 
-    <!-- Add Location to Group By in participations search view -->
-    <record id="survey_user_input_view_search_location" model="ir.ui.view">
-        <field name="name">survey.user_input.view.search.location</field>
+    <!-- Search view: Group By Key Answers -->
+    <record id="survey_user_input_view_search_key_answers" model="ir.ui.view">
+        <field name="name">survey.user_input.view.search.key_answers</field>
         <field name="model">survey.user_input</field>
         <field name="inherit_id" ref="survey.survey_user_input_view_search"/>
         <field name="arch" type="xml">
             <filter name="group_by_partner" position="after">
-                <filter string="Location" name="group_by_location" domain="[]" context="{'group_by': 'location_answer'}"/>
+                <filter string="Key Answers" name="group_by_key_answers"
+                    domain="[]" context="{'group_by': 'configured_answers_summary'}"/>
             </filter>
         </field>
     </record>
