@@ -1,0 +1,5 @@
+<odoo>
+    <record id="partner_creation_restriction_group" model="res.groups">
+        <field name="name">Partner Creation Restriction</field>
+    </record>
+</odoo>

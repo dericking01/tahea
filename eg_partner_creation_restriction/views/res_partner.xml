@@ -1,0 +1,33 @@
+<odoo>
+    <record model="ir.ui.view" id="res_partner_for_partner_creation_restriction">
+        <field name="name">res.partner.for.partner.creation.restriction</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+<!--        <field name="groups_id" eval="[(4, ref('eg_partner_creation_restriction.partner_creation_restriction_group'))]"/>-->
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="res_partner_for_partner_creation_restriction_tree_view">
+        <field name="name">res.partner.for.partner.creation.restriction.tree.view</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="res_partner_for_partner_creation_restriction_form_view">
+        <field name="name">res.partner.for.partner.creation.restriction.form.view</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
