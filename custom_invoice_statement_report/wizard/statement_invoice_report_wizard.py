@@ -80,7 +80,19 @@ class StatementInvoiceReportWizard(models.TransientModel):
         no conversion is silently applied at that level.
         """
         self.ensure_one()
-        AccountMove = self.env['account.move']
+        # sudo(): this report is also reachable from Sales -> Reporting so
+        # sales managers can pull it without being separately granted
+        # Accounting access, but read access to account.move itself is
+        # restricted to account.group_account_manager/readonly/invoice
+        # (see account's ir.model.access.csv) and a Sales Manager isn't a
+        # member of any of those by default. The security boundary for who
+        # can see this read-only, aggregated invoice data is therefore
+        # enforced at the wizard level instead (ir.model.access.csv grants
+        # this TransientModel to account.group_account_invoice/readonly
+        # *and* sales_team.group_sale_manager, and both menu items require
+        # one of those groups to even be reachable) rather than relying on
+        # the caller's own account.move rights.
+        AccountMove = self.env['account.move'].sudo()
         domain = self._get_domain()
         company_currency = self.company_id.currency_id
 

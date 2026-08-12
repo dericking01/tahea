@@ -51,4 +51,14 @@
               groups="account.group_account_readonly,account.group_account_invoice"
               sequence="70"/>
 
+    <!-- Same wizard, reachable from Sales -> Reporting too, so sales users
+         don't need Accounting access just to pull this report. menu_sale_report
+         (the Sales "Reporting" section) already gates on sales_team.group_sale_manager,
+         matching the ir.model.access.csv rule granting that group access to the wizard. -->
+    <menuitem id="menu_statement_invoice_report_sale"
+              name="Custom Invoice Report"
+              parent="sale.menu_sale_report"
+              action="action_statement_invoice_report_wizard"
+              sequence="50"/>
+
 </odoo>

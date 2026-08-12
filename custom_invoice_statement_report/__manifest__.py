@@ -6,8 +6,10 @@
 Custom Invoice Report (Statement Reports)
 ==========================================
 
-Adds a **Custom Invoice Report** entry under
-``Accounting -> Reporting -> Statement Reports``.
+Adds a **Custom Invoice Report** entry under both
+``Accounting -> Reporting -> Statement Reports`` and
+``Sales -> Reporting``, opening the same wizard either way, so both
+accounting and sales users can pull it from whichever app they work in.
 
 The report covers **posted customer invoices** (``account.move``,
 ``move_type = 'out_invoice'``, ``state = 'posted'``) issued within a
@@ -30,7 +32,7 @@ always consistent with each other.
     'category': 'Accounting/Accounting',
     'author': "Custom Development",
     'license': 'LGPL-3',
-    'depends': ['account'],
+    'depends': ['account', 'sale'],
     'data': [
         'security/ir.model.access.csv',
         'data/report_paperformat.xml',
