@@ -20,6 +20,22 @@ CASH_BANK_LABELS = {
     'bank': _lt("Bank"),
     'other': _lt("Other / Unclassified"),
 }
+DATE_BASIS_LABELS = {
+    'invoice_date': _lt("Invoice Date"),
+    'payment_date': _lt("Payment Date"),
+}
+# Filtering by Payment Date turns this from "which invoices were issued in
+# this window" into "which invoices were paid in this window" -- a
+# collections/sales view rather than an invoicing one -- so the report
+# title changes to match what the reader is actually looking at.
+REPORT_TITLES = {
+    'invoice_date': _lt("Custom Invoice Report"),
+    'payment_date': _lt("Custom Sales Report"),
+}
+FILENAME_PREFIXES = {
+    'invoice_date': "Custom_Invoice_Report",
+    'payment_date': "Custom_Sales_Report",
+}
 
 
 def _empty_bucket_totals():
@@ -30,6 +46,26 @@ class StatementInvoiceReportWizard(models.TransientModel):
     _name = 'statement.invoice.report.wizard'
     _description = "Custom Invoice Report Wizard"
 
+    date_basis = fields.Selection(
+        selection=[
+            ('invoice_date', "Invoice Date"),
+            ('payment_date', "Payment Date"),
+        ],
+        string="Filter By",
+        required=True,
+        default='invoice_date',
+        help="Invoice Date: include invoices issued within the selected "
+             "range, regardless of when (or whether) they were later paid. "
+             "This is what most people mean by \"invoices for January\".\n\n"
+             "Payment Date: include invoices that received at least one "
+             "payment within the selected range, regardless of when they "
+             "were issued (e.g. a December invoice settled in January "
+             "would show up under January). Amounts shown are still each "
+             "invoice's full value, not just the portion paid in this "
+             "window, and invoices with no payment at all can never appear "
+             "in this mode -- use Invoice Date if you also need to see "
+             "unpaid invoices.",
+    )
     date_from = fields.Date(string="Date From", required=True,
                              default=lambda self: fields.Date.context_today(self).replace(day=1))
     date_to = fields.Date(string="Date To", required=True,
@@ -52,13 +88,31 @@ class StatementInvoiceReportWizard(models.TransientModel):
     # ------------------------------------------------------------------
     def _get_domain(self):
         self.ensure_one()
-        return [
+        domain = [
             ('company_id', '=', self.company_id.id),
             ('move_type', '=', 'out_invoice'),
             ('state', '=', 'posted'),
-            ('invoice_date', '>=', self.date_from),
-            ('invoice_date', '<=', self.date_to),
         ]
+        if self.date_basis == 'payment_date':
+            # account.payment.reconciled_invoice_ids is the native reverse
+            # link from a payment to the (customer) invoices it settles
+            # (see account.payment._compute_reconciled_invoice_ids); going
+            # through it rather than a dotted domain on account.move's own
+            # computed reconciled_payment_ids keeps this a plain, reliable
+            # two-query lookup. 'draft'/'canceled'/'rejected' payments never
+            # represent real cash movement, so they're excluded.
+            payments = self.env['account.payment'].sudo().search([
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to),
+                ('state', 'in', ('in_process', 'paid')),
+            ])
+            domain.append(('id', 'in', payments.reconciled_invoice_ids.ids))
+        else:
+            domain += [
+                ('invoice_date', '>=', self.date_from),
+                ('invoice_date', '<=', self.date_to),
+            ]
+        return domain
 
     def _get_report_data(self):
         """Build the full aggregated dataset used by both the PDF and the
@@ -236,6 +290,9 @@ class StatementInvoiceReportWizard(models.TransientModel):
             'company_currency': company_currency,
             'date_from': self.date_from,
             'date_to': self.date_to,
+            'date_basis': self.date_basis,
+            'date_basis_label': self.env._(DATE_BASIS_LABELS[self.date_basis]),
+            'report_title': self.env._(REPORT_TITLES[self.date_basis]),
             # Kept naive (UTC): the QWeb 'datetime' widget localizes it to the
             # user's timezone itself and errors out on an already-localized
             # value. `_build_xlsx` localizes it explicitly for the Excel export.
@@ -301,7 +358,8 @@ class StatementInvoiceReportWizard(models.TransientModel):
 
     def _xlsx_filename(self):
         self.ensure_one()
-        return f"Custom_Invoice_Report_{self.date_from}_{self.date_to}.xlsx"
+        prefix = FILENAME_PREFIXES[self.date_basis]
+        return f"{prefix}_{self.date_from}_{self.date_to}.xlsx"
 
     def _build_xlsx(self, data):
         """Build the Excel workbook. Kept as a plain method (not a
@@ -352,16 +410,24 @@ class StatementInvoiceReportWizard(models.TransientModel):
         ws.set_column('B:B', 22)
 
         row = 0
-        ws.merge_range(row, 0, row, 3, "Custom Invoice Report", fmt_title)
+        ws.merge_range(row, 0, row, 3, data['report_title'], fmt_title)
         row += 1
         ws.merge_range(row, 0, row, 3, data['company'].name, fmt_subtitle)
         row += 1
         generated_on_local = fields.Datetime.context_timestamp(self, data['generated_on'])
         ws.merge_range(row, 0, row, 3,
-                        f"Period: {data['date_from']} to {data['date_to']}  |  "
+                        f"Period (by {data['date_basis_label']}): {data['date_from']} to {data['date_to']}  |  "
                         f"Generated: {generated_on_local.strftime('%Y-%m-%d %H:%M')}",
                         fmt_subtitle)
-        row += 2
+        row += 1
+        if data['date_basis'] == 'payment_date':
+            ws.merge_range(row, 0, row, 3,
+                            "Filtered by Payment Date: only invoices with at least one payment in this "
+                            "window are included (unpaid invoices cannot appear). Amounts shown are each "
+                            "invoice's full value, not just the portion paid within this window.",
+                            fmt_subtitle)
+            row += 1
+        row += 1
 
         ws.merge_range(row, 0, row, 1, "Summary", fmt_section)
         row += 1

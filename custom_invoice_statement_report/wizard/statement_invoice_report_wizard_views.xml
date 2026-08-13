@@ -17,6 +17,7 @@
                     <group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="date_basis" widget="radio" options="{'horizontal': true}"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
                         </group>

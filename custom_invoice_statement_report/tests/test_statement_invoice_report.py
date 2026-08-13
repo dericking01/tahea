@@ -58,13 +58,13 @@ class TestStatementInvoiceReport(TransactionCase):
             })],
         })
 
-    def _register_payment(self, invoice, amount, journal):
+    def _register_payment(self, invoice, amount, journal, payment_date=None):
         wizard = self.env['account.payment.register'].with_context(
             active_model='account.move', active_ids=invoice.ids,
         ).create({
             'journal_id': journal.id,
             'amount': amount,
-            'payment_date': invoice.invoice_date,
+            'payment_date': payment_date or invoice.invoice_date,
         })
         wizard.action_create_payments()
 
@@ -222,6 +222,33 @@ class TestStatementInvoiceReport(TransactionCase):
         # Per-journal rows must reconcile exactly with the type-level row.
         self.assertEqual(sum(r['count'] for r in journal_rows.values()), bank_row['count'])
         self.assertAlmostEqual(sum(r['amount'] for r in journal_rows.values()), bank_row['amount'])
+
+    def test_03c_date_basis_invoice_vs_payment(self):
+        """An invoice dated outside the window but paid inside it should
+        only show up under 'payment_date'; conversely an invoice dated
+        inside the window but never paid should only show up under
+        'invoice_date' (payment_date mode can never surface unpaid
+        invoices, since there is no payment event to match on)."""
+        backdated_but_paid_in_window = self._create_invoice(90, '2026-06-01')
+        backdated_but_paid_in_window.action_post()
+        self._register_payment(backdated_but_paid_in_window, 90, self.bank_journal, payment_date='2026-06-20')
+
+        in_window_but_unpaid = self._create_invoice(70, '2026-06-15')
+        in_window_but_unpaid.action_post()
+
+        by_invoice_date = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'invoice_date', 'date_from': '2026-06-10', 'date_to': '2026-06-30',
+        })
+        names_by_invoice_date = [line['name'] for line in by_invoice_date._get_report_data()['invoices']]
+        self.assertNotIn(backdated_but_paid_in_window.name, names_by_invoice_date)
+        self.assertIn(in_window_but_unpaid.name, names_by_invoice_date)
+
+        by_payment_date = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'payment_date', 'date_from': '2026-06-10', 'date_to': '2026-06-30',
+        })
+        names_by_payment_date = [line['name'] for line in by_payment_date._get_report_data()['invoices']]
+        self.assertIn(backdated_but_paid_in_window.name, names_by_payment_date)
+        self.assertNotIn(in_window_but_unpaid.name, names_by_payment_date)
 
     def test_04_date_range_validation(self):
         with self.assertRaises(ValidationError):

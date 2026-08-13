@@ -11,11 +11,12 @@
 
                         <div class="row mt-2 mb-3">
                             <div class="col-12">
-                                <h2 style="color:#1F4E78; margin-bottom:2px;">Custom Invoice Report</h2>
+                                <h2 style="color:#1F4E78; margin-bottom:2px;"><span t-out="rd['report_title']"/></h2>
                                 <div class="text-muted" style="font-size:12px;">
                                     <span t-field="rd['company'].name"/>
                                     &#8212;
-                                    Period:
+                                    Period (by
+                                    <span t-out="rd['date_basis_label']"/>):
                                     <span t-out="rd['date_from']" t-options="{'widget': 'date'}"/>
                                     to
                                     <span t-out="rd['date_to']" t-options="{'widget': 'date'}"/>
@@ -24,6 +25,11 @@
                                     Generated on
                                     <span t-out="rd['generated_on']" t-options="{'widget': 'datetime'}"/>
                                 </div>
+                                <p t-if="rd['date_basis'] == 'payment_date'" class="text-muted" style="font-size:9px; margin-top:4px;">
+                                    Filtered by Payment Date: only invoices with at least one payment in this
+                                    window are included (unpaid invoices cannot appear). Amounts shown are each
+                                    invoice's full value, not just the portion paid within this window.
+                                </p>
                             </div>
                         </div>
 
