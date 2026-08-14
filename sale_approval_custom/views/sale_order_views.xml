@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="group_sale_approval_menu" model="res.groups">
+        <field name="name">Show Sales Approval Menu</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="sale_order_personal_rule" model="ir.rule">
+        <field name="name">Personal Sales Orders Strict Rule</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="sale_order_approver_all_rule" model="ir.rule">
+        <field name="name">Manager Approver See All Orders Rule</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('state', 'in', ('draft', 'sent', 'waiting_approval'))]</field>
+    </record>
+
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="name">Sales Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ('sale', 'done'))]</field>
+    </record>
+
+    <record id="view_sale_order_reject_wizard" model="ir.ui.view">
+        <field name="name">sale.order.reject.wizard.form</field>
+        <field name="model">sale.order.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reason for Rejection">
+                <group>
+                    <field name="reject_reason" required="1" placeholder="Reason for Rejection..."/>
+                </group>
+                <footer>
+                    <button string="Confirm Reject" type="object" name="action_confirm_reject" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_quotation_approval_tree" model="ir.ui.view">
+        <field name="name">sale.order.approval.list</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <list string="Approvals" create="0">
+                <field name="name" string="Order Number" decoration-bf="1"/>
+                <field name="create_date" string="Creation Date"/>
+                <field name="partner_id" string="Customer"/>
+                <field name="user_id" string="Salesperson" widget="many2one_avatar_user"/>
+                <field name="company_id" string="Company" groups="base.group_multi_company"/>
+                <field name="amount_total" string="Total" sum="Total Tax Included" widget="monetary"/>
+                <field name="approval_statusbar" string="Approval Status" widget="badge" 
+                       decoration-info="approval_statusbar == 'draft'"
+                       decoration-warning="approval_statusbar == 'waiting_approval'"
+                       decoration-success="approval_statusbar in ('approved', 'sale')"
+                       decoration-danger="approval_statusbar == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_inherit_approval_status" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.approval.status</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="approval_statusbar" string="Status" widget="badge" 
+                       decoration-info="approval_statusbar == 'draft'"
+                       decoration-warning="approval_statusbar == 'waiting_approval'"
+                       decoration-success="approval_statusbar in ('approved', 'sale')"
+                       decoration-danger="approval_statusbar == 'cancel'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_my_approvals_waiting" model="ir.actions.act_window">
+        <field name="name">Wait for Approvals orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('approval_enabled', '=', True), '|', ('user_id', '=', uid), ('can_approve', '=', True), ('state', '=', 'waiting_approval'), ('approval_stage', '=', 'waiting')]</field>
+        <field name="view_id" ref="view_quotation_approval_tree"/>
+    </record>
+
+    <record id="action_my_approvals_approved" model="ir.actions.act_window">
+        <field name="name">Approved Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('approval_enabled', '=', True), ('state', '!=', 'cancel'), '|', ('user_id', '=', uid), ('can_approve', '=', True), ('approval_stage', '=', 'approved'), ('state', '!=', 'sale'), ('state', '!=', 'sent')]</field>
+        <field name="view_id" ref="view_quotation_approval_tree"/>
+    </record>
+
+    <record id="action_my_approvals_rejected" model="ir.actions.act_window">
+        <field name="name">Rejected Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('approval_enabled', '=', True), '|', ('user_id', '=', uid), ('can_approve', '=', True), ('state', '=', 'cancel')]</field>
+        <field name="view_id" ref="view_quotation_approval_tree"/>
+    </record>
+
+    <!-- Parent Menu -->
+    <menuitem id="menu_sale_my_approvals_root"
+              name="My Approvals"
+              parent="sale.sale_menu_root"
+              sequence="11"
+              groups="sale_approval_custom.group_sale_approval_menu"/>
+
+    <!-- Sub-menus -->
+    <menuitem id="menu_my_approvals_waiting"
+              name="Wait for Approvals orders"
+              parent="menu_sale_my_approvals_root"
+              action="action_my_approvals_waiting"
+              sequence="1"/>
+
+    <menuitem id="menu_my_approvals_approved"
+              name="Approved Orders"
+              parent="menu_sale_my_approvals_root"
+              action="action_my_approvals_approved"
+              sequence="2"/>
+
+    <menuitem id="menu_my_approvals_rejected"
+              name="Rejected Orders"
+              parent="menu_sale_my_approvals_root"
+              action="action_my_approvals_rejected"
+              sequence="3"/>
+
+
+    <record id="view_sale_order_form_company_approval"
+            model="ir.ui.view">
+
+        <field name="name">sale.order.form.company.approval</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id"
+               ref="sale.view_order_form"/>
+        <field name="arch"
+               type="xml">
+
+            <xpath expr="//header"
+                   position="inside">
+                <field name="approval_enabled"
+                       invisible="1"/>
+                <field name="can_approve"
+                       invisible="1"/>
+                <field name="approval_stage"
+                       invisible="1"/>
+            </xpath>
+
+
+            <xpath expr="//field[@name='state']"
+                   position="after">
+                <field name="approval_statusbar"
+                       widget="statusbar"
+                       statusbar_visible="draft,waiting_approval,approved,sent,sale,cancel"
+                       invisible="not approval_enabled"
+                       readonly="1"/>
+            </xpath>
+
+
+            <xpath expr="//field[@name='state']"
+                   position="attributes">
+                <attribute name="invisible">
+                    approval_enabled
+                </attribute>
+            </xpath>
+
+
+            <xpath expr="//field[@name='partner_id']"
+                   position="after">
+                <field name="approved_by"
+                       readonly="1"
+                       invisible="not approved_by"/>
+                <field name="approved_date"
+                       readonly="1"
+                       invisible="not approved_date"/>
+                <field name="reject_reason"
+                       readonly="1"
+                       invisible="not reject_reason"
+                       decoration-danger="1"/>
+            </xpath>
+
+
+            <xpath expr="//header"
+                   position="inside">
+                <button name="action_submit_for_approval"
+                        string="Submit for Approval"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not approval_enabled or state != 'draft'"/>
+            </xpath>
+
+
+            <xpath expr="//header"
+                   position="inside">
+                <button name="action_approve"
+                        string="Approve"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not can_approve"/>
+            </xpath>
+
+
+            <xpath expr="//header"
+                   position="inside">
+                <button name="action_reject"
+                        string="Reject"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not can_approve"/>
+            </xpath>
+            <xpath expr="//header//button[@name='action_confirm'][1]"
+                   position="attributes">
+                <attribute name="invisible">
+                    approval_enabled and approval_stage != 'approved'
+                </attribute>
+            </xpath>
+
+            <xpath expr="//header//button[@name='action_confirm'][2]"
+                   position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+
+            <xpath expr="//header//button[@name='action_quotation_send']"
+                   position="attributes">
+                <attribute name="invisible">
+                    approval_enabled and not (
+                        state == 'waiting_approval'
+                        and approval_stage == 'approved'
+                    )
+                </attribute>
+            </xpath>
+
+        </field>
+
+    </record>
+
+</odoo>
