@@ -26,9 +26,12 @@
                                     <span t-out="rd['generated_on']" t-options="{'widget': 'datetime'}"/>
                                 </div>
                                 <p t-if="rd['date_basis'] == 'payment_date'" class="text-muted" style="font-size:9px; margin-top:4px;">
-                                    Filtered by Payment Date: only invoices with at least one payment in this
-                                    window are included (unpaid invoices cannot appear). Amounts shown are each
-                                    invoice's full value, not just the portion paid within this window.
+                                    Filtered by Payment Date: only invoices with at least one payment in this window
+                                    are included (unpaid invoices cannot appear). "Paid"/"Collected" figures reflect
+                                    only what was actually paid within this window -- an invoice settled in
+                                    instalments across multiple periods is correctly split between each period's
+                                    report. "Total Invoice Amount" and "Amount Due" still show each invoice's full
+                                    billed value and current outstanding balance for reference.
                                 </p>
                             </div>
                         </div>
@@ -46,7 +49,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="text-muted">Total Paid Amount</td>
+                                    <td class="text-muted"><span t-out="rd['summary_paid_label']"/></td>
                                     <td class="fw-bold text-success">
                                         <span t-out="rd['summary']['paid_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
                                     </td>
@@ -130,11 +133,21 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <p class="text-muted" style="font-size:9px;">
-                            Amounts represent total invoice value per payment status (not cash collected to date).
-                            Indented rows break each Cash/Bank total down by the specific journal that settled the
-                            invoice. An invoice is classified under the single journal that carried the larger share
-                            of its reconciled payments, so it is never counted twice.
+                        <p t-if="rd['date_basis'] == 'invoice_date'" class="text-muted" style="font-size:9px;">
+                            "Total Invoice Amount", "Paid", "Partially Paid" and "Unpaid" all represent total invoice
+                            value per payment status (not cash collected to date). Indented rows break each Cash/Bank
+                            total down by the specific journal that settled the invoice. An invoice is classified
+                            under the single journal that carried the larger share of its reconciled payments, so it
+                            is never counted twice.
+                        </p>
+                        <p t-else="" class="text-muted" style="font-size:9px;">
+                            "Total Invoice Amount" is each invoice's full billed value; "Paid" / "Partially Paid" /
+                            "Unpaid" instead show the amount actually collected within this window from invoices
+                            currently in that status (so these three columns will not add up to "Total Invoice
+                            Amount" -- that is expected). Indented rows break each Cash/Bank total down by the
+                            specific journal that settled the invoice. An invoice is classified under the single
+                            journal that carried the larger share of its reconciled payments, so it is never counted
+                            twice.
                         </p>
                         <p t-if="rd['unclassified']['count']" class="text-muted" style="font-size:9px;">
                             Note:
@@ -158,7 +171,7 @@
                                     <th>Payment Type</th>
                                     <th>Settlement Journal</th>
                                     <th class="text-end">Amount</th>
-                                    <th class="text-end">Paid</th>
+                                    <th class="text-end"><span t-out="rd['paid_column_label']"/></th>
                                     <th class="text-end">Due</th>
                                     <th>Status</th>
                                     <th>Currency</th>

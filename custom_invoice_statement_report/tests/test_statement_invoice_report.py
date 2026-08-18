@@ -250,6 +250,56 @@ class TestStatementInvoiceReport(TransactionCase):
         self.assertIn(backdated_but_paid_in_window.name, names_by_payment_date)
         self.assertNotIn(in_window_but_unpaid.name, names_by_payment_date)
 
+    def test_03d_payment_date_splits_instalments_across_periods(self):
+        """The exact scenario reported: an 80,000 invoice paid 30,000 on
+        one day and 50,000 a week later must show only the instalment that
+        actually falls within the selected window as its 'Paid' amount --
+        not the invoice's full collected-to-date value -- when filtering
+        by Payment Date. 'Amount Due' (current, live residual) and
+        'Total Invoice Amount' are unaffected by the window."""
+        invoice = self._create_invoice(80000, '2026-08-01')
+        invoice.action_post()
+        self._register_payment(invoice, 30000, self.bank_journal, payment_date='2026-08-10')
+        self._register_payment(invoice, 50000, self.bank_journal, payment_date='2026-08-17')
+        self.assertAlmostEqual(invoice.amount_residual, 0.0)
+
+        def _get_line(wizard):
+            data = wizard._get_report_data()
+            line = next(l for l in data['invoices'] if l['name'] == invoice.name)
+            return data, line
+
+        wizard_17 = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'payment_date', 'date_from': '2026-08-17', 'date_to': '2026-08-17',
+        })
+        data_17, line_17 = _get_line(wizard_17)
+        self.assertAlmostEqual(line_17['amount_paid'], 50000.0)
+        self.assertAlmostEqual(line_17['amount_total'], 80000.0)
+        self.assertAlmostEqual(line_17['amount_due'], 0.0)
+        self.assertAlmostEqual(data_17['summary']['paid_amount'], 50000.0)
+        bank_row_17 = next(r for r in data_17['breakdown_rows'] if r['label'] == 'Bank')
+        self.assertAlmostEqual(bank_row_17['paid_amount'], 50000.0)
+        self.assertAlmostEqual(bank_row_17['amount'], 80000.0)  # Total Invoice Amount: full value, unaffected
+
+        wizard_10 = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'payment_date', 'date_from': '2026-08-10', 'date_to': '2026-08-10',
+        })
+        _, line_10 = _get_line(wizard_10)
+        self.assertAlmostEqual(line_10['amount_paid'], 30000.0)
+
+        wizard_both = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'payment_date', 'date_from': '2026-08-10', 'date_to': '2026-08-17',
+        })
+        _, line_both = _get_line(wizard_both)
+        self.assertAlmostEqual(line_both['amount_paid'], 80000.0)
+
+        # Invoice Date mode is unaffected by any of this: still the
+        # all-time collected total regardless of which window is picked.
+        wizard_invoice_date = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'invoice_date', 'date_from': '2026-08-01', 'date_to': '2026-08-01',
+        })
+        _, line_invoice_date = _get_line(wizard_invoice_date)
+        self.assertAlmostEqual(line_invoice_date['amount_paid'], 80000.0)
+
     def test_04_date_range_validation(self):
         with self.assertRaises(ValidationError):
             self.env['statement.invoice.report.wizard'].create({
