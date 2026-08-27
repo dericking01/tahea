@@ -7,6 +7,7 @@
         <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="user_id" invisible="1"/>
                 <field name="buyer_employee_id" string="Buyer" readonly="state != 'draft'" widget="many2one_avatar_employee" options="{'no_quick_create': True}"/>
             </xpath>
         </field>
