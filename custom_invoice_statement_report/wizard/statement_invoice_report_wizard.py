@@ -44,13 +44,25 @@ SUMMARY_PAID_LABELS = {
     'invoice_date': _lt("Total Paid Amount"),
     'payment_date': _lt("Total Collected (This Period)"),
 }
+# The "Total Invoice Amount" column in the Payment Type Breakdown table:
+# in Payment Date mode a single invoice can legitimately contribute to more
+# than one row (see _get_collected_amounts_by_invoice_journal), so showing
+# each row's full invoice value there would double- (or triple-) count it;
+# that column becomes "amount collected via this type/journal" instead.
+BREAKDOWN_AMOUNT_LABELS = {
+    'invoice_date': _lt("Total Invoice Amount"),
+    'payment_date': _lt("Amount Collected"),
+}
 
 
 def _empty_bucket_totals():
-    # 'amount': each invoice's own billed total (always this, in both
-    # modes) -- 'collected': in Payment Date mode only, the portion of
-    # that amount actually collected within the selected window (see
-    # StatementInvoiceReportWizard._get_collected_amounts_by_invoice).
+    # 'amount': each invoice's own billed total -- populated (and used) in
+    # Invoice Date mode only. 'collected': the amount actually collected
+    # within the selected window, attributed to the specific journal that
+    # received it -- populated (and used) in Payment Date mode only (see
+    # StatementInvoiceReportWizard._get_collected_amounts_by_invoice_journal).
+    # Which one a given row's figures come from is decided once via
+    # `paid_source` in _get_report_data, not per field access.
     return {'count': 0, 'amount': 0.0, 'collected': 0.0}
 
 
@@ -143,46 +155,55 @@ class StatementInvoiceReportWizard(models.TransientModel):
             ]
         return domain
 
-    def _get_collected_amounts_by_invoice(self, invoice_ids):
-        """Return ``(by_currency, by_company_currency)``: two
-        ``{invoice_id: amount}`` maps of exactly how much of each invoice
-        was collected via a qualifying payment (see
-        ``_get_qualifying_payments``) dated within the selected window --
-        the first expressed in each invoice's own currency (for the
+    def _get_collected_amounts_by_invoice_journal(self, invoice_ids):
+        """Return ``{invoice_id: [{'journal': record, 'currency': amount,
+        'company': amount}, ...]}`` -- one entry per *distinct journal*
+        that received a qualifying payment (see ``_get_qualifying_payments``)
+        against that invoice within the selected window, each amount
+        expressed both in the invoice's own currency (``currency``, for the
         per-invoice detail rows, consistent with how ``amount_total`` /
-        ``amount_due`` are shown there), the second in company currency
-        (for the cross-currency-safe aggregated totals).
+        ``amount_due`` are shown there) and in company currency
+        (``company``, for the cross-currency-safe aggregated totals).
 
-        This matters because account.move only exposes *current* totals
-        (``amount_total - amount_residual`` = paid *to date*, across every
-        payment the invoice has ever received). An invoice settled in two
-        instalments a week apart -- e.g. 30,000 last week and 50,000 today
-        -- would otherwise show its full 80,000 in *both* weeks' reports;
-        going through ``account.partial.reconcile`` (the ledger-level
+        Attributing to the *actual* journal each contribution came through
+        -- rather than picking one "dominant" journal for the whole invoice,
+        as ``account.move.statement_settlement_journal_id`` intentionally
+        does for the all-time view -- matters here because a single invoice
+        can genuinely be settled through more than one channel within the
+        same window (e.g. half by mobile money, half by cash): collapsing
+        that into one row/journal would misattribute money to a channel
+        that didn't actually receive it. See ``_get_report_data`` for how
+        this fans out into one report row per contributing journal.
+
+        Sourced from ``account.partial.reconcile`` -- the ledger-level
         record of exactly how much of an invoice's receivable a given
-        payment cleared) instead attributes each instalment to the window
-        it was actually paid in. ``debit_amount_currency``/``amount`` on
-        that model are the foreign-currency / company-currency views of
-        the same reconciled amount, mirroring the split already used
-        throughout this report.
+        payment cleared -- rather than ``amount_total - amount_residual``,
+        which only exposes the *cumulative*, all-time paid amount.
         """
         self.ensure_one()
         if not invoice_ids:
-            return {}, {}
+            return {}
         payments = self._get_qualifying_payments()
         if not payments:
-            return {}, {}
+            return {}
         partials = self.env['account.partial.reconcile'].sudo().search([
             ('debit_move_id.move_id', 'in', invoice_ids),
             ('debit_move_id.account_id.account_type', '=', 'asset_receivable'),
             ('credit_move_id.move_id.origin_payment_id', 'in', payments.ids),
         ])
-        by_currency, by_company_currency = {}, {}
+        by_invoice_journal = {}  # {(invoice_id, journal_id): {'journal': rec, 'currency': f, 'company': f}}
         for partial in partials:
             invoice_id = partial.debit_move_id.move_id.id
-            by_currency[invoice_id] = by_currency.get(invoice_id, 0.0) + partial.debit_amount_currency
-            by_company_currency[invoice_id] = by_company_currency.get(invoice_id, 0.0) + partial.amount
-        return by_currency, by_company_currency
+            journal = partial.credit_move_id.move_id.origin_payment_id.journal_id
+            key = (invoice_id, journal.id)
+            entry = by_invoice_journal.setdefault(key, {'journal': journal, 'currency': 0.0, 'company': 0.0})
+            entry['currency'] += partial.debit_amount_currency
+            entry['company'] += partial.amount
+
+        by_invoice = {}
+        for (invoice_id, _journal_id), entry in by_invoice_journal.items():
+            by_invoice.setdefault(invoice_id, []).append(entry)
+        return by_invoice
 
     def _get_report_data(self):
         """Build the full aggregated dataset used by both the PDF and the
@@ -194,12 +215,13 @@ class StatementInvoiceReportWizard(models.TransientModel):
         currencies and produce a meaningless number, so all summary and
         breakdown totals are computed from ``amount_total_signed`` /
         ``amount_residual_signed`` (or, for Payment Date mode's collected
-        amounts, the company-currency map from
-        ``_get_collected_amounts_by_invoice``), which are all expressed in
-        the *company* currency, so they can be summed safely. The company
-        currency is shown next to every aggregated figure. Per-invoice rows
-        in the detailed section instead show the amount in the invoice's
-        own currency, so no conversion is silently applied at that level.
+        amounts, the company-currency ``'company'`` figures from
+        ``_get_collected_amounts_by_invoice_journal``), which are all
+        expressed in the *company* currency, so they can be summed safely.
+        The company currency is shown next to every aggregated figure.
+        Per-invoice rows in the detailed section instead show the amount in
+        the invoice's own currency, so no conversion is silently applied at
+        that level.
         """
         self.ensure_one()
         # sudo(): this report is also reachable from Sales -> Reporting so
@@ -227,8 +249,8 @@ class StatementInvoiceReportWizard(models.TransientModel):
             'payment_state', 'currency_id',
         ])
 
-        collected_by_currency, collected_by_company_currency = (
-            self._get_collected_amounts_by_invoice(invoices.ids) if is_payment_date else ({}, {})
+        collected_by_invoice_journal = (
+            self._get_collected_amounts_by_invoice_journal(invoices.ids) if is_payment_date else {}
         )
 
         # breakdown[cash_bank_type][bucket] = {'count', 'amount', 'collected'}
@@ -238,54 +260,79 @@ class StatementInvoiceReportWizard(models.TransientModel):
         }
         # journal_breakdown[cash_bank_type][journal][bucket] = {'count', 'amount', 'collected'}
         journal_breakdown = {'cash': {}, 'bank': {}}
-        residual_by_type = {'cash': 0.0, 'bank': 0.0, 'other': 0.0}
+
+        def _contribution_cash_bank_type(journal):
+            return journal.type if journal and journal.type in ('cash', 'bank') else 'other'
+
+        def _get_contributions(move):
+            """[{'journal': rec, 'currency': f, 'company': f}, ...] for one
+            invoice -- one entry per journal that actually contributed a
+            qualifying payment within the window (see
+            _get_collected_amounts_by_invoice_journal). Falls back to a
+            single zero-amount entry under the invoice's all-time dominant
+            journal only if reconciliation data is somehow inconsistent
+            with the domain match (shouldn't normally happen: the invoice
+            is only in this set because a qualifying payment matched it)."""
+            contributions = collected_by_invoice_journal.get(move.id)
+            if contributions:
+                return contributions
+            return [{'journal': move.statement_settlement_journal_id, 'currency': 0.0, 'company': 0.0}]
 
         if is_payment_date:
-            # The exact per-invoice collected-in-window amount only exists
-            # at the reconciliation level (see
-            # _get_collected_amounts_by_invoice), so it's built by walking
-            # the invoice set directly instead of a DB-side aggregate. This
-            # set is bounded by actual payment activity in the window
-            # (typically far smaller than "all invoices ever"), which is
-            # exactly the kind of dataset a Python loop is fine for.
+            # The exact per-invoice, per-journal collected-in-window amount
+            # only exists at the reconciliation level (see
+            # _get_collected_amounts_by_invoice_journal), so this is built
+            # by walking the invoice set directly instead of a DB-side
+            # aggregate. This set is bounded by actual payment activity in
+            # the window (typically far smaller than "all invoices ever"),
+            # which is exactly the kind of dataset a Python loop is fine for.
+            #
+            # An invoice settled through more than one journal within the
+            # window (e.g. half by mobile money, half by cash) contributes
+            # to *each* journal's bucket below with only its own share --
+            # never the invoice's full amount under a single "dominant"
+            # journal -- so it is intentionally counted once per
+            # contributing type/journal rather than exactly once overall;
+            # see the 'invoice_count' vs. breakdown-table count note in the
+            # returned dict.
             for move in invoices:
-                cash_bank_type = move.statement_cash_bank_type
                 bucket = PAYMENT_STATE_BUCKETS.get(move.payment_state, 'other')
-                collected = collected_by_company_currency.get(move.id, 0.0)
+                for contrib in _get_contributions(move):
+                    journal = contrib['journal']
+                    cash_bank_type = _contribution_cash_bank_type(journal)
+                    collected = contrib['company']
 
-                entry = breakdown[cash_bank_type][bucket]
-                entry['count'] += 1
-                entry['amount'] += move.amount_total_signed
-                entry['collected'] += collected
-                residual_by_type[cash_bank_type] += move.amount_residual_signed
+                    entry = breakdown[cash_bank_type][bucket]
+                    entry['count'] += 1
+                    entry['collected'] += collected
 
-                journal = move.statement_settlement_journal_id
-                if journal:  # empty recordset for the 'other' bucket (no settlement journal)
-                    journal_buckets = journal_breakdown[cash_bank_type].setdefault(
-                        journal, {b: _empty_bucket_totals() for b in ('paid', 'partial', 'not_paid', 'other')}
-                    )
-                    j_entry = journal_buckets[bucket]
-                    j_entry['count'] += 1
-                    j_entry['amount'] += move.amount_total_signed
-                    j_entry['collected'] += collected
+                    if journal and cash_bank_type in ('cash', 'bank'):
+                        journal_buckets = journal_breakdown[cash_bank_type].setdefault(
+                            journal, {b: _empty_bucket_totals() for b in ('paid', 'partial', 'not_paid', 'other')}
+                        )
+                        j_entry = journal_buckets[bucket]
+                        j_entry['count'] += 1
+                        j_entry['collected'] += collected
         else:
             # ---- DB-level aggregation: one query for the whole matrix ---
             # Grouping by statement_settlement_journal_id (in addition to
             # type and payment status) gives the per-journal drill-down --
             # e.g. how much of "Bank" is specifically "Selcom" vs. "CRDB"
             # -- without a second query: the type-level rows are just this
-            # same data summed back up across journals.
+            # same data summed back up across journals. Invoice Date mode
+            # has no split-contribution concept (it isn't about specific
+            # payments), so each invoice is attributed to its single
+            # all-time-dominant type/journal, exactly once.
             groups = AccountMove._read_group(
                 domain,
                 groupby=['statement_cash_bank_type', 'statement_settlement_journal_id', 'payment_state'],
-                aggregates=['__count', 'amount_total_signed:sum', 'amount_residual_signed:sum'],
+                aggregates=['__count', 'amount_total_signed:sum'],
             )
-            for cash_bank_type, journal, payment_state, count, total_signed, residual_signed in groups:
+            for cash_bank_type, journal, payment_state, count, total_signed in groups:
                 bucket = PAYMENT_STATE_BUCKETS.get(payment_state, 'other')
                 entry = breakdown[cash_bank_type][bucket]
                 entry['count'] += count
                 entry['amount'] += total_signed
-                residual_by_type[cash_bank_type] += residual_signed
 
                 if journal:
                     journal_buckets = journal_breakdown[cash_bank_type].setdefault(
@@ -295,19 +342,20 @@ class StatementInvoiceReportWizard(models.TransientModel):
                     j_entry['count'] += count
                     j_entry['amount'] += total_signed
 
-        # 'amount' (Total Invoice Amount) always reflects each invoice's own
-        # billed value, in both modes. The Paid/Partially Paid/Unpaid
-        # figures instead source from 'collected' (amount actually
-        # collected within the window) in Payment Date mode -- so they
-        # reconcile with the fixed per-invoice detail rows below -- and
-        # from the usual all-time invoice value in Invoice Date mode
-        # (unchanged from before).
+        # 'amount' (Total Invoice Amount / Amount Collected column) sources
+        # from each invoice's own billed value in Invoice Date mode, and
+        # from 'collected' (amount actually collected within the window,
+        # per contributing journal) in Payment Date mode -- where a single
+        # invoice's full value can no longer be attributed to one row, now
+        # that it may genuinely span more than one. The Paid/Partially
+        # Paid/Unpaid figures use the same source, so both stay consistent
+        # with each other and with the per-invoice detail rows below.
         paid_source = 'collected' if is_payment_date else 'amount'
 
         def _row(cash_bank_type):
             buckets = breakdown[cash_bank_type]
             count = sum(b['count'] for b in buckets.values())
-            amount = sum(b['amount'] for b in buckets.values())
+            amount = sum(b[paid_source] for b in buckets.values())
             return {
                 'key': cash_bank_type,
                 'label': self.env._(CASH_BANK_LABELS[cash_bank_type]),
@@ -321,7 +369,7 @@ class StatementInvoiceReportWizard(models.TransientModel):
 
         def _journal_row(journal, buckets):
             count = sum(b['count'] for b in buckets.values())
-            amount = sum(b['amount'] for b in buckets.values())
+            amount = sum(b[paid_source] for b in buckets.values())
             return {
                 'label': journal.name,
                 'count': count,
@@ -360,8 +408,16 @@ class StatementInvoiceReportWizard(models.TransientModel):
                 summary_buckets[bucket]['count'] += values['count']
                 summary_buckets[bucket]['amount'] += values[paid_source]
 
-        total_amount = total_row['amount']
-        total_residual = sum(residual_by_type.values())
+        # Always the true count of *unique* invoices and their full billed
+        # value/current balance -- deliberately independent of
+        # total_row['count']/['amount'], which (in Payment Date mode) can
+        # legitimately exceed these once an invoice spans more than one
+        # journal within the window (see the loop above): such an invoice
+        # is still exactly one invoice for these KPIs, even though it
+        # contributes a row to more than one type/journal below.
+        invoice_count = len(invoices)
+        total_amount = sum(move.amount_total_signed for move in invoices)
+        total_residual = sum(move.amount_residual_signed for move in invoices)
         if is_payment_date:
             total_paid_amount = sum(
                 bucket_values['collected']
@@ -372,7 +428,7 @@ class StatementInvoiceReportWizard(models.TransientModel):
             total_paid_amount = total_amount - total_residual
 
         summary = {
-            'invoice_count': total_row['count'],
+            'invoice_count': invoice_count,
             'total_amount': total_amount,
             'paid_amount': total_paid_amount,
             'outstanding_amount': total_residual,
@@ -386,27 +442,44 @@ class StatementInvoiceReportWizard(models.TransientModel):
         }
 
         # ---- Invoice-level detail ----------------------------------------
+        # In Payment Date mode, an invoice settled through more than one
+        # journal within the window gets one row per contributing journal
+        # (built from the exact same per-contribution data as the
+        # breakdown above, so the two can never disagree) instead of being
+        # collapsed into a single misleading "dominant journal" row.
         invoice_lines = []
         for move in invoices:
             bucket = PAYMENT_STATE_BUCKETS.get(move.payment_state, 'other')
-            amount_paid = (
-                collected_by_currency.get(move.id, 0.0) if is_payment_date
-                else move.amount_total - move.amount_residual
-            )
-            invoice_lines.append({
-                'name': move.name,
-                'invoice_date': move.invoice_date,
-                'partner': move.partner_id.name or '',
-                'journal': move.journal_id.name or '',
-                'cash_bank_type': self.env._(CASH_BANK_LABELS[move.statement_cash_bank_type]),
-                'settlement_journal': move.statement_settlement_journal_id.name or '',
-                'amount_total': move.amount_total,
-                'amount_paid': amount_paid,
-                'amount_due': move.amount_residual,
-                'payment_status': self.env._(BUCKET_LABELS[bucket]),
-                'currency': move.currency_id.name,
-                'currency_record': move.currency_id,
-            })
+            if is_payment_date:
+                rows = [
+                    (
+                        _contribution_cash_bank_type(contrib['journal']),
+                        contrib['journal'].name if contrib['journal'] else '',
+                        contrib['currency'],
+                    )
+                    for contrib in _get_contributions(move)
+                ]
+            else:
+                rows = [(
+                    move.statement_cash_bank_type,
+                    move.statement_settlement_journal_id.name or '',
+                    move.amount_total - move.amount_residual,
+                )]
+            for cash_bank_type, settlement_journal_name, amount_paid in rows:
+                invoice_lines.append({
+                    'name': move.name,
+                    'invoice_date': move.invoice_date,
+                    'partner': move.partner_id.name or '',
+                    'journal': move.journal_id.name or '',
+                    'cash_bank_type': self.env._(CASH_BANK_LABELS[cash_bank_type]),
+                    'settlement_journal': settlement_journal_name,
+                    'amount_total': move.amount_total,
+                    'amount_paid': amount_paid,
+                    'amount_due': move.amount_residual,
+                    'payment_status': self.env._(BUCKET_LABELS[bucket]),
+                    'currency': move.currency_id.name,
+                    'currency_record': move.currency_id,
+                })
 
         return {
             'company': self.company_id,
@@ -418,6 +491,13 @@ class StatementInvoiceReportWizard(models.TransientModel):
             'report_title': self.env._(REPORT_TITLES[self.date_basis]),
             'paid_column_label': self.env._(PAID_COLUMN_LABELS[self.date_basis]),
             'summary_paid_label': self.env._(SUMMARY_PAID_LABELS[self.date_basis]),
+            'breakdown_amount_label': self.env._(BREAKDOWN_AMOUNT_LABELS[self.date_basis]),
+            # True when at least one invoice was settled through more than
+            # one journal within the window, so the breakdown table's total
+            # invoice count legitimately exceeds the Summary's unique count
+            # -- surfaced so the report can explain the difference instead
+            # of it looking like a mistake.
+            'has_split_settlements': total_row['count'] > invoice_count,
             # Kept naive (UTC): the QWeb 'datetime' widget localizes it to the
             # user's timezone itself and errors out on an already-localized
             # value. `_build_xlsx` localizes it explicitly for the Excel export.
@@ -550,9 +630,11 @@ class StatementInvoiceReportWizard(models.TransientModel):
                             "Filtered by Payment Date: only invoices with at least one payment in this window "
                             "are included (unpaid invoices cannot appear). \"Paid\"/\"Collected\" figures reflect "
                             "only what was actually paid within this window -- an invoice settled in instalments "
-                            "across multiple periods is correctly split between each period's report. \"Total "
-                            "Invoice Amount\" and \"Amount Due\" still show each invoice's full billed value and "
-                            "current outstanding balance for reference.",
+                            "across multiple periods, or through more than one journal within the same period "
+                            "(e.g. part Mobile Money, part Cash), is correctly split between each period and/or "
+                            "each journal instead of being attributed to a single one. \"Invoice Amount\" and "
+                            "\"Amount Due\" still show each invoice's full billed value and current outstanding "
+                            "balance for reference.",
                             fmt_subtitle)
             row += 1
         row += 1
@@ -588,7 +670,7 @@ class StatementInvoiceReportWizard(models.TransientModel):
 
         ws.merge_range(row, 0, row, 5, "Payment Type Breakdown (Cash / Bank)", fmt_section)
         row += 1
-        headers = ["Payment Type", "Invoice Count", f"Total Invoice Amount ({currency_code})",
+        headers = ["Payment Type", "Invoice Count", f"{data['breakdown_amount_label']} ({currency_code})",
                    "Paid", "Partially Paid", "Unpaid"]
         ws.write_row(row, 0, headers, fmt_header)
         header_row = row
@@ -624,10 +706,19 @@ class StatementInvoiceReportWizard(models.TransientModel):
         row += 1
         if data['date_basis'] == 'payment_date':
             ws.merge_range(row, 0, row, 5,
-                            "\"Total Invoice Amount\" is each invoice's full billed value; \"Paid\" / "
-                            "\"Partially Paid\" / \"Unpaid\" instead show the amount actually collected within "
-                            "this window from invoices currently in that status (so these three columns will "
-                            "not add up to \"Total Invoice Amount\" -- that is expected).", fmt_subtitle)
+                            "\"Amount Collected\"/\"Paid\"/\"Partially Paid\"/\"Unpaid\" all show the amount "
+                            "actually collected within this window. An invoice settled through more than one "
+                            "journal within this window (e.g. part Mobile Money, part Cash) contributes only its "
+                            "own share to each journal's row -- never its full amount to just one -- so such an "
+                            "invoice is intentionally counted once per contributing journal below rather than "
+                            "exactly once overall.", fmt_subtitle)
+            row += 1
+        if data['has_split_settlements']:
+            ws.merge_range(row, 0, row, 5,
+                            "Note: because at least one invoice above was settled through more than one journal "
+                            f"within this window, the invoice counts in this table can add up to more than the "
+                            f"{summary['invoice_count']} unique invoice(s) shown in the Summary -- that is "
+                            "expected, not a duplicate.", fmt_subtitle)
             row += 1
         if data['unclassified']['count']:
             ws.merge_range(row, 0, row, 5,

@@ -29,9 +29,11 @@
                                     Filtered by Payment Date: only invoices with at least one payment in this window
                                     are included (unpaid invoices cannot appear). "Paid"/"Collected" figures reflect
                                     only what was actually paid within this window -- an invoice settled in
-                                    instalments across multiple periods is correctly split between each period's
-                                    report. "Total Invoice Amount" and "Amount Due" still show each invoice's full
-                                    billed value and current outstanding balance for reference.
+                                    instalments across multiple periods, or through more than one journal within the
+                                    same period (e.g. part Mobile Money, part Cash), is correctly split between each
+                                    period and/or each journal instead of being attributed to a single one. "Amount"
+                                    and "Amount Due" still show each invoice's full billed value and current
+                                    outstanding balance for reference.
                                 </p>
                             </div>
                         </div>
@@ -92,7 +94,7 @@
                                 <tr style="background-color:#2E75B6; color:white;">
                                     <th>Payment Type</th>
                                     <th class="text-end">Invoice Count</th>
-                                    <th class="text-end">Total Invoice Amount</th>
+                                    <th class="text-end"><span t-out="rd['breakdown_amount_label']"/></th>
                                     <th class="text-end">Paid</th>
                                     <th class="text-end">Partially Paid</th>
                                     <th class="text-end">Unpaid</th>
@@ -141,13 +143,18 @@
                             is never counted twice.
                         </p>
                         <p t-else="" class="text-muted" style="font-size:9px;">
-                            "Total Invoice Amount" is each invoice's full billed value; "Paid" / "Partially Paid" /
-                            "Unpaid" instead show the amount actually collected within this window from invoices
-                            currently in that status (so these three columns will not add up to "Total Invoice
-                            Amount" -- that is expected). Indented rows break each Cash/Bank total down by the
-                            specific journal that settled the invoice. An invoice is classified under the single
-                            journal that carried the larger share of its reconciled payments, so it is never counted
-                            twice.
+                            "Amount Collected"/"Paid"/"Partially Paid"/"Unpaid" all show the amount actually collected
+                            within this window. Indented rows break each Cash/Bank total down by the specific journal
+                            that received it. An invoice settled through more than one journal within this window
+                            (e.g. part Mobile Money, part Cash) contributes only its own share to each journal's row
+                            -- never its full amount to just one -- so such an invoice is intentionally counted once
+                            per contributing journal below rather than exactly once overall.
+                        </p>
+                        <p t-if="rd['has_split_settlements']" class="text-muted" style="font-size:9px;">
+                            Note: because at least one invoice above was settled through more than one journal within
+                            this window, the invoice counts in this table can add up to more than the
+                            <span t-out="rd['summary']['invoice_count']"/> unique invoice(s) shown in the Summary --
+                            that is expected, not a duplicate.
                         </p>
                         <p t-if="rd['unclassified']['count']" class="text-muted" style="font-size:9px;">
                             Note:

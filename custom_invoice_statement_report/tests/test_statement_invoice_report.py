@@ -278,7 +278,11 @@ class TestStatementInvoiceReport(TransactionCase):
         self.assertAlmostEqual(data_17['summary']['paid_amount'], 50000.0)
         bank_row_17 = next(r for r in data_17['breakdown_rows'] if r['label'] == 'Bank')
         self.assertAlmostEqual(bank_row_17['paid_amount'], 50000.0)
-        self.assertAlmostEqual(bank_row_17['amount'], 80000.0)  # Total Invoice Amount: full value, unaffected
+        # In Payment Date mode the breakdown table's "amount" column is
+        # itself collected-in-window (see test_03e for why: an invoice can
+        # span more than one journal, so attributing its full value would
+        # double-count it across rows), so it matches paid_amount here.
+        self.assertAlmostEqual(bank_row_17['amount'], 50000.0)
 
         wizard_10 = self.env['statement.invoice.report.wizard'].create({
             'date_basis': 'payment_date', 'date_from': '2026-08-10', 'date_to': '2026-08-10',
@@ -299,6 +303,57 @@ class TestStatementInvoiceReport(TransactionCase):
         })
         _, line_invoice_date = _get_line(wizard_invoice_date)
         self.assertAlmostEqual(line_invoice_date['amount_paid'], 80000.0)
+
+    def test_03e_payment_date_splits_by_journal_within_same_window(self):
+        """The exact scenario reported: an 80,000 invoice paid 40,000 via
+        one bank journal and 40,000 via a cash journal, both within the
+        same selected window, must appear as *two* detail rows -- one per
+        contributing journal, each showing only its own amount -- instead
+        of being collapsed into a single row under whichever journal
+        happens to be the invoice's all-time "dominant" one."""
+        invoice = self._create_invoice(80000, '2026-08-17')
+        invoice.action_post()
+        self._register_payment(invoice, 40000, self.bank_journal_2, payment_date='2026-08-17')  # "Lipa namba"-like
+        self._register_payment(invoice, 40000, self.cash_journal, payment_date='2026-08-19')
+        self.assertAlmostEqual(invoice.amount_residual, 0.0)
+
+        wizard = self.env['statement.invoice.report.wizard'].create({
+            'date_basis': 'payment_date', 'date_from': '2026-08-17', 'date_to': '2026-08-19',
+        })
+        data = wizard._get_report_data()
+        lines = [l for l in data['invoices'] if l['name'] == invoice.name]
+        self.assertEqual(len(lines), 2, "one detail row per contributing journal, not one collapsed row")
+
+        by_journal = {l['settlement_journal']: l for l in lines}
+        self.assertEqual(set(by_journal), {self.bank_journal_2.name, self.cash_journal.name})
+
+        bank_line = by_journal[self.bank_journal_2.name]
+        self.assertEqual(bank_line['cash_bank_type'], 'Bank')
+        self.assertAlmostEqual(bank_line['amount_paid'], 40000.0)
+        self.assertAlmostEqual(bank_line['amount_total'], 80000.0)  # full invoice value, repeated for context
+
+        cash_line = by_journal[self.cash_journal.name]
+        self.assertEqual(cash_line['cash_bank_type'], 'Cash')
+        self.assertAlmostEqual(cash_line['amount_paid'], 40000.0)
+
+        # The aggregate breakdown must attribute each journal's own share
+        # correctly too (not lump all 80,000 under one type).
+        bank_row = next(r for r in data['breakdown_rows'] if r['label'] == 'Bank')
+        cash_row = next(r for r in data['breakdown_rows'] if r['label'] == 'Cash')
+        self.assertAlmostEqual(bank_row['paid_amount'], 40000.0)
+        self.assertAlmostEqual(cash_row['paid_amount'], 40000.0)
+
+        # The invoice genuinely touched both types, so it is intentionally
+        # counted once per type here (2 total) even though the Summary
+        # still correctly reports exactly 1 unique invoice.
+        self.assertEqual(bank_row['count'] + cash_row['count'], 2)
+        self.assertEqual(data['summary']['invoice_count'], 1)
+        self.assertTrue(data['has_split_settlements'])
+
+        # Total collected (Summary KPI) must still add up to the full
+        # 80,000 -- amounts are never lost or double-counted, only counts
+        # legitimately diverge from unique-invoice counts in this mode.
+        self.assertAlmostEqual(data['summary']['paid_amount'], 80000.0)
 
     def test_04_date_range_validation(self):
         with self.assertRaises(ValidationError):
