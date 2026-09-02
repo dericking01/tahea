@@ -7,6 +7,7 @@
     'depends': ['approvals', 'account'],
     'data': [
         'views/views.xml',
+        'views/report_templates.xml',
     ],
     'installable': True,
     'application': False,
