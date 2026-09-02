@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_backup_config_form" model="ir.ui.view">
+        <field name="name">db.backup.form</field>
+        <field name="model">db.backup</field>
+        <field name="arch" type="xml">
+            <form string="Back-up configuration">
+                <sheet>
+                    <group string="Local backup configuration">
+                        <group name="configuration">
+                            <field name="name"/>
+                            <field name="host"/>
+                            <field name="port"/>
+                        </group>
+                        <group name="configuration_right">
+                            <field name="backup_type"/>
+                            <field name="folder"/>
+                            <field name="autoremove"/>
+                            <field name="days_to_keep" invisible="not autoremove"
+                                   required="autoremove"/>
+                        </group>
+                    </group>
+                    <group string="SFTP">
+                        <field name="sftp_write"/>
+                    </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not sftp_write">
+                        <b>Warning:</b>
+                        Use SFTP with caution! This writes files to external servers
+                        under the path you specify.
+                    </div>
+                    <group name="sftp_configuration" invisible="not sftp_write">
+                        <field name="sftp_host" required="sftp_write"/>
+                        <field name="sftp_port" required="sftp_write"/>
+                        <field name="sftp_user" required="sftp_write"/>
+                        <field name="sftp_password" password="True" required="sftp_write"/>
+                        <field name="sftp_path" required="sftp_write"
+                               placeholder="For example: /odoo/backups/"/>
+                        <field name="days_to_keep_sftp" required="sftp_write"/>
+                        <field name="send_mail_sftp_fail"/>
+                        <field name="email_to_notify"
+                               invisible="not send_mail_sftp_fail"
+                               required="send_mail_sftp_fail"/>
+                        <button name="test_sftp_connection" type="object"
+                                string="Test SFTP Connection" class="btn-secondary"/>
+                    </group>
+                    <separator string="Help"/>
+                    <div name="configuration_details">
+                        This configures the scheduler for automatic backup of the given
+                        database running on the given host at the given port on regular
+                        intervals.
+                        <br/>
+                        Automatic backups of the database can be scheduled as follows:
+                        <ol>
+                            <li>Go to Settings / Technical / Automation / Scheduled Actions.</li>
+                            <li>Search the action named 'Backup scheduler'.</li>
+                            <li>Set the scheduler to active and fill in how often you want backups generated.</li>
+                        </ol>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_backup_config_tree" model="ir.ui.view">
+        <field name="name">db.backup.list</field>
+        <field name="model">db.backup</field>
+        <field name="arch" type="xml">
+            <list string="Back-ups">
+                <field name="name"/>
+                <field name="host"/>
+                <field name="port"/>
+                <field name="folder"/>
+                <field name="backup_type"/>
+                <field name="autoremove"/>
+                <field name="sftp_write"/>
+                <field name="sftp_host"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_backup" model="ir.actions.act_window">
+        <field name="name">Configure back-ups</field>
+        <field name="res_model">db.backup</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="auto_backup_menu" name="Back-ups"
+              parent="base.menu_custom" groups="auto_backup.group_manager"/>
+    <menuitem id="backup_conf_menu" parent="auto_backup_menu"
+              action="action_backup" groups="auto_backup.group_manager"/>
+</odoo>
