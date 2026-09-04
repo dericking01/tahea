@@ -316,7 +316,12 @@ class DbBackup(models.Model):
 
         _logger.info('DUMP DB: %s format %s', db_name, backup_format)
 
-        cmd = ['pg_dump', '--no-owner', db_name]
+        # Connection settings (host/port/user/password) come from the Odoo config
+        # via libpq environment variables, exactly like odoo.service.db.dump_db.
+        # This is what makes pg_dump reach a remote/containerised PostgreSQL
+        # instead of falling back to a local unix socket.
+        pg_env = odoo.tools.exec_pg_environ()
+        cmd = [odoo.tools.find_pg_tool('pg_dump'), '--no-owner', db_name]
 
         if backup_format == 'zip':
             with tempfile.TemporaryDirectory() as dump_dir:
@@ -328,7 +333,7 @@ class DbBackup(models.Model):
                     with db.cursor() as cr:
                         json.dump(self._dump_db_manifest(cr), fh, indent=4)
                 cmd.append('--file=' + os.path.join(dump_dir, 'dump.sql'))
-                subprocess.run(cmd, check=True)
+                subprocess.run(cmd, env=pg_env, check=True)
                 if stream:
                     odoo.tools.osutil.zip_dir(
                         dump_dir, stream, include_dir=False,
@@ -342,8 +347,10 @@ class DbBackup(models.Model):
                     return t
         else:
             cmd.append('--format=c')
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            process = subprocess.Popen(cmd, env=pg_env, stdout=subprocess.PIPE)
             stdout, _stderr = process.communicate()
+            if process.returncode:
+                raise Exception("pg_dump failed with return code %s" % process.returncode)
             if stream:
                 stream.write(stdout)
             else:
