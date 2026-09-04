@@ -4,7 +4,7 @@
 
 {
     'name': 'Restriction of POS User',
-    'version': '18.0.1.1.0',
+    'version': '18.0.1.2.0',
     'category': 'Point of Sale',
     'author': 'Garazd Creation',
     'website': 'https://garazd.biz/shop',
@@ -13,11 +13,13 @@
     'images': ['static/description/banner.png', 'static/description/icon.png'],
     'depends': [
         'point_of_sale',
+        'pos_hr',
     ],
     'data': [
         'security/pos_user_groups.xml',
         'security/pos_user_restrict_security.xml',
         'views/res_users_views.xml',
+        'views/res_config_settings_views.xml',
     ],
     'support': 'support@garazd.biz',
     'application': False,
