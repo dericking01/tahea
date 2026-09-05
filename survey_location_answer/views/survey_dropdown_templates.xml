@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <!--
+        Override question_container: swap in our searchable dropdown when a choice
+        question has > 3 options and the survey is in fill mode (not read-only).
+    -->
+    <template id="question_container_dropdown" inherit_id="survey.question_container">
+        <xpath expr="//t[@t-call='survey.question_simple_choice']" position="replace">
+            <t t-if="question.question_type == 'simple_choice'">
+                <t t-if="not survey_form_readonly and len(question.suggested_answer_ids) > 3"
+                   t-call="survey_location_answer.question_choice_dropdown">
+                    <t t-set="dd_is_multi" t-value="False"/>
+                    <t t-set="dd_qtype"    t-value="'simple_choice_radio'"/>
+                </t>
+                <t t-else="" t-call="survey.question_simple_choice"/>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-call='survey.question_multiple_choice']" position="replace">
+            <t t-if="question.question_type == 'multiple_choice'">
+                <t t-if="not survey_form_readonly and len(question.suggested_answer_ids) > 3"
+                   t-call="survey_location_answer.question_choice_dropdown">
+                    <t t-set="dd_is_multi" t-value="True"/>
+                    <t t-set="dd_qtype"    t-value="'multiple_choice'"/>
+                </t>
+                <t t-else="" t-call="survey.question_multiple_choice"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!--
+        Unified searchable dropdown for both single and multiple choice questions.
+        Variables expected from the caller:
+            dd_is_multi  — True for multiple_choice, False for simple_choice
+            dd_qtype     — "multiple_choice" | "simple_choice_radio"
+        The outer div keeps the same data-name / data-question-type that
+        survey_form.js uses for submission and validation — nothing changes there.
+    -->
+    <template id="question_choice_dropdown" name="Question: searchable choice dropdown">
+        <t t-set="comment_line"      t-value="answer_lines.filtered(lambda l: l.value_char_box)[:1]"/>
+        <t t-set="has_other"         t-value="question.comments_allowed and question.comment_count_as_answer"/>
+        <t t-set="is_other_selected" t-value="bool(comment_line)"/>
+
+        <!-- Wrapper — keeps same attributes survey JS relies on -->
+        <div class="o_survey_answer_wrapper o_survey_form_choice o_survey_dropdown_choice"
+             t-att-data-name="question.id"
+             t-att-data-question-type="dd_qtype">
+
+            <div class="o_survey_dd position-relative">
+
+                <!-- ① Chip row (visible for multiple choice pre-selections) -->
+                <div class="o_survey_dd_chips d-flex flex-wrap gap-1 mb-1"/>
+
+                <!-- ② Search input — always visible, user types here to filter -->
+                <input type="text"
+                       class="form-control o_survey_dd_search"
+                       t-att-data-is-multi="'1' if dd_is_multi else '0'"
+                       t-att-data-question-name="question.id"
+                       placeholder="Type to search options…"
+                       autocomplete="off"/>
+
+                <!-- ③ Dropdown list — hidden until focus/type -->
+                <div class="o_survey_dd_list"
+                     style="display:none; position:absolute; z-index:9999; width:100%; max-height:240px; overflow-y:auto; background:#fff; border:1px solid #dee2e6; border-top:none; border-radius:0 0 .375rem .375rem; box-shadow:0 4px 8px rgba(0,0,0,.1);">
+                    <div class="o_survey_dd_empty py-2 px-3 text-muted fst-italic" style="display:none;">No results found</div>
+
+                    <t t-foreach="question.suggested_answer_ids" t-as="label">
+                        <t t-set="ans_line"  t-value="answer_lines.filtered(lambda l: l.suggested_answer_id == label)[:1]"
+                           t-if="dd_is_multi"/>
+                        <t t-set="ans_line_s" t-value="answer_lines.filtered(lambda l: l.suggested_answer_id)[:1]"
+                           t-if="not dd_is_multi"/>
+                        <t t-set="is_sel"
+                           t-value="bool(ans_line) if dd_is_multi else (ans_line_s and ans_line_s.suggested_answer_id.id == label.id)"/>
+
+                        <div t-attf-class="o_survey_dd_opt py-2 px-3 d-flex align-items-center gap-2 #{'o_survey_dd_opt_active' if is_sel else ''}"
+                             t-att-data-value="label.id"
+                             t-att-data-label="label.value"
+                             style="cursor:pointer; user-select:none;">
+                            <!-- Visual indicator — NOT a real input (avoids form submission collision) -->
+                            <span class="o_survey_dd_icon" aria-hidden="true">
+                                <t t-if="dd_is_multi"><t t-if="is_sel">&#9745;</t><t t-else="">&#9744;</t></t>
+                                <t t-else=""><t t-if="is_sel">&#9679;</t><t t-else="">&#9675;</t></t>
+                            </span>
+                            <span><t t-esc="label.value"/></span>
+                        </div>
+                    </t>
+
+                    <!-- "Other" option -->
+                    <t t-if="has_other">
+                        <div t-attf-class="o_survey_dd_opt o_survey_dd_other py-2 px-3 d-flex align-items-center gap-2 border-top #{'o_survey_dd_opt_active' if is_other_selected else ''}"
+                             data-value="-1"
+                             t-att-data-label="question.comments_message or 'Other (please specify)'"
+                             style="cursor:pointer; user-select:none; color:#6c757d;">
+                            <span class="o_survey_dd_icon" aria-hidden="true">
+                                <t t-if="dd_is_multi"><t t-if="is_other_selected">&#9745;</t><t t-else="">&#9744;</t></t>
+                                <t t-else=""><t t-if="is_other_selected">&#9679;</t><t t-else="">&#9675;</t></t>
+                            </span>
+                            <span><t t-esc="question.comments_message or 'Other (please specify)'"/></span>
+                        </div>
+                    </t>
+                </div><!-- /.o_survey_dd_list -->
+            </div><!-- /.o_survey_dd -->
+
+            <!-- "Other" textarea -->
+            <t t-if="has_other">
+                <div t-attf-class="o_survey_comment_container mt-3 py-0 px-1 #{'d-none' if not is_other_selected else ''}">
+                    <textarea class="form-control o_survey_question_text_box bg-transparent rounded-0 p-0"
+                              t-att-disabled="None if is_other_selected else 'disabled'"><t t-esc="comment_line.value_char_box if comment_line else ''"/></textarea>
+                </div>
+            </t>
+
+            <!-- Regular (non-scored) comment textarea -->
+            <div t-if="question.comments_allowed and not question.comment_count_as_answer"
+                 class="mb-2 o_survey_comment_container mt-3">
+                <textarea class="col form-control o_survey_comment o_survey_question_text_box bg-transparent rounded-0 p-0"
+                          t-att-placeholder="question.comments_message or ''"><t t-esc="comment_line.value_char_box if comment_line else ''"/></textarea>
+            </div>
+
+            <!--
+                Hidden inputs — survey_form.js reads input:checked inside this
+                wrapper for submission (_prepareSubmitChoices) and validation.
+                We keep these hidden and sync them via JS.
+            -->
+            <t t-foreach="question.suggested_answer_ids" t-as="label">
+                <t t-set="ans_line_h"  t-value="answer_lines.filtered(lambda l: l.suggested_answer_id == label)[:1]"
+                   t-if="dd_is_multi"/>
+                <t t-set="ans_line_hs" t-value="answer_lines.filtered(lambda l: l.suggested_answer_id)[:1]"
+                   t-if="not dd_is_multi"/>
+                <t t-set="is_sel_h"
+                   t-value="bool(ans_line_h) if dd_is_multi else (ans_line_hs and ans_line_hs.suggested_answer_id.id == label.id)"/>
+                <input t-att-type="'checkbox' if dd_is_multi else 'radio'"
+                       t-att-name="question.id"
+                       t-att-value="label.id"
+                       t-attf-class="o_survey_form_choice_item #{'o_survey_form_choice_item_selected' if is_sel_h else ''}"
+                       style="display:none !important;"
+                       t-att-checked="'checked' if is_sel_h else None"/>
+            </t>
+            <t t-if="has_other">
+                <input t-att-type="'checkbox' if dd_is_multi else 'radio'"
+                       class="o_survey_form_choice_item o_survey_js_form_other_comment"
+                       t-att-name="question.id"
+                       value="-1"
+                       style="display:none !important;"
+                       t-att-checked="is_other_selected and 'checked' or None"/>
+            </t>
+
+        </div><!-- /.o_survey_answer_wrapper -->
+    </template>
+
+</data>
+</odoo>

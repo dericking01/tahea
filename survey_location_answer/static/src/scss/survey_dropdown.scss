@@ -1,0 +1,49 @@
+// Survey searchable choice dropdown
+
+.o_survey_dd {
+    position: relative;
+
+    .o_survey_dd_search {
+        &:focus {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+            outline: 0;
+        }
+    }
+
+    .o_survey_dd_list {
+        .o_survey_dd_opt {
+            transition: background-color .1s;
+            font-size: .95rem;
+
+            &:hover {
+                background-color: #f8f9fa;
+            }
+
+            &.o_survey_dd_opt_active {
+                background-color: #e7f1ff;
+                font-weight: 500;
+            }
+
+            .o_survey_dd_icon {
+                flex-shrink: 0;
+                font-size: .9rem;
+                color: #6c757d;
+                pointer-events: none;
+            }
+
+            &.o_survey_dd_opt_active .o_survey_dd_icon {
+                color: #0d6efd;
+            }
+        }
+    }
+
+    .o_survey_dd_chips {
+        .badge {
+            font-size: .78rem;
+            white-space: nowrap;
+        }
+    }
+}
