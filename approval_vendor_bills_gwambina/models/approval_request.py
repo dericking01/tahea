@@ -1,5 +1,5 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, UserError
 
 
 # -------------------------------
@@ -143,3 +143,12 @@ class ApprovalRequest(models.Model):
                             "You cannot select the same bill more than once."
                         )
                     all_bills.append(bill)
+
+    # -------------------------------
+    # Deletion is disabled for everyone
+    # -------------------------------
+    def unlink(self):
+        raise UserError(_(
+            "Approval requests cannot be deleted. Please refuse or cancel "
+            "the request instead."
+        ))
