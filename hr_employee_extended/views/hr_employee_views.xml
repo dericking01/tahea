@@ -10,7 +10,6 @@
             <xpath expr="//page[@name='personal_information']//group[1]//field[@name='bank_account_id']" position="after">
                 <field name="tin_number"/>
                 <field name="nssf_number"/>
-                <field name="wcf"/>
             </xpath>
         </field>
     </record>
@@ -51,6 +50,7 @@
                     <field name="nhif_2"/>
                     <field name="heslb"/>
                     <field name="paye"/>
+                    <field name="reimbursement_expense"/>
                 </xpath>
             </field>
 </record>

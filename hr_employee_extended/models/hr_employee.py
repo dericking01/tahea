@@ -17,13 +17,6 @@ class HrEmployeeExtended(models.Model):
         index=True
     )
 
-    wcf = fields.Char(
-        string='WCF',
-        help='Optional WCF field',
-        tracking=True,
-        index=True
-    )
-
 class hr_custom(models.Model):
     _inherit = 'hr.contract'
 
@@ -31,3 +24,8 @@ class hr_custom(models.Model):
     heslb = fields.Boolean("Loan Board", default=True)
     nhif_2 = fields.Boolean("NHIF", default=True)
     paye = fields.Boolean("PAYE", default=True)
+    reimbursement_expense = fields.Monetary(
+        "Reimbursement Expense",
+        currency_field='currency_id',
+        help="Reimbursement expense amount for this contract"
+    )
