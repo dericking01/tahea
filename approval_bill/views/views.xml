@@ -70,4 +70,15 @@
 
         </field>
     </record>
+
+    <record id="view_move_form_inherit_readonly_name" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.readonly.name</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name'][@readonly=&quot;state != 'draft'&quot;]" position="attributes">
+                <attribute name="readonly">state != 'draft' or move_type == 'in_invoice'</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>
