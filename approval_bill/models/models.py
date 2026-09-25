@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from odoo import models, fields
+from odoo import api, models, fields
 from odoo.exceptions import UserError
 
 
@@ -24,12 +24,32 @@ class ApprovalRequest(models.Model):
         required=True
     )
 
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Currency',
+        domain=[('active', '=', True)],
+        default=lambda self: self.env['res.currency'].search(
+            [('active', '=', True)], limit=1),
+    )
+
     bill_payment_state = fields.Selection(
         related='bill_id.payment_state',
         string='Bill Payment Status',
         store=True,
         readonly=True
     )
+
+    # =====================================================
+    # SUBMIT VALIDATION
+    # =====================================================
+
+    def action_confirm(self):
+        for request in self:
+            if request.has_amount != 'no' and request.amount < 1:
+                raise UserError(
+                    "The amount must be at least 1 before submitting the approval."
+                )
+        return super().action_confirm()
 
     # =====================================================
     # ACTION: CREATE VENDOR BILL (APPROVAL CONTACT AS VENDOR)
@@ -70,7 +90,9 @@ class ApprovalRequest(models.Model):
         # ---------------- BILL VALUES ----------------
 
         bill_vals = {
+            'name': '/',
             'partner_id': vendor_partner.id,
+            'currency_id': (self.currency_id or self.env.company.currency_id).id,
             'invoice_date': fields.Date.today(),
             'ref': self.name,
             'invoice_origin': self.name,
@@ -107,3 +129,16 @@ class ApprovalRequest(models.Model):
             'view_mode': 'form',
             'res_id': bill.id,
         }
+
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    def _post(self, soft=True):
+        # A draft bill whose name is a placeholder (e.g. "New") would be posted
+        # with that literal name and collide on the unique (name, journal) index.
+        for move in self:
+            if move.state == 'draft' and move.name and move.name != '/' \
+                    and move.name.strip().lower().startswith('new'):
+                move.name = '/'
+        return super()._post(soft=soft)

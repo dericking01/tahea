@@ -38,6 +38,14 @@
                         groups="account.group_account_manager"/>
             </xpath>
 
+            <xpath expr="//field[@name='amount']" position="after">
+                <field name="currency_id"
+                       invisible="has_amount == 'no'"
+                       readonly="request_status != 'new'"
+                       required="has_amount != 'no'"
+                       options="{'no_create': True, 'no_open': True}"/>
+            </xpath>
+
             <!-- ============================================== -->
             <!-- ANALYTIC ACCOUNT TAB -->
             <!-- ============================================== -->
