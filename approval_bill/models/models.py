@@ -134,11 +134,42 @@ class ApprovalRequest(models.Model):
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
+    def _is_placeholder_name(self):
+        self.ensure_one()
+        return not self.name or self.name == '/' or self.name.strip().lower().startswith('new')
+
+    def _next_name_from_last_bill(self):
+        """Next number following the format of the most recent numbered bill of the journal."""
+        self.ensure_one()
+        last = self.search([
+            ('journal_id', '=', self.journal_id.id),
+            ('move_type', '=', 'in_invoice'),
+            ('state', '=', 'posted'),
+            ('id', '!=', self.id),
+            ('name', '!=', '/'),
+            ('name', 'not ilike', 'new%'),
+        ], order='date desc, id desc', limit=1)
+        match = re.match(r'^(.*?)(\d+)$', last.name or '')
+        if not match:
+            return False
+        prefix, digits = match.groups()
+        date = self.date or fields.Date.context_today(self)
+        if last.date:
+            prefix = prefix.replace('/%d/' % last.date.year, '/%d/' % date.year)
+            prefix = prefix.replace('/%02d/' % last.date.month, '/%02d/' % date.month)
+        used = self.search([
+            ('journal_id', '=', self.journal_id.id),
+            ('name', '=like', prefix.replace('_', r'\_').replace('%', r'\%') + '%'),
+        ]).mapped('name')
+        numbers = [int(n.group(1)) for n in (re.match(r'^%s(\d+)$' % re.escape(prefix), u) for u in used) if n]
+        number = max(numbers, default=int(digits) if prefix == match.group(1) else 0) + 1
+        return '%s%s' % (prefix, str(number).zfill(len(digits)))
+
     def _post(self, soft=True):
-        # A draft bill whose name is a placeholder (e.g. "New") would be posted
-        # with that literal name and collide on the unique (name, journal) index.
+        approval_bills = self.env['approval.request'].search([('bill_id', 'in', self.ids)]).bill_id
         for move in self:
-            if move.state == 'draft' and move.name and move.name != '/' \
-                    and move.name.strip().lower().startswith('new'):
-                move.name = '/'
+            if move.state != 'draft' or not move._is_placeholder_name():
+                continue
+            name = move in approval_bills and move._next_name_from_last_bill()
+            move.name = name or '/'
         return super()._post(soft=soft)
