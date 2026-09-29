@@ -148,7 +148,8 @@
                                 <p style="margin:0;">
                                     <strong>Amount:</strong><br/>
                                     <span style="font-size:18px; font-weight:600;"
-                                          t-esc="'{:,.2f}'.format(o.amount or 0.0)"/>
+                                          t-field="o.amount"
+                                          t-options="{'widget': 'monetary', 'display_currency': (o.currency_id if 'currency_id' in o._fields and o.currency_id else o.company_id.currency_id)}"/>
                                 </p>
 
                                 <p style="margin-top:10px;">
