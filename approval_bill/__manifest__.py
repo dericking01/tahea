@@ -3,7 +3,7 @@
     'version': '1.0',
     'summary': 'Create Vendor Bill from Approval Requests',
     'category': 'Accounting',
-    'author': 'Powersoft Solutions Ltd',
+    'author': 'Primesoft Communications Ltd',
     'depends': ['approvals', 'account'],
     'data': [
         'views/views.xml',

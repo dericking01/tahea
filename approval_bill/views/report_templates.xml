@@ -9,6 +9,11 @@
                 <span t-field="o.name">EXP/2026/0001</span>
             </h4>
         </xpath>
+
+        <!-- Show the amount together with the approval's currency -->
+        <xpath expr="//h6[@t-field='o.amount']" position="attributes">
+            <attribute name="t-options">{'widget': 'monetary', 'display_currency': o.currency_id or o.company_id.currency_id}</attribute>
+        </xpath>
     </template>
 
 </odoo>
