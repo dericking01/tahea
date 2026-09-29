@@ -50,7 +50,7 @@
                     <field name="nhif_2"/>
                     <field name="heslb"/>
                     <field name="paye"/>
-                    <field name="reimbursement_expense"/>
+                    <field name="reimbursement_expense" groups="hr_employee_extended.group_reimbursement_expense_visible"/>
                 </xpath>
             </field>
 </record>

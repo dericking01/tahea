@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="group_reimbursement_expense_visible" model="res.groups">
+        <field name="name">Show Reimbursement Expense on Contracts</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <!-- Not wrapped in noupdate: on a fresh install this runs in 'init' mode anyway,
+         but it must also re-apply on `-u` upgrades of an already-installed database
+         (Odoo's XML loader skips noupdate writes to pre-existing records outside
+         init mode, so base.group_user would otherwise never gain the implied group). -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('hr_employee_extended.group_reimbursement_expense_visible'))]"/>
+    </record>
+
+</odoo>
