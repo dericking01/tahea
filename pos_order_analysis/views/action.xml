@@ -1,0 +1,10 @@
+<odoo>
+
+      <record id="action_sales_pos_excel_wizard" model="ir.actions.act_window">
+          <field name="name">Sales / POS Excel Report</field>
+          <field name="res_model">sales.pos.report.wizard</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+      </record>
+      
+</odoo>

@@ -1,0 +1,34 @@
+<odoo>
+
+    <!-- Pos Order Report Pivot -->
+    <record id="view_report_pos_order_pivot_inherit" model="ir.ui.view">
+        <field name="name">report.pos.order.pivot.inherit</field>
+        <field name="model">report.pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_report_pos_order_pivot"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_total']" position="after">
+                <field name="amount_untaxed" type="measure"/>
+                <field name="amount_tax" type="measure"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+
+      <!-- Reuse POS Excel Report Wizard under Accounting -->
+    <menuitem id="menu_sales_pos_excel_accounting"
+              name="POS / Sales Excel Report"
+              parent="account.account_reports_management_menu"
+              action="action_sales_pos_excel_wizard"
+              sequence="100"/>
+
+    <menuitem id="menu_sale_report"
+            name="Sales Order Analysis"
+            action="sale.action_order_report_all"
+            groups="sales_team.group_sale_manager"
+            parent="account.account_reports_management_menu"
+            sequence="40"/>
+
+    <menuitem id="menu_report_pos_order_all" name="POS Orders" action="point_of_sale.action_report_pos_order_all" parent="account.account_reports_management_menu" sequence="3"/>
+</odoo>
