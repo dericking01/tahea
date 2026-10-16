@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_delivery_document_hdimex_responsible" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@name='div_sched_date']" position="after">
+            <div t-if="o.responsible_employee_id" class="col col-3 mw-100 mb-2" name="div_responsible_employee">
+                <strong>Responsible</strong>
+                <div class="m-0" t-out="o.responsible_employee_id.sudo().name"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -15,6 +15,7 @@ responsible is kept in sync so filters and activities keep working.
     'depends': ['stock', 'hr'],
     'data': [
         'views/stock_picking_views.xml',
+        'views/report_deliveryslip.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'license': 'LGPL-3',
