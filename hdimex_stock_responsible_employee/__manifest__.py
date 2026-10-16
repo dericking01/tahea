@@ -12,10 +12,11 @@ When the selected employee has a linked user, the standard user
 responsible is kept in sync so filters and activities keep working.
     """,
     'author': 'HDIMEX',
-    'depends': ['stock', 'hr'],
+    'depends': ['stock', 'hr', 'sale_stock'],
     'data': [
         'views/stock_picking_views.xml',
         'views/report_deliveryslip.xml',
+        'views/sale_order_views.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'license': 'LGPL-3',
