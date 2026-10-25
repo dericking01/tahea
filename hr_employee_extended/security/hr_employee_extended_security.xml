@@ -6,6 +6,13 @@
         <field name="category_id" ref="base.module_category_hidden"/>
     </record>
 
+    <!-- TUICO is hidden by default: no implied-group link is added here, the
+         payroll setting adds/removes it on base.group_user. -->
+    <record id="group_tuico_visible" model="res.groups">
+        <field name="name">Show TUICO on Contracts</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
     <!-- Not wrapped in noupdate: on a fresh install this runs in 'init' mode anyway,
          but it must also re-apply on `-u` upgrades of an already-installed database
          (Odoo's XML loader skips noupdate writes to pre-existing records outside
