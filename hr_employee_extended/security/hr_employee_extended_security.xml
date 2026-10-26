@@ -13,6 +13,12 @@
         <field name="category_id" ref="base.module_category_hidden"/>
     </record>
 
+    <!-- Non-Resident is hidden by default, same as TUICO. -->
+    <record id="group_non_resident_visible" model="res.groups">
+        <field name="name">Show Non-Resident on Contracts</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
     <!-- Not wrapped in noupdate: on a fresh install this runs in 'init' mode anyway,
          but it must also re-apply on `-u` upgrades of an already-installed database
          (Odoo's XML loader skips noupdate writes to pre-existing records outside

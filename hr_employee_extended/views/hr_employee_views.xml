@@ -51,6 +51,7 @@
                     <field name="heslb"/>
                     <field name="paye"/>
                     <field name="tuico" groups="hr_employee_extended.group_tuico_visible"/>
+                    <field name="non_resident" groups="hr_employee_extended.group_non_resident_visible"/>
                     <field name="reimbursement_expense" groups="hr_employee_extended.group_reimbursement_expense_visible"/>
                 </xpath>
             </field>

@@ -25,6 +25,7 @@ class hr_custom(models.Model):
     nhif_2 = fields.Boolean("NHIF", default=True)
     paye = fields.Boolean("PAYE", default=True)
     tuico = fields.Boolean("TUICO", default=False)
+    non_resident = fields.Boolean("Non-Resident", default=False)
     reimbursement_expense = fields.Monetary(
         "Reimbursement Expense",
         currency_field='currency_id',
