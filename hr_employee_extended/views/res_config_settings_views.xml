@@ -12,16 +12,6 @@
                          help="Show the Reimbursement Expense field on employee contracts">
                     <field name="group_reimbursement_expense_visible"/>
                 </setting>
-                <setting id="tuico_visibility"
-                         string="TUICO"
-                         help="Show the TUICO field on employee contracts">
-                    <field name="group_tuico_visible"/>
-                </setting>
-                <setting id="non_resident_visibility"
-                         string="Non-Resident"
-                         help="Show the Non-Resident field on employee contracts">
-                    <field name="group_non_resident_visible"/>
-                </setting>
             </block>
         </field>
     </record>
