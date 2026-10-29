@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_gw" model="ir.ui.view">
+        <field name="name">stock.picking.form.gwambina</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <!-- Receipt confirmation: return undelivered goods to the source location -->
+            <xpath expr="//header/button[@name='action_cancel']" position="before">
+                <button name="action_gw_return_to_source" type="object" string="Return to Source"
+                        invisible="not gw_is_receipt_confirmation or gw_returned_to_source or state in ('done', 'cancel')"
+                        confirm="The goods of this transfer will not be delivered and will be sent back to the original source location. Continue?"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_gw_view_receipt_confirmations" type="object"
+                        class="oe_stat_button" icon="fa-check-square-o"
+                        invisible="gw_receipt_picking_count == 0">
+                    <field string="Receipt Confirmation" name="gw_receipt_picking_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//sheet/div[@name='button_box']" position="after">
+                <div class="alert alert-warning text-center" role="alert"
+                     invisible="not gw_is_receipt_confirmation or state in ('done', 'cancel')">
+                    <span invisible="gw_returned_to_source">Goods are in transit: confirm the quantities physically received. Undelivered quantities go to a backorder.</span>
+                    <span invisible="not gw_returned_to_source">Goods not delivered: returning to the original source location.</span>
+                    <div invisible="not gw_responsible_user_ids">Persons in charge: <field name="gw_responsible_user_ids" widget="many2many_tags" readonly="1" class="d-inline-block"/></div>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='backorder_id']" position="after">
+                <field name="gw_is_receipt_confirmation" invisible="1"/>
+                <field name="gw_returned_to_source" invisible="1"/>
+                <field name="gw_final_location_id" invisible="not gw_final_location_id"/>
+                <field name="gw_dispatch_picking_id" invisible="not gw_dispatch_picking_id"/>
+                <field name="gw_return_location_id" invisible="not gw_is_receipt_confirmation"/>
+            </xpath>
+            <!-- Location-restricted users only pick their allowed locations as source -->
+            <xpath expr="//sheet/group/group/field[@name='location_id'][@groups='stock.group_stock_multi_locations']" position="attributes">
+                <attribute name="context">{'gw_restrict_locations': True}</attribute>
+            </xpath>
+            <xpath expr="//sheet/group/group/field[@name='location_dest_id'][@groups='stock.group_stock_multi_locations']" position="attributes">
+                <attribute name="context">{'gw_restrict_locations': picking_type_code == 'incoming'}</attribute>
+            </xpath>
+            <!-- Receipts: no delete icon on the operation lines, except for administrators -->
+            <xpath expr="//field[@name='move_ids_without_package']" position="before">
+                <field name="gw_can_delete_moves" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                <attribute name="options">{'delete': [('gw_can_delete_moves', '=', True)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_gw" model="ir.ui.view">
+        <field name="name">stock.picking.search.gwambina</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='internal']" position="after">
+                <filter name="gw_receipt_confirmation" string="Receipt Confirmations"
+                        domain="[('gw_is_receipt_confirmation', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_gw_receipt_confirmations" model="ir.actions.act_window">
+        <field name="name">Receipt Confirmations</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,kanban,form,calendar,activity</field>
+        <field name="domain">[('gw_is_receipt_confirmation', '=', True)]</field>
+        <field name="context">{'create': False, 'search_default_available': 1, 'search_default_waiting': 1}</field>
+        <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No goods awaiting reception confirmation</p>
+            <p>Internal transfers sent to a location with persons in charge appear here once dispatched,
+               until the receiver confirms the quantities physically received.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_gw_receipt_confirmations" name="Receipt Confirmations"
+              parent="stock.menu_stock_transfers" action="action_gw_receipt_confirmations" sequence="23"/>
+</odoo>

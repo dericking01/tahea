@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_gw_stock_locations" model="ir.ui.view">
+        <field name="name">res.users.form.gwambina.stock.locations</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='access_rights']" position="after">
+                <page string="Inventory Locations" name="gw_stock_locations">
+                    <group>
+                        <group string="Location Visibility">
+                            <field name="restrict_stock_locations"/>
+                            <field name="allowed_stock_location_ids" widget="many2many_tags"
+                                   invisible="not restrict_stock_locations"
+                                   required="restrict_stock_locations"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group string="Reception of Internal Transfers">
+                            <field name="gw_responsible_location_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        A restricted user only sees the stock, locations, warehouses and operations of the
+                        allowed locations (and their sub-locations). Internal transfers and delivery orders
+                        remain visible to all users.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

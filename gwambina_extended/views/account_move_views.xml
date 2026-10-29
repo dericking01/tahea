@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vendor bill lines coming from a purchase order: UoM is read-only -->
+    <record id="view_move_form_gw_po_uom" model="ir.ui.view">
+        <field name="name">account.move.form.gwambina.po.uom</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_uom_id'][@groups='uom.group_uom']" position="before">
+                <field name="po_qty_locked" column_invisible="True"/>
+                <field name="po_original_qty" column_invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_uom_id'][@groups='uom.group_uom']" position="attributes">
+                <attribute name="readonly">po_qty_locked</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
