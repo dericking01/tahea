@@ -12,14 +12,9 @@ patch(StockKanbanRenderer.prototype, {
         super.setup();
         this.gwOrm = useService("orm");
         this.gwAction = useService("action");
-        this.gwCustomReceipts = useState({ show: false, type_count: 0, ready: 0, waiting: 0, late: 0 });
+        this.gwCustomReceipts = useState({ show: false, ready: 0 });
         onWillStart(async () => {
-            const context = this.props.list.context || {};
-            if (
-                this.env.inDialog ||
-                this.props.list.resModel !== "stock.picking.type" ||
-                context.gw_hide_custom_receipts_card
-            ) {
+            if (this.env.inDialog || this.props.list.resModel !== "stock.picking.type") {
                 return;
             }
             const data = await this.gwOrm.call("stock.picking.type", "gw_get_custom_receipts_data", []);
@@ -27,18 +22,8 @@ patch(StockKanbanRenderer.prototype, {
         });
     },
 
-    async gwOpenCustomReceiptTypes() {
+    async gwOpenCustomReceipts() {
         const action = await this.gwOrm.call("stock.picking.type", "gw_action_custom_receipts", []);
-        await this.gwAction.doAction(action);
-    },
-
-    async gwOpenCustomReceiptPickings(state) {
-        const action = await this.gwOrm.call(
-            "stock.picking.type",
-            "gw_action_custom_receipts_pickings",
-            [],
-            { state: state || false }
-        );
         await this.gwAction.doAction(action);
     },
 });

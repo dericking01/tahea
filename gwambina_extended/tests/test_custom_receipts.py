@@ -32,31 +32,49 @@ class TestCustomReceipts(GwStockCommon):
         cls.type_a_internal = picking_type('Shelving A', 'internal', cls.loc_a, 'GSA')  # not a receipt
         cls.stock_user.allowed_stock_location_ids = [(6, 0, (cls.loc_a | cls.loc_b).ids)]
 
-    def test_custom_receipt_types_follow_allowed_locations(self):
-        PickingType = self.env['stock.picking.type'].with_user(self.stock_user)
-        types = PickingType._gw_custom_receipt_types()
-        self.assertEqual(types, self.type_a | self.type_b)
+    def _grns(self, user):
+        action = self.env['stock.picking.type'].with_user(user).gw_action_custom_receipts()
+        self.assertEqual(action['res_model'], 'stock.picking')
+        self.assertNotIn('help', action)
+        return self.env['stock.picking'].search(action['domain'])
 
-        action = PickingType.gw_action_custom_receipts()
-        self.assertEqual(action['res_model'], 'stock.picking.type')
-        self.assertEqual(set(action['domain'][0][2]), set((self.type_a | self.type_b).ids))
-        self.assertTrue(action['context']['gw_hide_custom_receipts_card'])
+    def test_card_opens_grns_to_allowed_locations(self):
+        grn_a = self._create_picking(self.type_a, self.supplier_location, self.loc_a, [(self.product_a, 5)])
+        grn_b = self._create_picking(self.type_b, self.stock_location, self.loc_b_bin, [(self.product_a, 1)])
+        grn_c = self._create_picking(self.type_c, self.supplier_location, self.loc_c, [(self.product_a, 5)])
+        shelving = self._create_picking(self.type_a_internal, self.stock_location, self.loc_a, [(self.product_a, 1)])
+        # Standard warehouse receipt type ending in an allowed location also counts
+        grn_wh = self._create_picking(self.warehouse.in_type_id, self.supplier_location, self.loc_a, [(self.product_b, 2)])
 
-    def test_card_counts_and_pickings_action(self):
-        receipt_a = self._create_picking(self.type_a, self.supplier_location, self.loc_a, [(self.product_a, 5)])
-        self._create_picking(self.type_c, self.supplier_location, self.loc_c, [(self.product_a, 5)])
-        self.assertEqual(receipt_a.state, 'assigned')
+        grns = self._grns(self.stock_user)
+        self.assertIn(grn_a, grns)
+        self.assertIn(grn_b, grns)
+        self.assertIn(grn_wh, grns)
+        self.assertNotIn(grn_c, grns)
+        self.assertNotIn(shelving, grns)
 
         data = self.env['stock.picking.type'].with_user(self.stock_user).gw_get_custom_receipts_data()
         self.assertTrue(data['show'])
-        self.assertEqual(data['type_count'], 2)
-        self.assertEqual(data['ready'], 1)
+        self.assertEqual(data['ready'], len(grns.filtered(lambda p: p.state == 'assigned')))
 
-        action = self.env['stock.picking.type'].with_user(self.stock_user).gw_action_custom_receipts_pickings('assigned')
-        pickings = self.env['stock.picking'].search(action['domain'])
-        self.assertEqual(pickings, receipt_a)
+    def test_receipt_confirmations_excluded(self):
+        self.loc_a.gw_responsible_user_ids = [(6, 0, self.receiver_user.ids)]
+        self._set_qty(self.product_a, self.loc_c, 3)
+        transfer = self._create_picking(self.warehouse.int_type_id, self.loc_c, self.loc_a, [(self.product_a, 3)])
+        transfer.action_assign()
+        transfer.button_validate()
+        confirmation = transfer.gw_receipt_picking_ids
+        self.assertTrue(confirmation)
+        self.assertNotIn(confirmation, self._grns(self.stock_user))
 
     def test_card_hidden_without_allowed_locations(self):
         data = self.env['stock.picking.type'].with_user(self.receiver_user).gw_get_custom_receipts_data()
         self.assertFalse(data['show'])
-        self.assertEqual(data['type_count'], 0)
+        self.assertFalse(self._grns(self.receiver_user))
+
+    def test_card_hidden_when_allowed_locations_archived(self):
+        self.loc_a.active = False
+        self.loc_b_bin.active = False
+        self.loc_b.active = False
+        data = self.env['stock.picking.type'].with_user(self.stock_user).gw_get_custom_receipts_data()
+        self.assertFalse(data['show'])
