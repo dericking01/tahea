@@ -240,8 +240,10 @@ class StockPicking(models.Model):
         done_moves = self.move_ids.filtered(lambda m: m.state == 'done' and m.quantity)
         if not done_moves:
             return self.env['stock.picking']
+        warehouse = final_location.warehouse_id or self.picking_type_id.warehouse_id
+        picking_type = warehouse._gw_get_receipt_confirm_type() if warehouse else self.picking_type_id
         receipt = self.env['stock.picking'].create({
-            'picking_type_id': self.picking_type_id.id,
+            'picking_type_id': picking_type.id,
             'location_id': transit.id,
             'location_dest_id': final_location.id,
             'partner_id': self.partner_id.id,
@@ -258,7 +260,7 @@ class StockPicking(models.Model):
                 'location_id': transit.id,
                 'location_dest_id': final_location.id,
                 'company_id': self.company_id.id,
-                'picking_type_id': self.picking_type_id.id,
+                'picking_type_id': picking_type.id,
                 'description_picking': move.description_picking,
             }) for move in done_moves],
         })

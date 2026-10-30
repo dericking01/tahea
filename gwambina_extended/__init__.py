@@ -11,3 +11,5 @@ def post_init_hook(env):
     # Enable receipt confirmation on the standard internal transfer type of every warehouse.
     warehouses = env['stock.warehouse'].with_context(active_test=False).search([])
     warehouses.int_type_id.write({'gw_receipt_confirmation': True})
+    # Dedicated "Receipt Confirmations" operation type, shown on the Inventory Overview.
+    warehouses._gw_create_receipt_confirm_type()

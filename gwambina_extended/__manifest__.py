@@ -1,6 +1,6 @@
 {
     'name': 'Gwambina Extended',
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.1.0',
     'summary': 'Accounting sequence, purchase bill, GRN and inventory transfer controls for Gwambina',
     'description': """
 Gwambina Extended

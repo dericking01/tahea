@@ -51,6 +51,10 @@ class TestReceiptConfirmation(GwStockCommon):
         self.assertEqual(receipt.gw_return_location_id, self.location_a)
         self.assertEqual(receipt.state, 'assigned')
         self.assertEqual(receipt.activity_ids.user_id, self.receiver_user)
+        rc_type = self.warehouse.gw_receipt_confirm_type_id
+        self.assertEqual(receipt.picking_type_id, rc_type)
+        self.assertTrue(receipt.name.startswith('%s/RC/' % self.warehouse.code))
+        self.assertEqual(rc_type.count_picking_ready, 1)
 
         # Only the person in charge of B can confirm
         with self.assertRaises(UserError):
@@ -147,3 +151,25 @@ class TestReceiptConfirmation(GwStockCommon):
     def test_new_warehouse_internal_type_flagged(self):
         wh2 = self.env['stock.warehouse'].create({'name': 'GW Second WH', 'code': 'GW2', 'company_id': self.company.id})
         self.assertTrue(wh2.int_type_id.gw_receipt_confirmation)
+
+    def test_overview_shows_receipts_and_receipt_confirmations(self):
+        rc_type = self.warehouse.gw_receipt_confirm_type_id
+        self.assertTrue(rc_type.active)
+        self.assertEqual(rc_type.code, 'internal')
+        self.assertEqual(rc_type.default_location_src_id, self.transit_location)
+        # Overview (stock.picking.type kanban), also for a location-restricted user of this warehouse
+        self.stock_user.write({
+            'restrict_stock_locations': True,
+            'allowed_stock_location_ids': [(6, 0, self.warehouse.view_location_id.ids)],
+        })
+        for user in (self.stock_user, self.receiver_user):
+            cards = self.env['stock.picking.type'].with_user(user).web_search_read(
+                [('warehouse_id', '=', self.warehouse.id)], {'id': {}})['records']
+            ids = {c['id'] for c in cards}
+            self.assertIn(self.warehouse.in_type_id.id, ids)
+            self.assertIn(rc_type.id, ids)
+
+    def test_new_warehouse_gets_receipt_confirmation_type(self):
+        wh2 = self.env['stock.warehouse'].create({'name': 'GW Third WH', 'code': 'GW3', 'company_id': self.company.id})
+        self.assertTrue(wh2.gw_receipt_confirm_type_id)
+        self.assertEqual(wh2.gw_receipt_confirm_type_id.warehouse_id, wh2)
