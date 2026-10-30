@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="gwambina_extended.StockKanbanRenderer" t-inherit="web.KanbanRenderer" t-inherit-mode="primary">
+        <xpath expr="//t[@t-foreach='getGroupsOrRecords()']" position="before">
+            <article t-if="gwCustomReceipts.show and !props.list.isGrouped"
+                     class="o_kanban_record d-flex flex-grow-1 flex-md-shrink-1 flex-shrink-0 gw_custom_receipts_card"
+                     role="article">
+                <div class="px-2 w-100">
+                    <a href="#" class="fw-bold fs-4" t-on-click.prevent="() => this.gwOpenCustomReceiptTypes()">Custom Receipts</a>
+                    <div class="text-muted">
+                        <t t-esc="gwCustomReceipts.type_count"/> operation type(s) for my locations
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <button class="btn btn-primary" t-on-click="() => this.gwOpenCustomReceiptPickings('assigned')">
+                                <span t-if="gwCustomReceipts.ready"><t t-esc="gwCustomReceipts.ready"/> To Receive</span>
+                                <span t-else="">Open</span>
+                            </button>
+                        </div>
+                        <div class="col-6 stock-overview-links">
+                            <div t-if="gwCustomReceipts.waiting" class="row">
+                                <a href="#" class="col-8 offset-4 pe-0 text-truncate" t-on-click.prevent="() => this.gwOpenCustomReceiptPickings('waiting')">
+                                    <div class="row">
+                                        <span class="col-6">Waiting</span>
+                                        <span class="col-2 text-end" t-esc="gwCustomReceipts.waiting"/>
+                                    </div>
+                                </a>
+                            </div>
+                            <div t-if="gwCustomReceipts.late" class="row">
+                                <a href="#" class="col-8 offset-4 pe-0 text-truncate text-danger" t-on-click.prevent="() => this.gwOpenCustomReceiptPickings('late')">
+                                    <div class="row">
+                                        <span class="col-6">Late</span>
+                                        <span class="col-2 text-end" t-esc="gwCustomReceipts.late"/>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="row">
+                                <a href="#" class="col-8 offset-4 pe-0 text-truncate" t-on-click.prevent="() => this.gwOpenCustomReceiptTypes()">
+                                    <span>Operation Types</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </xpath>
+    </t>
+</templates>

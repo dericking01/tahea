@@ -3,3 +3,4 @@ from . import test_purchase_controls
 from . import test_stock_availability
 from . import test_receipt_confirmation
 from . import test_location_restriction
+from . import test_custom_receipts

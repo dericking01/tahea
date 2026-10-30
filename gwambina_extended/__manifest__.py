@@ -25,6 +25,11 @@ Gwambina Extended
         'views/stock_location_views.xml',
         'views/res_users_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'gwambina_extended/static/src/stock_overview/*',
+        ],
+    },
     'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
