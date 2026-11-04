@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- TRA EFD Config Form View -->
+    <record id="view_tra_efd_config_form" model="ir.ui.view">
+        <field name="name">tra.efd.config.form</field>
+        <field name="model">tra.efd.config</field>
+        <field name="arch" type="xml">
+            <form string="TRA EFD Configuration">
+                <header>
+                    <button name="action_test_connection" type="object"
+                            string="Test Connection" class="btn-primary"
+                            icon="fa-plug"/>
+                    <button name="action_refresh_token" type="object"
+                            string="Refresh Token" class="btn-secondary"
+                            icon="fa-refresh"/>
+                    <field name="connection_status" widget="statusbar"
+                           statusbar_visible="not_tested,connected,failed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="API Credentials">
+                            <field name="api_base_url"/>
+                            <field name="client_id"/>
+                            <field name="client_secret" password="True"/>
+                        </group>
+                        <group string="Connection Status">
+                            <field name="connection_status"/>
+                            <field name="last_connection"/>
+                            <field name="token_user_name"/>
+                            <field name="token_email"/>
+                            <field name="token_expiry"/>
+                        </group>
+                    </group>
+                    <group string="Company Profile (from TRA)">
+                        <group>
+                            <field name="company_vrn"/>
+                            <field name="company_tin"/>
+                            <field name="company_serial"/>
+                        </group>
+                        <group>
+                            <field name="company_vin"/>
+                            <field name="tax_office"/>
+                        </group>
+                    </group>
+                    <group string="Receipt Settings">
+                        <field name="auto_generate_receipt"/>
+                        <field name="go_live_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- TRA EFD Config List View -->
+    <record id="view_tra_efd_config_list" model="ir.ui.view">
+        <field name="name">tra.efd.config.list</field>
+        <field name="model">tra.efd.config</field>
+        <field name="arch" type="xml">
+            <list string="TRA EFD Configurations">
+                <field name="name"/>
+                <field name="api_base_url"/>
+                <field name="client_id"/>
+                <field name="connection_status" widget="badge"
+                       decoration-success="connection_status == 'connected'"
+                       decoration-danger="connection_status == 'failed'"
+                       decoration-info="connection_status == 'not_tested'"/>
+                <field name="last_connection"/>
+                <field name="company_vrn"/>
+                <field name="auto_generate_receipt"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tra_efd_config" model="ir.actions.act_window">
+        <field name="name">TRA EFD Configuration</field>
+        <field name="res_model">tra.efd.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure your TRA EFD (WebSHOP) API settings
+            </p>
+            <p>
+                Enter your Zalongwa WebSHOP client credentials to start generating
+                TRA-compliant EFD receipts.
+            </p>
+        </field>
+    </record>
+
+</odoo>

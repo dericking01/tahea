@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_tra_dashboard" model="ir.actions.client">
+        <field name="name">TRA EFD Dashboard</field>
+        <field name="tag">zalongwa_tra_efd.dashboard</field>
+    </record>
+
+</odoo>

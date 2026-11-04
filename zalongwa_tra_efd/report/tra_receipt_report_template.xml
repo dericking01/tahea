@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_tra_receipt_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>TRA EFD Receipt <span t-esc="o.receipt_number"/></h2>
+                        <p t-if="o.is_demo" class="alert alert-warning">DEMO RECEIPT - NOT VALID FOR TAX</p>
+
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <div><strong>Invoice: </strong><span t-esc="o.invoice_id_ref"/></div>
+                                <div><strong>Date: </strong><span t-esc="o.receipt_date"/> <span t-esc="o.receipt_time"/></div>
+                                <div><strong>Z Number: </strong><span t-esc="o.znum"/></div>
+                                <div><strong>VRN: </strong><span t-esc="o.vrn"/></div>
+                                <div><strong>Verification Code: </strong><span t-esc="o.verification_code"/></div>
+                                <div><strong>Customer: </strong><span t-esc="o.customer_name"/></div>
+                                <div t-if="o.customer_id_number">
+                                    <strong t-esc="o.customer_id_type"/>: <span t-esc="o.customer_id_number"/>
+                                </div>
+                                <div t-if="o.customer_mobile"><strong>Mobile: </strong><span t-esc="o.customer_mobile"/></div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <img t-if="o.qr_code_image"
+                                     t-att-src="image_data_uri(o.qr_code_image)"
+                                     style="height:130px;"
+                                     alt="TRA QR"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-end">Net</th>
+                                    <th class="text-end">VAT</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.item_ids" t-as="item">
+                                    <td><span t-esc="item.itemcode"/></td>
+                                    <td><span t-esc="item.itemdesc"/></td>
+                                    <td class="text-end"><span t-esc="item.itemqty"/></td>
+                                    <td class="text-end"><span t-esc="'%.2f' % item.net"/></td>
+                                    <td class="text-end"><span t-esc="'%.2f' % item.tax"/></td>
+                                    <td class="text-end"><span t-esc="'%.2f' % item.amount"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="text-end">
+                            <div><strong>Total Excl. Tax: </strong><span t-esc="'%.2f' % o.total_excl_tax"/></div>
+                            <div><strong>Total VAT: </strong><span t-esc="'%.2f' % o.total_tax"/></div>
+                            <div><strong>Total Incl. Tax: </strong><span t-esc="'%.2f' % o.total_incl_tax"/></div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

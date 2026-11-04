@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_tra_efd_root"
+              name="TRA EFD"
+              web_icon="zalongwa_tra_efd,static/src/img/tralogo.png"
+              sequence="95"/>
+
+    <menuitem id="menu_tra_dashboard"
+              name="Dashboard"
+              parent="menu_tra_efd_root"
+              action="action_tra_dashboard"
+              groups="account.group_account_invoice"
+              sequence="5"/>
+
+    <!-- Receipts Menu -->
+    <menuitem id="menu_tra_receipts"
+              name="Receipts"
+              parent="menu_tra_efd_root"
+              sequence="10"/>
+
+    <menuitem id="menu_tra_receipt_list"
+              name="All TRA Receipts"
+              parent="menu_tra_receipts"
+              action="action_tra_receipt"
+              sequence="10"/>
+
+    <!-- Reports Menu -->
+    <menuitem id="menu_tra_reports"
+              name="Reports"
+              parent="menu_tra_efd_root"
+              sequence="20"/>
+
+    <menuitem id="menu_tra_zreport_list"
+              name="Z-Reports"
+              parent="menu_tra_reports"
+              action="action_tra_zreport"
+              sequence="10"/>
+
+    <menuitem id="menu_tra_zreport_sync"
+              name="Sync Z-Reports"
+              parent="menu_tra_reports"
+              action="action_sync_zreports"
+              sequence="20"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_tra_config"
+              name="Configuration"
+              parent="menu_tra_efd_root"
+              sequence="90"
+              groups="account.group_account_manager"/>
+
+    <menuitem id="menu_tra_efd_config"
+              name="EFD API Settings"
+              parent="menu_tra_config"
+              action="action_tra_efd_config"
+              sequence="10"/>
+
+</odoo>

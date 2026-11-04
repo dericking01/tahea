@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- In the invoice body rather than a layout, so it prints with any document layout -->
+    <template id="report_invoice_document_tra"
+              inherit_id="account.report_invoice_document">
+
+        <!-- End of the page, after totals and terms -->
+        <xpath expr="//div[hasclass('page')]" position="inside">
+
+            <div t-if="o.tra_receipt_status == 'success' and o.tra_qr_code"
+                 name="tra_receipt" class="row mt-4" style="page-break-inside: avoid;">
+                <div class="col-auto">
+                    <img t-att-src="image_data_uri(o.tra_qr_code)"
+                         style="height:100px;"
+                         alt="TRA QR"/>
+                </div>
+                <div class="col">
+                    <div><strong>TRA Receipt No: </strong><span t-esc="o.tra_receipt_number"/></div>
+                    <div><strong>Verification Code: </strong><span t-esc="o.tra_verification_code"/></div>
+                    <div><strong>Verification Link: </strong><span t-esc="o.tra_verify_link"/></div>
+                </div>
+            </div>
+
+        </xpath>
+
+    </template>
+
+</odoo>

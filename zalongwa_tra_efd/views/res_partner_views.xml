@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_tra_form" model="ir.ui.view">
+        <field name="name">res.partner.tra.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="tra_tin" placeholder="e.g. 150-145-147" readonly="parent_id"/>
+                <field name="tra_vrn" placeholder="e.g. 40-041972-Q" readonly="parent_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="zalongwa_tra_efd.Dashboard">
+        <div class="o_tra_dashboard h-100 overflow-auto p-3" t-if="state.data" t-att-data-loaded="1">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h2 class="mb-0">TRA EFD Dashboard</h2>
+                    <small class="text-muted">
+                        <t t-if="state.data.connection.vrn">VRN <t t-esc="state.data.connection.vrn"/> · Serial <t t-esc="state.data.connection.serial"/> · </t>
+                        <t t-esc="state.data.connection.auto ? 'Automatic receipts' : 'Manual receipts'"/>
+                    </small>
+                </div>
+                <button class="btn btn-primary" t-on-click="() => this.sync()" t-att-disabled="state.syncing">
+                    <i class="fa fa-refresh me-1" t-att-class="{'fa-spin': state.syncing}"/>
+                    <t t-esc="state.syncing ? 'Syncing…' : 'Sync with TRA'"/>
+                </button>
+            </div>
+
+            <div t-if="state.syncError" class="alert alert-danger" role="alert">
+                <t t-esc="state.syncError"/>
+            </div>
+            <div t-if="state.data.connection.status === 'failed'" class="alert alert-danger" role="alert">
+                The last connection to the TRA EFD API failed. Check the EFD API Settings.
+            </div>
+            <div t-if="state.data.demo_count" class="alert alert-warning" role="alert">
+                <t t-esc="state.data.demo_count"/> demo receipts exist. They are left out of all totals below.
+            </div>
+
+            <h5 class="text-muted">Needs Attention</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-xl-3" t-foreach="state.data.attention" t-as="item" t-key="item_index">
+                    <button class="card o_tra_card w-100 h-100 text-start p-3 border-0 border-start border-4"
+                            t-attf-class="border-#{item.value ? item.tone : 'success'}"
+                            t-on-click="() => this.openList(item.label, item.res_model, item.domain)">
+                        <div class="text-muted"><t t-esc="item.label"/></div>
+                        <div class="fs-2 fw-bold"><t t-esc="item.value"/></div>
+                        <small class="text-muted"><t t-esc="item.hint"/></small>
+                    </button>
+                </div>
+            </div>
+
+            <h5 class="text-muted">Live Receipts (TZS)</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-xl-3" t-foreach="state.data.totals" t-as="total" t-key="total_index">
+                    <div class="card h-100 p-3">
+                        <div class="text-muted"><t t-esc="total.label"/></div>
+                        <div class="fs-3 fw-bold">
+                            <t t-esc="total.money ? money(total.value) : total.value"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-xl-8">
+                    <div class="card h-100 p-3">
+                        <h5>Sales, Last 14 Days</h5>
+                        <div class="o_tra_chart d-flex align-items-end gap-1">
+                            <button class="o_tra_bar_col btn btn-link p-0 d-flex flex-column justify-content-end align-items-center h-100 flex-grow-1"
+                                    t-foreach="state.data.trend" t-as="day" t-key="day.date"
+                                    t-att-title="day.label + ': ' + money(day.amount) + ' TZS, ' + day.count + ' receipts'"
+                                    t-on-click="() => this.openDay(day)">
+                                <span class="o_tra_bar bg-primary w-100 rounded-top" t-attf-style="height: #{day.percent}%;"/>
+                            </button>
+                        </div>
+                        <div class="d-flex gap-1 mt-1">
+                            <small class="o_tra_bar_label text-muted text-center flex-grow-1"
+                                   t-foreach="state.data.trend" t-as="day" t-key="day.date">
+                                <t t-esc="day.label"/>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="card h-100 p-3">
+                        <h5>Odoo vs TRA</h5>
+                        <div t-if="!state.api" class="text-muted">Loading from TRA…</div>
+                        <div t-elif="state.api.error" class="text-danger"><t t-esc="state.api.error"/></div>
+                        <t t-else="">
+                            <table class="table table-sm mb-2">
+                                <thead><tr><th/><th class="text-end">Odoo</th><th class="text-end">TRA</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Receipts today</td>
+                                        <td class="text-end"><t t-esc="todayCount"/></td>
+                                        <td class="text-end"><t t-esc="state.api.count"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>This month</td>
+                                        <td class="text-end"><t t-esc="money(state.data.totals[2].value)"/></td>
+                                        <td class="text-end"><t t-esc="money(state.api.month_amount)"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <small t-if="Math.abs(monthDifference) >= 1" class="text-warning">
+                                Difference of <t t-esc="money(monthDifference)"/> this month. Expected if other systems use this EFD.
+                            </small>
+                            <small t-else="" class="text-success">Totals match.</small>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12 col-xl-6">
+                    <div class="card h-100 p-3">
+                        <h5>Latest Issues</h5>
+                        <div t-if="!state.data.issues.length" class="text-muted">No open issues.</div>
+                        <div class="table-responsive" t-else="">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead><tr><th>Invoice</th><th>Receipt</th><th>Problem</th><th>Message</th></tr></thead>
+                                <tbody>
+                                    <tr class="o_tra_row" t-foreach="state.data.issues" t-as="issue" t-key="issue.id"
+                                        t-on-click="() => this.openReceipt(issue.id)">
+                                        <td><t t-esc="issue.invoice"/></td>
+                                        <td><t t-esc="issue.receipt_number"/></td>
+                                        <td><t t-esc="issue.problem"/></td>
+                                        <td><t t-esc="issue.message"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="card h-100 p-3">
+                        <h5>This Month by Tax Code</h5>
+                        <div t-if="!state.data.tax_codes.length" class="text-muted">No receipts this month.</div>
+                        <table class="table table-sm mb-0" t-else="">
+                            <thead><tr><th>Code</th><th class="text-end">Amount</th><th class="text-end">VAT</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="state.data.tax_codes" t-as="code" t-key="code_index">
+                                    <td><t t-esc="code.label"/></td>
+                                    <td class="text-end"><t t-esc="money(code.amount)"/></td>
+                                    <td class="text-end"><t t-esc="money(code.tax)"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="card h-100 p-3">
+                        <h5>EFD Status</h5>
+                        <div>Connection: <strong t-esc="state.data.connection.status"/></div>
+                        <div t-if="state.data.connection.last_connection">
+                            Last login: <t t-esc="state.data.connection.last_connection"/>
+                        </div>
+                        <div>Go-live: <t t-esc="state.data.connection.go_live"/></div>
+                        <hr/>
+                        <button class="btn btn-link p-0 text-start" t-on-click="() => this.openZReports()">Latest Z-Report</button>
+                        <t t-if="state.data.zreport.number">
+                            <div><t t-esc="state.data.zreport.date"/></div>
+                            <div>Total: <t t-esc="money(state.data.zreport.total)"/></div>
+                            <div>VAT: <t t-esc="money(state.data.zreport.vat)"/></div>
+                        </t>
+                        <div t-else="" class="text-muted">Not synced yet.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

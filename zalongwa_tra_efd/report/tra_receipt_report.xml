@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_tra_receipt" model="ir.actions.report">
+        <field name="name">TRA EFD Receipt</field>
+        <field name="model">tra.receipt</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">zalongwa_tra_efd.report_tra_receipt_document</field>
+        <field name="report_file">zalongwa_tra_efd.report_tra_receipt_document</field>
+        <field name="binding_model_id" ref="model_tra_receipt"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+</odoo>
