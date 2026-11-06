@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_intercompany_transfer"
+              name="Inter-Company Transfers"
+              parent="stock.menu_stock_warehouse_mgmt"
+              action="action_intercompany_transfer"
+              groups="group_intercompany_transfer"
+              sequence="2"/>
+</odoo>

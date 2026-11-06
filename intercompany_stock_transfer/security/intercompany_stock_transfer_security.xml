@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Own category under "Inventory": Odoo 18 shows category-less
+         (checkbox) groups only in debug mode, while category groups are
+         rendered on Settings > Users > Access Rights for every administrator.
+         Leaving the field empty revokes the right. -->
+    <record id="module_category_intercompany_transfer" model="ir.module.category">
+        <field name="name">Inter-Company Stock Transfers</field>
+        <field name="parent_id" ref="base.module_category_inventory"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Implying Inventory/User gives the stock access the workflow needs;
+         the reverse is NOT true, so plain Inventory users never get it. -->
+    <record id="group_intercompany_transfer" model="res.groups">
+        <field name="name">Allow Inter-Company Stock Transfers</field>
+        <field name="category_id" ref="module_category_intercompany_transfer"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+        <field name="comment">Create, confirm, dispatch, receive and cancel stock transfers between warehouses of different companies.</field>
+    </record>
+
+    <data noupdate="1">
+        <!-- Global multi-company rules: a transfer is visible when one of its
+             two companies is active for the user. Workflow methods additionally
+             require access to the companies they act on. -->
+        <record id="intercompany_transfer_company_rule" model="ir.rule">
+            <field name="name">Inter-company transfer: multi-company</field>
+            <field name="model_id" ref="model_intercompany_stock_transfer"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('source_company_id', 'in', company_ids), ('dest_company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="intercompany_transfer_line_company_rule" model="ir.rule">
+            <field name="name">Inter-company transfer line: multi-company</field>
+            <field name="model_id" ref="model_intercompany_stock_transfer_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('transfer_id.source_company_id', 'in', company_ids), ('transfer_id.dest_company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_intercompany_transfer_cancel_form" model="ir.ui.view">
+        <field name="name">intercompany.stock.transfer.cancel.form</field>
+        <field name="model">intercompany.stock.transfer.cancel</field>
+        <field name="arch" type="xml">
+            <form string="Cancel Transfer">
+                <field name="transfer_ids" invisible="1"/>
+                <field name="has_dispatched_stock" invisible="1"/>
+                <div class="alert alert-warning" role="alert" invisible="not has_dispatched_stock">
+                    Part of the stock has already been dispatched. It will not be reversed silently:
+                    a return operation (transit to source location) will be created in the source
+                    company and must be validated when the goods are back.
+                </div>
+                <group>
+                    <field name="reason" placeholder="Why is this transfer cancelled?"/>
+                </group>
+                <footer>
+                    <button name="action_cancel" string="Cancel Transfer" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Discard" special="cancel" class="btn-secondary" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

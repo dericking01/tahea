@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_intercompany_transfer_user,intercompany.stock.transfer user,model_intercompany_stock_transfer,group_intercompany_transfer,1,1,1,1
+access_intercompany_transfer_line_user,intercompany.stock.transfer.line user,model_intercompany_stock_transfer_line,group_intercompany_transfer,1,1,1,1
+access_intercompany_transfer_cancel_user,intercompany.stock.transfer.cancel user,model_intercompany_stock_transfer_cancel,group_intercompany_transfer,1,1,1,1

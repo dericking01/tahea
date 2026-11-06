@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_intercompany" model="ir.ui.view">
+        <field name="name">stock.picking.form.intercompany.transfer</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_intercompany_transfer" type="object" class="oe_stat_button"
+                        icon="fa-exchange" invisible="not intercompany_transfer_id"
+                        groups="intercompany_stock_transfer.group_intercompany_transfer">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Inter-Company</span>
+                        <span class="o_stat_text">Transfer</span>
+                    </div>
+                </button>
+            </div>
+            <field name="origin" position="after">
+                <field name="intercompany_transfer_id" invisible="not intercompany_transfer_id"
+                       groups="intercompany_stock_transfer.group_intercompany_transfer"/>
+                <field name="intercompany_role" invisible="not intercompany_role"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_search_inherit_intercompany" model="ir.ui.view">
+        <field name="name">stock.picking.search.intercompany.transfer</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="intercompany_transfer_id" groups="intercompany_stock_transfer.group_intercompany_transfer"/>
+            </field>
+        </field>
+    </record>
+</odoo>
