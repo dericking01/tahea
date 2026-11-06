@@ -4,16 +4,29 @@
         <xpath expr="//t[@t-foreach='getGroupsOrRecords()']" position="before">
             <article t-if="gwCustomReceipts.show and !props.list.isGrouped"
                      class="o_kanban_record d-flex flex-grow-1 flex-md-shrink-1 flex-shrink-0 gw_custom_receipts_card"
-                     role="article" style="cursor: pointer;"
-                     t-on-click="() => this.gwOpenCustomReceipts()">
+                     role="article">
                 <div class="px-2 w-100">
-                    <span class="fw-bold fs-4 text-primary">Custom Receipts</span>
-                    <div class="text-muted">GRNs to my locations</div>
-                    <div class="mt-3">
-                        <button class="btn btn-primary">
-                            <span t-if="gwCustomReceipts.ready"><t t-esc="gwCustomReceipts.ready"/> To Receive</span>
-                            <span t-else="">Open</span>
-                        </button>
+                    <a href="#" class="fw-bold fs-4" t-on-click.prevent="() => this.gwOpenCustomReceipts()">Custom Receipts</a>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <button class="btn btn-primary" t-on-click="() => this.gwOpenCustomReceipts('ready')">
+                                <span t-if="gwCustomReceipts.ready"><t t-esc="gwCustomReceipts.ready"/> To Receive</span>
+                                <span t-else="">Open</span>
+                            </button>
+                        </div>
+                        <div class="col-6 stock-overview-links">
+                            <t t-foreach="gwSummaryLinks" t-as="link" t-key="link.key">
+                                <div t-if="gwCustomReceipts[link.key]" class="row">
+                                    <a href="#" class="col-8 offset-4 pe-0 text-truncate"
+                                       t-on-click.prevent="() => this.gwOpenCustomReceipts(link.key)">
+                                        <div class="row">
+                                            <span class="col-6" t-esc="link.label"/>
+                                            <span class="col-2 text-end" t-esc="gwFormat(gwCustomReceipts[link.key])"/>
+                                        </div>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
                     </div>
                 </div>
             </article>

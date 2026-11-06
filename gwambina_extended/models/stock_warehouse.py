@@ -40,6 +40,6 @@ class StockWarehouse(models.Model):
                 'company_id': warehouse.company_id.id,
                 'default_location_src_id': transit.id or warehouse.lot_stock_id.id,
                 'default_location_dest_id': warehouse.lot_stock_id.id,
-                'create_backorder': 'always',
+                'create_backorder': 'ask',
                 'active': warehouse.active,
             })

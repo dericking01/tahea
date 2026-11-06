@@ -67,7 +67,12 @@ class TestReceiptConfirmation(GwStockCommon):
         receipt_b = receipt.with_user(self.receiver_user)
         receipt_b.move_ids.filtered(lambda m: m.product_id == self.product_a).quantity = 7
         res = receipt_b.button_validate()
-        self.assertIs(res, True)
+        # Standard backorder wizard, adapted to goods in transit
+        self.assertEqual(res['res_model'], 'stock.backorder.confirmation')
+        wizard = Form.from_action(self.env(user=self.receiver_user), res).save()
+        self.assertTrue(wizard.gw_has_receipt_confirmation)
+        self.assertTrue(wizard.gw_can_return_remaining)
+        wizard.process()
         self.assertEqual(receipt.state, 'done')
         self.assertFalse(receipt.activity_ids)
         self.assertEqual(self._on_hand(self.product_a, self.location_b), 7)
@@ -173,3 +178,65 @@ class TestReceiptConfirmation(GwStockCommon):
         wh2 = self.env['stock.warehouse'].create({'name': 'GW Third WH', 'code': 'GW3', 'company_id': self.company.id})
         self.assertTrue(wh2.gw_receipt_confirm_type_id)
         self.assertEqual(wh2.gw_receipt_confirm_type_id.warehouse_id, wh2)
+
+    def test_initiator_cannot_receive_own_transfer(self):
+        # The receiver initiates a transfer to his own location: he cannot confirm it himself
+        self._set_qty(self.product_a, self.location_a, 4)
+        picking = self._create_picking(self.int_type, self.location_a, self.location_b, [(self.product_a, 4)],
+                                       user=self.receiver_user).with_user(self.receiver_user)
+        picking.action_assign()
+        picking.button_validate()
+        receipt = picking.gw_receipt_picking_ids
+        self.assertEqual(receipt.gw_dispatched_by_id, self.receiver_user)
+        with self.assertRaises(UserError) as err:
+            receipt.with_user(self.receiver_user).button_validate()
+        self.assertIn('initiated', str(err.exception))
+        # A second person in charge of B can; so can an administrator
+        self.location_b.gw_responsible_user_ids = [(4, self.other_user.id)]
+        receipt.with_user(self.other_user).button_validate()
+        self.assertEqual(self._on_hand(self.product_a, self.location_b), 4)
+
+    def test_dispatcher_cannot_receive_even_if_not_creator(self):
+        self._set_qty(self.product_a, self.location_a, 2)
+        picking = self._create_picking(self.int_type, self.location_a, self.location_b, [(self.product_a, 2)])
+        picking.action_assign()
+        picking.with_user(self.receiver_user).button_validate()  # receiver dispatched it
+        receipt = picking.gw_receipt_picking_ids
+        with self.assertRaises(UserError):
+            receipt.with_user(self.receiver_user).button_validate()
+        receipt.with_user(self.admin_user).button_validate()
+        self.assertEqual(receipt.state, 'done')
+
+    def test_no_backorder_returns_remaining_to_source(self):
+        picking = self._dispatch([(self.product_a, 10)])
+        picking.button_validate()
+        receipt = picking.gw_receipt_picking_ids.with_user(self.receiver_user)
+        receipt.move_ids.quantity = 6
+        res = receipt.button_validate()
+        Form.from_action(self.env(user=self.receiver_user), res).save().process_cancel_backorder()
+        self.assertEqual(receipt.state, 'done')
+        self.assertEqual(self._on_hand(self.product_a, self.location_b), 6)
+        backorder = receipt.backorder_ids
+        self.assertEqual(len(backorder), 1)
+        self.assertEqual(receipt.gw_backorder_count, 1)
+        self.assertTrue(backorder.gw_returned_to_source)
+        self.assertEqual(backorder.location_dest_id, self.location_a)
+        self.assertEqual(backorder.move_ids.product_uom_qty, 4)
+        # Received back at A (no person in charge there: any stock user, even the initiator)
+        backorder.with_user(self.stock_user).button_validate()
+        self.assertEqual(self._on_hand(self.product_a, self.location_a), 4)
+        self.assertEqual(self._on_hand(self.product_a, self.transit_location), 0)
+
+    def test_returned_goods_partial_backorder_no_return_option(self):
+        picking = self._dispatch([(self.product_a, 5)])
+        picking.button_validate()
+        receipt = picking.gw_receipt_picking_ids
+        receipt.with_user(self.receiver_user).action_gw_return_to_source()
+        receipt.move_ids.quantity = 3
+        res = receipt.with_user(self.other_user).button_validate()
+        wizard = Form.from_action(self.env(user=self.other_user), res).save()
+        self.assertFalse(wizard.gw_can_return_remaining)
+        wizard.process_cancel_backorder()
+        # Goods in transit are never dropped: the remainder stays expected at the source
+        self.assertEqual(receipt.backorder_ids.move_ids.product_uom_qty, 2)
+        self.assertEqual(receipt.backorder_ids.location_dest_id, self.location_a)

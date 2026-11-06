@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_backorder_confirmation_gw" model="ir.ui.view">
+        <field name="name">stock.backorder.confirmation.gwambina</field>
+        <field name="model">stock.backorder.confirmation</field>
+        <field name="inherit_id" ref="stock.view_backorder_confirmation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//p[@name='explanation-text']/.." position="after">
+                <field name="gw_has_receipt_confirmation" invisible="1"/>
+                <field name="gw_can_return_remaining" invisible="1"/>
+                <div colspan="2" class="alert alert-info mt-2" role="alert" invisible="not gw_has_receipt_confirmation">
+                    The missing goods are still in transit.
+                    <ul class="mb-0">
+                        <li><b>Create Backorder</b>: the remaining quantities are expected later and stay to be received here.</li>
+                        <li invisible="not gw_can_return_remaining"><b>No Backorder - Return to Source</b>: the remaining quantities will not be delivered and are sent back to the original source location.</li>
+                    </ul>
+                </div>
+            </xpath>
+            <xpath expr="//button[@name='process_cancel_backorder']" position="attributes">
+                <attribute name="invisible">show_transfers or gw_has_receipt_confirmation</attribute>
+            </xpath>
+            <xpath expr="//button[@name='process_cancel_backorder']" position="after">
+                <button name="process_cancel_backorder" string="No Backorder - Return to Source" type="object"
+                        class="btn-danger" invisible="show_transfers or not gw_can_return_remaining"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

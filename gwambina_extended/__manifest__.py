@@ -1,6 +1,6 @@
 {
     'name': 'Gwambina Extended',
-    'version': '18.0.1.1.0',
+    'version': '18.0.1.2.0',
     'summary': 'Accounting sequence, purchase bill, GRN and inventory transfer controls for Gwambina',
     'description': """
 Gwambina Extended
@@ -24,6 +24,7 @@ Gwambina Extended
         'views/stock_picking_type_views.xml',
         'views/stock_location_views.xml',
         'views/res_users_views.xml',
+        'views/stock_backorder_confirmation_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

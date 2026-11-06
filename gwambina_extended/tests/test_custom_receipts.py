@@ -1,4 +1,4 @@
-from odoo.tests import tagged
+from odoo.tests import Form, tagged
 
 from .common import GwStockCommon
 
@@ -78,3 +78,25 @@ class TestCustomReceipts(GwStockCommon):
         self.loc_b.active = False
         data = self.env['stock.picking.type'].with_user(self.stock_user).gw_get_custom_receipts_data()
         self.assertFalse(data['show'])
+
+    def test_card_summary_counters(self):
+        grn = self._create_picking(self.type_a, self.supplier_location, self.loc_a,
+                                   [(self.product_a, 5), (self.product_b, 2)])
+        grn.scheduled_date = '2020-01-01'
+        grn.move_ids.filtered(lambda m: m.product_id == self.product_a).quantity = 3
+        res = grn.button_validate()
+        Form.from_action(self.env, res).save().process()  # backorder for the 2 missing A
+        waiting = self._create_picking(self.type_b, self.stock_location, self.loc_b_bin, [(self.product_c, 1)])
+        self.assertEqual(waiting.state, 'confirmed')
+
+        PickingType = self.env['stock.picking.type'].with_user(self.stock_user)
+        data = PickingType.gw_get_custom_receipts_data()
+        for key in ('waiting', 'late', 'backorders', 'operations'):
+            action = PickingType.gw_action_custom_receipts(key)
+            model = 'stock.move' if key == 'operations' else 'stock.picking'
+            self.assertEqual(action['res_model'], model)
+            self.assertEqual(self.env[model].search_count(action['domain']), data[key], key)
+        self.assertGreaterEqual(data['waiting'], 1)
+        self.assertGreaterEqual(data['backorders'], 1)
+        self.assertGreaterEqual(data['late'], 1)
+        self.assertGreaterEqual(data['operations'], 1)

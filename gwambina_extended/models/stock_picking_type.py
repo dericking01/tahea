@@ -36,24 +36,46 @@ class StockPickingType(models.Model):
         ]
 
     @api.model
-    def gw_get_custom_receipts_data(self):
-        if not self._gw_custom_receipt_locations():
-            return {'show': False, 'ready': 0}
-        Picking = self.env['stock.picking']
-        domain = self._gw_custom_receipts_domain()
+    def _gw_custom_receipts_filters(self):
+        # Same definitions as the standard operation type cards (see _compute_picking_count)
+        open_states = ('assigned', 'waiting', 'confirmed')
         return {
-            'show': True,
-            'ready': Picking.search_count(domain + [('state', '=', 'assigned')]),
+            'ready': [('state', '=', 'assigned')],
+            'waiting': [('state', 'in', ('confirmed', 'waiting'))],
+            'late': [('state', 'in', open_states), '|', ('scheduled_date', '<', fields.Date.today()),
+                     ('has_deadline_issue', '=', True)],
+            'backorders': [('backorder_id', '!=', False), ('state', 'in', open_states)],
         }
 
     @api.model
-    def gw_action_custom_receipts(self):
-        action = self.env['ir.actions.act_window']._for_xml_id('stock.action_picking_tree_all')
-        action.update({
-            'name': _('Custom Receipts'),
-            'domain': self._gw_custom_receipts_domain(),
-            'context': {'contact_display': 'partner_address', 'create': False},
-        })
+    def gw_get_custom_receipts_data(self):
+        if not self._gw_custom_receipt_locations():
+            return {'show': False}
+        Picking = self.env['stock.picking']
+        domain = self._gw_custom_receipts_domain()
+        data = {'show': True}
+        for key, extra in self._gw_custom_receipts_filters().items():
+            data[key] = Picking.search_count(domain + extra)
+        data['operations'] = self.env['stock.move'].search_count(
+            [('state', '=', 'assigned'), ('picking_id', 'any', domain)])
+        return data
+
+    @api.model
+    def gw_action_custom_receipts(self, filter_key=None):
+        if filter_key == 'operations':
+            action = self.env['ir.actions.act_window']._for_xml_id('stock.action_get_picking_type_ready_moves')
+            action.update({
+                'name': _('Custom Receipts: Operations'),
+                'domain': [('state', '=', 'assigned'), ('picking_id', 'any', self._gw_custom_receipts_domain())],
+                'context': {'create': False},
+            })
+        else:
+            action = self.env['ir.actions.act_window']._for_xml_id('stock.action_picking_tree_all')
+            action.update({
+                'name': _('Custom Receipts'),
+                'domain': self._gw_custom_receipts_domain() + self._gw_custom_receipts_filters().get(filter_key, []),
+                'context': {'contact_display': 'partner_address', 'create': False},
+            })
         for key in ('path', 'help'):
             action.pop(key, None)
         return action

@@ -29,6 +29,15 @@ class StockPicking(models.Model):
     gw_responsible_user_ids = fields.Many2many(
         'res.users', string='Persons in Charge of Reception', compute='_compute_gw_responsible_user_ids')
     gw_can_delete_moves = fields.Boolean(compute='_compute_gw_can_delete_moves')
+    gw_dispatched_by_id = fields.Many2one(
+        'res.users', string='Dispatched By (User)', readonly=True,
+        help="User who validated the dispatch of the goods from the source location.")
+    gw_backorder_count = fields.Integer(compute='_compute_gw_backorder_count')
+
+    @api.depends('backorder_ids')
+    def _compute_gw_backorder_count(self):
+        for picking in self:
+            picking.gw_backorder_count = len(picking.backorder_ids)
 
     @api.depends('picking_type_code')
     @api.depends_context('uid')
@@ -192,6 +201,17 @@ class StockPicking(models.Model):
         if self.env.su or user.has_group('base.group_system'):
             return
         for picking in self.filtered('gw_is_receipt_confirmation'):
+            # Segregation of duties: whoever initiated or dispatched the transfer cannot confirm
+            # its reception. Goods coming back to their source (Return to Source) are exempt.
+            initiators = picking.gw_dispatch_picking_id.create_uid | picking.gw_dispatched_by_id
+            if not picking.gw_returned_to_source and user in initiators:
+                raise UserError(_(
+                    "You initiated the transfer %(transfer)s, so you cannot confirm its reception "
+                    "(%(picking)s) yourself. It must be received by the person in charge of %(location)s.",
+                    transfer=picking.gw_dispatch_picking_id.name,
+                    picking=picking.name,
+                    location=picking.location_dest_id.display_name,
+                ))
             responsibles = picking.location_dest_id._gw_get_responsible_users()
             if responsibles and user not in responsibles:
                 raise UserError(_(
@@ -205,11 +225,6 @@ class StockPicking(models.Model):
         self.filtered(lambda p: p.state != 'done')._gw_check_can_confirm_receipt()
         return super().button_validate()
 
-    def _check_backorder(self):
-        # Goods sitting in transit must never be dropped: the remainder of a receipt
-        # confirmation always goes to a backorder (no "No Backorder" option).
-        return super(StockPicking, self.filtered(lambda p: not p.gw_is_receipt_confirmation))._check_backorder()
-
     def _action_done(self):
         confirmations = self.filtered('gw_is_receipt_confirmation')
         to_dispatch = (self - confirmations).filtered(lambda p: p._gw_needs_receipt_confirmation())
@@ -217,7 +232,11 @@ class StockPicking(models.Model):
         for picking in to_dispatch:
             final_locations[picking] = picking.location_dest_id
             transit = picking.company_id.internal_transit_location_id
-            picking.write({'location_dest_id': transit.id, 'gw_final_location_id': picking.location_dest_id.id})
+            picking.write({
+                'location_dest_id': transit.id,
+                'gw_final_location_id': picking.location_dest_id.id,
+                'gw_dispatched_by_id': self.env.user.id,
+            })
             picking.move_line_ids.write({'location_dest_id': transit.id})
 
         if confirmations:
@@ -252,6 +271,7 @@ class StockPicking(models.Model):
             'gw_is_receipt_confirmation': True,
             'gw_dispatch_picking_id': self.id,
             'gw_return_location_id': self.location_id.id,
+            'gw_dispatched_by_id': self.gw_dispatched_by_id.id,
             'move_ids': [Command.create({
                 'name': move.name,
                 'product_id': move.product_id.id,
@@ -326,6 +346,18 @@ class StockPicking(models.Model):
     def _gw_unlink_except_pending_confirmation(self):
         if any(p.gw_is_receipt_confirmation and p.state not in ('done', 'cancel') for p in self):
             raise UserError(_("A pending receipt confirmation cannot be deleted: the goods are in transit."))
+
+    def action_gw_view_backorders(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window']._for_xml_id('stock.action_picking_tree_all')
+        action.update({
+            'name': _('Backorders of %s', self.name),
+            'domain': [('backorder_id', '=', self.id)],
+            'context': {'create': False},
+        })
+        if len(self.backorder_ids) == 1:
+            action.update({'views': [(False, 'form')], 'res_id': self.backorder_ids.id})
+        return action
 
     def action_gw_view_receipt_confirmations(self):
         self.ensure_one()

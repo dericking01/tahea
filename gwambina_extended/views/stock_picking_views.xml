@@ -17,6 +17,11 @@
                         invisible="gw_receipt_picking_count == 0">
                     <field string="Receipt Confirmation" name="gw_receipt_picking_count" widget="statinfo"/>
                 </button>
+                <button name="action_gw_view_backorders" type="object"
+                        class="oe_stat_button" icon="fa-files-o"
+                        invisible="gw_backorder_count == 0">
+                    <field string="Backorders" name="gw_backorder_count" widget="statinfo"/>
+                </button>
             </xpath>
             <xpath expr="//sheet/div[@name='button_box']" position="after">
                 <div class="alert alert-warning text-center" role="alert"
@@ -32,6 +37,7 @@
                 <field name="gw_final_location_id" invisible="not gw_final_location_id"/>
                 <field name="gw_dispatch_picking_id" invisible="not gw_dispatch_picking_id"/>
                 <field name="gw_return_location_id" invisible="not gw_is_receipt_confirmation"/>
+                <field name="gw_dispatched_by_id" invisible="not gw_dispatched_by_id"/>
             </xpath>
             <!-- Location-restricted users only pick their allowed locations as source -->
             <xpath expr="//sheet/group/group/field[@name='location_id'][@groups='stock.group_stock_multi_locations']" position="attributes">
