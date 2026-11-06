@@ -240,3 +240,22 @@ class TestReceiptConfirmation(GwStockCommon):
         # Goods in transit are never dropped: the remainder stays expected at the source
         self.assertEqual(receipt.backorder_ids.move_ids.product_uom_qty, 2)
         self.assertEqual(receipt.backorder_ids.location_dest_id, self.location_a)
+
+    def test_admin_initiator_cannot_receive_own_transfer(self):
+        self.location_b.gw_responsible_user_ids = [(4, self.admin_user.id)]
+        self._set_qty(self.product_a, self.location_a, 3)
+        picking = self._create_picking(self.int_type, self.location_a, self.location_b, [(self.product_a, 3)],
+                                       user=self.admin_user).with_user(self.admin_user)
+        picking.action_assign()
+        picking.button_validate()
+        receipt = picking.gw_receipt_picking_ids
+        # Admin initiated it: "Pending Validation" instead of "Validate", and validation refused
+        self.assertTrue(receipt.with_user(self.admin_user).gw_pending_validation)
+        self.assertFalse(receipt.with_user(self.receiver_user).gw_pending_validation)
+        action = receipt.with_user(self.admin_user).action_gw_pending_validation()
+        self.assertEqual(action['tag'], 'display_notification')
+        with self.assertRaises(UserError):
+            receipt.with_user(self.admin_user).button_validate()
+        receipt.with_user(self.receiver_user).button_validate()
+        self.assertEqual(receipt.state, 'done')
+        self.assertFalse(receipt.with_user(self.admin_user).gw_pending_validation)

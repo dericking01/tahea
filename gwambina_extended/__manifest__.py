@@ -1,6 +1,6 @@
 {
     'name': 'Gwambina Extended',
-    'version': '18.0.1.3.0',
+    'version': '18.0.1.4.0',
     'summary': 'Accounting sequence, purchase bill, GRN, inventory transfer and time off controls for Gwambina',
     'description': """
 Gwambina Extended
@@ -13,6 +13,7 @@ Gwambina Extended
 * Internal transfers are confirmed by the person in charge of the destination location
   (goods wait in transit), with backorders and return-to-source for undelivered goods.
 * Users can be restricted to see only their allowed stock locations.
+* Submitted / confirmed purchase orders are read-only for everyone, administrators included.
 * Time off requests carry a hand-drawn employee signature, printed on the Time Off Request PDF.
     """,
     'author': 'Gwambina',

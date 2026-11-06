@@ -33,11 +33,45 @@ class StockPicking(models.Model):
         'res.users', string='Dispatched By (User)', readonly=True,
         help="User who validated the dispatch of the goods from the source location.")
     gw_backorder_count = fields.Integer(compute='_compute_gw_backorder_count')
+    gw_pending_validation = fields.Boolean(
+        compute='_compute_gw_pending_validation',
+        help="The current user initiated this transfer and must wait for the person in charge "
+             "of the destination to validate its reception.")
 
     @api.depends('backorder_ids')
     def _compute_gw_backorder_count(self):
         for picking in self:
             picking.gw_backorder_count = len(picking.backorder_ids)
+
+    def _gw_is_initiator(self, user):
+        self.ensure_one()
+        initiators = self.gw_dispatch_picking_id.create_uid | self.gw_dispatched_by_id
+        return (self.gw_is_receipt_confirmation and not self.gw_returned_to_source
+                and user in initiators)
+
+    @api.depends('gw_is_receipt_confirmation', 'gw_returned_to_source', 'state',
+                 'gw_dispatch_picking_id.create_uid', 'gw_dispatched_by_id')
+    @api.depends_context('uid')
+    def _compute_gw_pending_validation(self):
+        for picking in self:
+            picking.gw_pending_validation = (
+                picking.state not in ('done', 'cancel') and picking._gw_is_initiator(self.env.user))
+
+    def action_gw_pending_validation(self):
+        self.ensure_one()
+        responsibles = self.location_dest_id._gw_get_responsible_users()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'warning',
+                'title': _("Pending Validation"),
+                'message': _(
+                    "You initiated this transfer: its reception must be validated by %(users)s.",
+                    users=", ".join(responsibles.mapped('name'))
+                    or _("the person in charge of %s", self.location_dest_id.display_name)),
+            },
+        }
 
     @api.depends('picking_type_code')
     @api.depends_context('uid')
@@ -198,13 +232,13 @@ class StockPicking(models.Model):
 
     def _gw_check_can_confirm_receipt(self):
         user = self.env.user
-        if self.env.su or user.has_group('base.group_system'):
+        if self.env.su:
             return
+        is_admin = user.has_group('base.group_system')
         for picking in self.filtered('gw_is_receipt_confirmation'):
-            # Segregation of duties: whoever initiated or dispatched the transfer cannot confirm
-            # its reception. Goods coming back to their source (Return to Source) are exempt.
-            initiators = picking.gw_dispatch_picking_id.create_uid | picking.gw_dispatched_by_id
-            if not picking.gw_returned_to_source and user in initiators:
+            # Segregation of duties, administrators included: whoever initiated or dispatched the
+            # transfer cannot confirm its reception. Goods coming back to their source are exempt.
+            if picking._gw_is_initiator(user):
                 raise UserError(_(
                     "You initiated the transfer %(transfer)s, so you cannot confirm its reception "
                     "(%(picking)s) yourself. It must be received by the person in charge of %(location)s.",
@@ -212,6 +246,8 @@ class StockPicking(models.Model):
                     picking=picking.name,
                     location=picking.location_dest_id.display_name,
                 ))
+            if is_admin:
+                continue
             responsibles = picking.location_dest_id._gw_get_responsible_users()
             if responsibles and user not in responsibles:
                 raise UserError(_(

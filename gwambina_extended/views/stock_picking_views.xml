@@ -6,6 +6,18 @@
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
             <!-- Receipt confirmation: return undelivered goods to the source location -->
+            <!-- The initiator of a transfer cannot validate its reception (administrators included) -->
+            <xpath expr="//header/button[@name='button_validate'][1]" position="attributes">
+                <attribute name="invisible">state in ('draft', 'confirmed', 'done', 'cancel') or gw_pending_validation</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='button_validate'][2]" position="attributes">
+                <attribute name="invisible">state in ('waiting', 'assigned', 'done', 'cancel') or gw_pending_validation</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='button_validate'][1]" position="before">
+                <field name="gw_pending_validation" invisible="1"/>
+                <button name="action_gw_pending_validation" type="object" string="Pending Validation"
+                        class="btn-warning" icon="fa-hourglass-half" invisible="not gw_pending_validation"/>
+            </xpath>
             <xpath expr="//header/button[@name='action_cancel']" position="before">
                 <button name="action_gw_return_to_source" type="object" string="Return to Source"
                         invisible="not gw_is_receipt_confirmation or gw_returned_to_source or state in ('done', 'cancel')"

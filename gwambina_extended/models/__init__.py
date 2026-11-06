@@ -7,3 +7,4 @@ from . import stock_picking_type
 from . import stock_warehouse
 from . import stock_picking
 from . import hr_leave
+from . import purchase_order

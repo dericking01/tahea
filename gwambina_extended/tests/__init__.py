@@ -5,3 +5,4 @@ from . import test_receipt_confirmation
 from . import test_location_restriction
 from . import test_custom_receipts
 from . import test_time_off_signature
+from . import test_purchase_lock
