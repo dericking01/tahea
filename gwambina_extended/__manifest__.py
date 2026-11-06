@@ -1,7 +1,7 @@
 {
     'name': 'Gwambina Extended',
-    'version': '18.0.1.2.0',
-    'summary': 'Accounting sequence, purchase bill, GRN and inventory transfer controls for Gwambina',
+    'version': '18.0.1.3.0',
+    'summary': 'Accounting sequence, purchase bill, GRN, inventory transfer and time off controls for Gwambina',
     'description': """
 Gwambina Extended
 =================
@@ -13,11 +13,12 @@ Gwambina Extended
 * Internal transfers are confirmed by the person in charge of the destination location
   (goods wait in transit), with backorders and return-to-source for undelivered goods.
 * Users can be restricted to see only their allowed stock locations.
+* Time off requests carry a hand-drawn employee signature, printed on the Time Off Request PDF.
     """,
     'author': 'Gwambina',
     'category': 'Inventory/Inventory',
     'license': 'LGPL-3',
-    'depends': ['account', 'purchase_stock', 'stock_account'],
+    'depends': ['account', 'purchase_stock', 'stock_account', 'hr_holidays'],
     'data': [
         'views/account_move_views.xml',
         'views/stock_picking_views.xml',
@@ -25,6 +26,8 @@ Gwambina Extended
         'views/stock_location_views.xml',
         'views/res_users_views.xml',
         'views/stock_backorder_confirmation_views.xml',
+        'views/hr_leave_views.xml',
+        'report/hr_leave_report.xml',
     ],
     'assets': {
         'web.assets_backend': [

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_time_off_request" model="ir.actions.report">
+        <field name="name">Time Off Request</field>
+        <field name="model">hr.leave</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gwambina_extended.report_time_off_request</field>
+        <field name="report_file">gwambina_extended.report_time_off_request</field>
+        <field name="print_report_name">'Time Off - %s - %s' % (object.employee_id.name or '', object.request_date_from or '')</field>
+        <field name="binding_model_id" ref="hr_holidays.model_hr_leave"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_time_off_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="leave">
+                <t t-call="web.external_layout">
+                    <t t-set="company" t-value="leave.employee_company_id or leave.company_id or res_company"/>
+                    <div class="page">
+                        <h2>Time Off Request</h2>
+                        <table class="table table-sm table-borderless mt-4">
+                            <tr>
+                                <td class="fw-bold" style="width: 30%;">Employee</td>
+                                <td><span t-field="leave.employee_id"/></td>
+                            </tr>
+                            <tr t-if="leave.department_id">
+                                <td class="fw-bold">Department</td>
+                                <td><span t-field="leave.department_id"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Time Off Type</td>
+                                <td><span t-field="leave.holiday_status_id"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">From</td>
+                                <td><span t-field="leave.request_date_from"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">To</td>
+                                <td><span t-field="leave.request_date_to"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Duration</td>
+                                <td><span t-field="leave.duration_display"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Status</td>
+                                <td><span t-field="leave.state"/></td>
+                            </tr>
+                            <tr t-if="leave.first_approver_id">
+                                <td class="fw-bold">Approved By</td>
+                                <td>
+                                    <span t-field="leave.first_approver_id"/>
+                                    <t t-if="leave.second_approver_id"> / <span t-field="leave.second_approver_id"/></t>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div t-if="leave.name" class="mt-3">
+                            <div class="fw-bold">Description</div>
+                            <p t-field="leave.name" style="white-space: pre-wrap;"/>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <div class="fw-bold">Employee Signature</div>
+                                <t t-if="leave.employee_signature">
+                                    <img t-att-src="image_data_uri(leave.employee_signature)"
+                                         style="max-height: 4cm; max-width: 8cm;" alt="Signature"/>
+                                </t>
+                                <div t-else="" style="height: 2.5cm;"/>
+                                <div style="border-top: 1px solid #000; width: 8cm;">
+                                    <span t-field="leave.employee_id"/>
+                                    <t t-if="leave.employee_signed_on">
+                                        - <span t-field="leave.employee_signed_on" t-options="{'widget': 'date'}"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
