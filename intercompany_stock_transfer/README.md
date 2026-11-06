@@ -155,10 +155,27 @@ Stock** creates a new receipt for it.
   **or** the destination company (or branch) is one of the companies the user
   is allowed in (`user.company_ids`). This doesn't depend on the company
   switcher, and nothing of other companies is visible.
+* **Branch users → sibling branches (delegated destinations).** A user
+  working in a branch may send stock to the **other branches of the same
+  top-level company** without being allowed in them. Those branches stay out
+  of the user's Allowed Companies: they can't be ticked in the company
+  switcher, and their stock, warehouses, locations and pickings stay invisible
+  in Inventory. The transfer form's destination dropdowns show only their
+  names (company, warehouses, internal locations), through a `name_search`
+  extension enabled by the form's `ict_delegated_targets` context key. The
+  list of branches is always recomputed on the server from the user's own
+  companies. The parent company and branches of other companies are never
+  delegated targets, and a sibling branch can never be the *source*.
+  When such a transfer is dispatched, the destination receipt is created in
+  the sibling branch with a narrowly scoped `sudo` (after the permission check;
+  the sender is recorded as author but not subscribed). It must be
+  **received by that branch's own users**: the sender can't open or validate
+  it.
 * Server-side checks in every workflow method and on the linked pickings,
   whatever screen or API is used:
   * create / edit / confirm / check availability / dispatch / cancel:
-    group **and** access to **both** companies;
+    group **and** access to **both** companies (or the destination is a
+    sibling branch, see above);
   * receive: group and access to the destination company (lets a store keeper
     of company B receive);
   * validating or cancelling a linked picking from the standard Inventory

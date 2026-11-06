@@ -51,7 +51,7 @@
                             <field name="dispatch_picking_count" widget="statinfo" string="Source Picking"/>
                         </button>
                         <button name="action_view_receipt_pickings" type="object" class="oe_stat_button"
-                                icon="fa-download" invisible="not receipt_picking_count">
+                                icon="fa-download" invisible="not receipt_picking_count or not can_access_dest">
                             <field name="receipt_picking_count" widget="statinfo" string="Destination Picking"/>
                         </button>
                         <button name="action_view_return_pickings" type="object" class="oe_stat_button"
@@ -68,6 +68,9 @@
                     <field name="can_receive" invisible="1"/>
                     <field name="allowed_company_ids" invisible="1"/>
                     <field name="allowed_parent_company_ids" invisible="1"/>
+                    <field name="allowed_dest_company_ids" invisible="1"/>
+                    <field name="allowed_dest_parent_company_ids" invisible="1"/>
+                    <field name="can_access_dest" invisible="1"/>
                     <field name="company_id" invisible="1"/>
                     <group>
                         <group string="Source" name="source">
@@ -93,22 +96,22 @@
                         <group string="Destination" name="destination">
                             <field name="dest_parent_company_id" string="Company" required="1"
                                    readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"
-                                   domain="[('id', 'in', allowed_parent_company_ids)]"
-                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                                   domain="[('id', 'in', allowed_dest_parent_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids, 'ict_delegated_targets': True}"/>
                             <field name="dest_branch_id" string="Branch" invisible="not dest_has_branches"
                                    readonly="state != 'draft'" placeholder="Main company (no branch)"
                                    options="{'no_create': True, 'no_open': True}"
-                                   domain="[('id', 'in', allowed_company_ids), ('id', 'child_of', dest_parent_company_id), ('id', '!=', dest_parent_company_id)]"
-                                   context="{'allowed_company_ids': allowed_company_ids}"/>
-                            <field name="dest_company_id" invisible="1" context="{'allowed_company_ids': allowed_company_ids}"/>
+                                   domain="[('id', 'in', allowed_dest_company_ids), ('id', 'child_of', dest_parent_company_id), ('id', '!=', dest_parent_company_id)]"
+                                   context="{'allowed_company_ids': allowed_company_ids, 'ict_delegated_targets': True}"/>
+                            <field name="dest_company_id" invisible="1" context="{'allowed_company_ids': allowed_company_ids, 'ict_delegated_targets': True}"/>
                             <field name="dest_has_branches" invisible="1"/>
                             <field name="dest_warehouse_id" string="Warehouse" readonly="state != 'draft'"
-                                   options="{'no_create': True}"
-                                   domain="[('company_id', 'child_of', dest_branch_id or dest_parent_company_id), ('company_id', 'in', allowed_company_ids)]"
-                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('company_id', 'child_of', dest_branch_id or dest_parent_company_id), ('company_id', 'in', allowed_dest_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids, 'ict_delegated_targets': True}"/>
                             <field name="dest_location_id" string="Location" readonly="state != 'draft'"
-                                   options="{'no_create': True}"
-                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                                   options="{'no_create': True, 'no_open': True}"
+                                   context="{'allowed_company_ids': allowed_company_ids, 'ict_delegated_targets': True}"/>
                         </group>
                         <group name="planning">
                             <field name="scheduled_date" readonly="state in ('received', 'cancel')"/>

@@ -47,6 +47,15 @@ class IntercompanyStockTransfer(models.Model):
         compute='_compute_allowed_company_ids',
         help='Technical field: every company/branch the current user is allowed in, '
              'whatever is ticked in the company switcher.')
+    allowed_dest_company_ids = fields.Json(
+        compute='_compute_allowed_company_ids',
+        help='Technical field: possible destinations = the user\'s companies plus the '
+             'sibling branches the user may send stock to without having access to them.')
+    allowed_dest_parent_company_ids = fields.Json(compute='_compute_allowed_company_ids')
+    can_access_dest = fields.Boolean(
+        compute='_compute_can_access_dest',
+        help='Technical field: the user is allowed in the destination company (can open '
+             'and validate its receipts).')
     allowed_parent_company_ids = fields.Json(
         compute='_compute_allowed_company_ids',
         help='Technical field: top-level companies the user may select (a branch is '
@@ -134,40 +143,87 @@ class IntercompanyStockTransfer(models.Model):
     # ------------------------------------------------------------------
     # Real dependencies are required: Odoo does not compute dependency-less
     # fields on new records, which left the company dropdowns empty.
-    @api.depends('source_company_id', 'dest_company_id')
+    @api.depends('state', 'source_company_id', 'dest_company_id')
     @api.depends_context('uid')
     def _compute_allowed_company_ids(self):
         companies = self.env.user.company_ids
-        parents = companies.filtered(lambda c: c.sudo().parent_id not in companies)
+        dest_companies = self._get_dest_companies()
+        parents = self._top_companies(companies)
+        dest_parents = self._top_companies(dest_companies)
         for transfer in self:
             transfer.allowed_company_ids = companies.ids
             transfer.allowed_parent_company_ids = parents.ids
+            transfer.allowed_dest_company_ids = dest_companies.ids
+            transfer.allowed_dest_parent_company_ids = dest_parents.ids
+
+    @api.depends('dest_company_id')
+    @api.depends_context('uid')
+    def _compute_can_access_dest(self):
+        for transfer in self:
+            transfer.can_access_dest = self.env.su or transfer.dest_company_id in self.env.user.company_ids
 
     @api.model
-    def _get_parent_company(self, company):
-        """Highest ancestor of `company` the user may access (the company itself
-        when it is not a branch, or when its parent is not accessible)."""
-        allowed = self.env.user.company_ids
+    def _top_companies(self, companies):
+        return companies.filtered(lambda c: c.sudo().parent_id not in companies)
+
+    # ------------------------------------------------------------------
+    # Delegated destinations (branch -> sibling branch)
+    # ------------------------------------------------------------------
+    @api.model
+    def _get_delegated_companies(self):
+        """Branches a user may send stock to *without* being allowed in them:
+        the other branches of the top-level company of any branch the user
+        works in. The parent company itself and other companies' branches are
+        never included. Computed server-side only, from the user's own
+        companies; never taken from the client."""
+        Company = self.env['res.company']
+        user = self.env.user
+        if not user.has_group(GROUP_XMLID):
+            return Company
+        own = user.company_ids.sudo()
+        roots = {int(c.parent_path.split('/')[0]) for c in own if c.parent_id}
+        if not roots:
+            return Company
+        targets = Company.sudo().search([
+            ('id', 'child_of', list(roots)),
+            ('parent_id', '!=', False),
+            ('id', 'not in', own.ids),
+        ])
+        return Company.browse(targets.ids)
+
+    @api.model
+    def _get_dest_companies(self):
+        return self.env.user.company_ids | self._get_delegated_companies()
+
+    @api.model
+    def _get_parent_company(self, company, allowed=None):
+        """Highest ancestor of `company` within `allowed` (default: the user's
+        companies): the company itself when it is not a branch, or when its
+        parent is not selectable."""
+        allowed = self.env.user.company_ids if allowed is None else allowed
         parent = company
         while parent.sudo().parent_id and parent.sudo().parent_id in allowed:
             parent = parent.sudo().parent_id
         return parent
+
+    def _side_companies(self, side):
+        return self.env.user.company_ids if side == 'source' else self._get_dest_companies()
 
     @api.depends('source_company_id', 'dest_company_id')
     def _compute_parent_and_branch(self):
         for transfer in self:
             for side in ('source', 'dest'):
                 company = transfer[f'{side}_company_id']
-                parent = self._get_parent_company(company) if company else company
+                parent = self._get_parent_company(company, self._side_companies(side)) if company else company
                 transfer[f'{side}_parent_company_id'] = parent
                 transfer[f'{side}_branch_id'] = company if company != parent else False
 
     @api.depends('source_parent_company_id', 'dest_parent_company_id')
     @api.depends_context('uid')
     def _compute_has_branches(self):
-        allowed = self.env.user.company_ids.sudo()
         for transfer in self:
             for side in ('source', 'dest'):
+                allowed = self._side_companies(side).sudo()
                 parent = transfer[f'{side}_parent_company_id'].sudo()
                 transfer[f'{side}_has_branches'] = bool(parent) and any(
                     c != parent and c.parent_path.startswith(parent.parent_path) for c in allowed)
@@ -195,7 +251,7 @@ class IntercompanyStockTransfer(models.Model):
         for transfer in self:
             transfer.can_dispatch = transfer.state in ('confirmed', 'in_transit') and bool(
                 transfer._get_pickings('dispatch', open_only=True))
-            transfer.can_receive = transfer.state == 'in_transit' and (
+            transfer.can_receive = transfer.state == 'in_transit' and transfer.can_access_dest and (
                 bool(transfer._get_pickings('receipt', open_only=True))
                 or bool(transfer._get_uncovered_transit()))
 
@@ -254,7 +310,7 @@ class IntercompanyStockTransfer(models.Model):
         # A warehouse of a branch selects that branch.
         if warehouse.company_id != self[f'{side}_company_id']:
             self[f'{side}_company_id'] = warehouse.company_id
-            parent = self._get_parent_company(warehouse.company_id)
+            parent = self._get_parent_company(warehouse.company_id, self._side_companies(side))
             self[f'{side}_parent_company_id'] = parent
             self[f'{side}_branch_id'] = warehouse.company_id if warehouse.company_id != parent else False
         if self[f'{side}_location_id'].sudo().warehouse_id != warehouse:
@@ -270,7 +326,7 @@ class IntercompanyStockTransfer(models.Model):
         root = self[f'{side}_branch_id'] or self[f'{side}_parent_company_id']
         if not root:
             return False
-        allowed = self.env.user.company_ids
+        allowed = self._side_companies(side)
         warehouses = self.env['stock.warehouse'].sudo().search(
             [('company_id', '=' if exact else 'child_of', root.id), ('company_id', 'in', allowed.ids)],
             limit=2)
@@ -378,6 +434,7 @@ class IntercompanyStockTransfer(models.Model):
                 "You are not allowed to process inter-company stock transfers. Ask an "
                 "administrator to grant you the 'Allow Inter-Company Stock Transfers' right."))
         allowed = user.company_ids
+        delegated = self._get_delegated_companies() if scope == 'both' else self.env['res.company']
         for transfer in self.sudo():
             needed = {
                 'both': transfer.source_company_id | transfer.dest_company_id,
@@ -385,10 +442,27 @@ class IntercompanyStockTransfer(models.Model):
                 'dest': transfer.dest_company_id,
             }[scope]
             missing = needed - allowed
+            if scope == 'both' and missing == transfer.dest_company_id and missing <= delegated:
+                # Sending to a sibling branch: allowed without access to it.
+                continue
             if missing:
                 raise AccessError(_(
                     "Transfer %(name)s requires access to company %(companies)s.",
                     name=transfer.name, companies=', '.join(missing.mapped('name'))))
+
+    def _ict_dest_records(self, records):
+        """`records` in the destination company. Users allowed in it work with
+        their own rights. For a delegated destination (sibling branch the user
+        is not allowed in) this is a narrowly scoped sudo, used only for
+        operations the transfer itself generates, after
+        `_check_ict_permission('both')` has passed."""
+        self.ensure_one()
+        dest = self.sudo().dest_company_id
+        if self.env.su or dest in self.env.user.company_ids:
+            return self._with_ict_companies(records, 'dest')
+        self._check_ict_permission('both')
+        return records.sudo().with_company(dest).with_context(
+            mail_create_nosubscribe=True, mail_auto_subscribe_no_notify=True)
 
     def _with_ict_companies(self, records, scope='both'):
         """Return `records` in an environment where the transfer's companies are
@@ -543,11 +617,12 @@ class IntercompanyStockTransfer(models.Model):
                 unit_cost = -sum(layers.mapped('value')) / qty
         if not unit_cost:
             unit_cost = product.sudo().with_company(self.source_company_id).standard_price
-        src_currency = self.source_company_id.currency_id
-        dst_currency = self.dest_company_id.currency_id
+        this = self.sudo()
+        src_currency = this.source_company_id.currency_id
+        dst_currency = this.dest_company_id.currency_id
         if src_currency != dst_currency:
             date = max(dispatch_moves.mapped('date')) if dispatch_moves else fields.Date.context_today(self)
-            unit_cost = src_currency._convert(unit_cost, dst_currency, self.dest_company_id, date)
+            unit_cost = src_currency._convert(unit_cost, dst_currency, this.dest_company_id, date)
         return unit_cost
 
     def _create_transit_picking(self, kind, quantities, balances, origin_moves=None):
@@ -561,28 +636,31 @@ class IntercompanyStockTransfer(models.Model):
             mirrors (pricing and chaining); defaults to all dispatch moves.
         """
         self.ensure_one()
+        # sudo for reading configuration ids only (warehouse, operation type,
+        # locations): a sender may target a sibling branch it cannot read.
+        this = self.sudo()
         transit = self._get_transit_location()
         if kind == 'receipt':
-            company = self.dest_company_id
-            warehouse = self.dest_warehouse_id
+            company = this.dest_company_id
+            warehouse = this.dest_warehouse_id
             picking_type = warehouse.in_type_id
             if warehouse.reception_steps == 'one_step':
-                picking_dest = self.dest_location_id
+                picking_dest = this.dest_location_id
             else:
                 # Multi-step reception: enter through the warehouse input and
                 # let the native push rules carry the goods to the final
                 # (selected) location.
                 picking_dest = picking_type.default_location_dest_id or warehouse.lot_stock_id
-            final_location = self.dest_location_id
-            partner = self._partner_for_picking(self.source_company_id, company)
-            origin = self.name
+            final_location = this.dest_location_id
+            partner = self._partner_for_picking(this.source_company_id, company)
+            origin = this.name
         else:
-            company = self.source_company_id
-            warehouse = self.source_warehouse_id
+            company = this.source_company_id
+            warehouse = this.source_warehouse_id
             picking_type = warehouse.out_type_id.return_picking_type_id or warehouse.in_type_id
-            picking_dest = final_location = self.source_location_id
-            partner = self._partner_for_picking(self.dest_company_id, company)
-            origin = _('Return of %s', self.name)
+            picking_dest = final_location = this.source_location_id
+            partner = self._partner_for_picking(this.dest_company_id, company)
+            origin = _('Return of %s', this.name)
         if not picking_type:
             raise UserError(_("No operation type is configured for warehouse %s.", warehouse.display_name))
 
@@ -613,7 +691,8 @@ class IntercompanyStockTransfer(models.Model):
                 vals['origin_returned_move_id'] = dispatch_moves.sorted('id')[-1].id
             move_vals.append(vals)
 
-        Picking = self._with_ict_companies(self.env['stock.picking'], 'dest' if kind == 'receipt' else 'source')
+        Picking = self._ict_dest_records(self.env['stock.picking']) if kind == 'receipt' \
+            else self._with_ict_companies(self.env['stock.picking'], 'source')
         picking = Picking.with_company(company).create({
             'picking_type_id': picking_type.id,
             'company_id': company.id,
@@ -861,7 +940,7 @@ class IntercompanyStockTransfer(models.Model):
             raise UserError(_(
                 "No quantity is reserved on the source operation of %s. Use 'Check "
                 "Availability' or set the quantities on the source operation.", self.name))
-        res = self._with_ict_companies(pickings).button_validate()
+        res = self._with_ict_companies(pickings, 'source').button_validate()
         return res if isinstance(res, dict) else True
 
     def action_receive(self):
@@ -903,10 +982,12 @@ class IntercompanyStockTransfer(models.Model):
         for transfer in self:
             if transfer.state in ('received', 'cancel'):
                 raise UserError(_("Transfer %s cannot be cancelled anymore.", transfer.name))
-            open_pickings = (transfer._get_pickings('dispatch', open_only=True)
-                             | transfer._get_pickings('receipt', open_only=True))
-            if open_pickings:
-                transfer._with_ict_companies(open_pickings).with_context(ict_skip_sync=True).action_cancel()
+            open_dispatch = transfer._get_pickings('dispatch', open_only=True)
+            if open_dispatch:
+                transfer._with_ict_companies(open_dispatch, 'source').with_context(ict_skip_sync=True).action_cancel()
+            open_receipts = transfer._get_pickings('receipt', open_only=True)
+            if open_receipts:
+                transfer._ict_dest_records(open_receipts).with_context(ict_skip_sync=True).action_cancel()
             body = _("Transfer cancelled. Reason: %s", reason)
             balances = transfer._get_balances()
             uncovered = transfer._get_uncovered_transit(balances)
