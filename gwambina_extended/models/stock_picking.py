@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from lxml import etree
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_round
@@ -42,6 +44,33 @@ class StockPicking(models.Model):
     def _compute_gw_backorder_count(self):
         for picking in self:
             picking.gw_backorder_count = len(picking.backorder_ids)
+
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type == 'form':
+            # Initiator of a transfer: every "Validate" button is replaced by "Pending Validation".
+            # Done in Python (not XPath) so it works whatever other modules did to the header.
+            validate_buttons = arch.xpath("//header//button[@name='button_validate']")
+            for button in validate_buttons:
+                invisible = (button.get('invisible') or '').strip()
+                button.set('invisible', f"({invisible}) or gw_pending_validation" if invisible
+                           else "gw_pending_validation")
+            headers = arch.xpath("//header")
+            if headers:
+                pending = etree.Element('button', {
+                    'name': 'action_gw_pending_validation',
+                    'type': 'object',
+                    'string': _("Pending Validation"),
+                    'class': 'btn-warning',
+                    'icon': 'fa-hourglass-half',
+                    'invisible': 'not gw_pending_validation',
+                })
+                if validate_buttons:
+                    validate_buttons[0].addprevious(pending)
+                else:
+                    headers[0].insert(0, pending)
+        return arch, view
 
     def _gw_is_initiator(self, user):
         self.ensure_one()

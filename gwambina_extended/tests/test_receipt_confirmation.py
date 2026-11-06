@@ -259,3 +259,8 @@ class TestReceiptConfirmation(GwStockCommon):
         receipt.with_user(self.receiver_user).button_validate()
         self.assertEqual(receipt.state, 'done')
         self.assertFalse(receipt.with_user(self.admin_user).gw_pending_validation)
+
+    def test_form_validate_buttons_replaced(self):
+        arch = self.env['stock.picking'].get_views([(False, 'form')])['views']['form']['arch']
+        self.assertIn('action_gw_pending_validation', arch)
+        self.assertIn('or gw_pending_validation', arch)
