@@ -7,10 +7,12 @@
             <list string="Inter-Company Transfers" sample="1">
                 <field name="name" decoration-bf="1"/>
                 <field name="scheduled_date" widget="remaining_days" optional="show" invisible="state in ('received', 'cancel')"/>
-                <field name="source_company_id" optional="show"/>
+                <field name="source_parent_company_id" string="Source Company" optional="show"/>
+                <field name="source_branch_id" optional="show"/>
                 <field name="source_warehouse_id" optional="show"/>
                 <field name="source_location_id" optional="hide"/>
-                <field name="dest_company_id" optional="show"/>
+                <field name="dest_parent_company_id" string="Destination Company" optional="show"/>
+                <field name="dest_branch_id" optional="show"/>
                 <field name="dest_warehouse_id" optional="show"/>
                 <field name="dest_location_id" optional="hide"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show"/>
@@ -65,20 +67,48 @@
                     <field name="can_dispatch" invisible="1"/>
                     <field name="can_receive" invisible="1"/>
                     <field name="allowed_company_ids" invisible="1"/>
+                    <field name="allowed_parent_company_ids" invisible="1"/>
                     <field name="company_id" invisible="1"/>
                     <group>
                         <group string="Source" name="source">
-                            <field name="source_company_id" readonly="state != 'draft'"
-                                   domain="[('id', 'in', allowed_company_ids)]" options="{'no_create': True}"/>
-                            <field name="source_warehouse_id" readonly="state != 'draft'" options="{'no_create': True}"/>
-                            <field name="source_location_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="source_parent_company_id" string="Company" required="1"
+                                   readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"
+                                   domain="[('id', 'in', allowed_parent_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="source_branch_id" string="Branch" invisible="not source_has_branches"
+                                   readonly="state != 'draft'" placeholder="Main company (no branch)"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('id', 'in', allowed_company_ids), ('id', 'child_of', source_parent_company_id), ('id', '!=', source_parent_company_id)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="source_company_id" invisible="1" context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="source_has_branches" invisible="1"/>
+                            <field name="source_warehouse_id" string="Warehouse" readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   domain="[('company_id', 'child_of', source_branch_id or source_parent_company_id), ('company_id', 'in', allowed_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="source_location_id" string="Location" readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
                         </group>
                         <group string="Destination" name="destination">
-                            <field name="dest_company_id" readonly="state != 'draft'"
-                                   domain="[('id', 'in', allowed_company_ids), ('id', '!=', source_company_id)]"
-                                   options="{'no_create': True}"/>
-                            <field name="dest_warehouse_id" readonly="state != 'draft'" options="{'no_create': True}"/>
-                            <field name="dest_location_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="dest_parent_company_id" string="Company" required="1"
+                                   readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"
+                                   domain="[('id', 'in', allowed_parent_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="dest_branch_id" string="Branch" invisible="not dest_has_branches"
+                                   readonly="state != 'draft'" placeholder="Main company (no branch)"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   domain="[('id', 'in', allowed_company_ids), ('id', 'child_of', dest_parent_company_id), ('id', '!=', dest_parent_company_id)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="dest_company_id" invisible="1" context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="dest_has_branches" invisible="1"/>
+                            <field name="dest_warehouse_id" string="Warehouse" readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   domain="[('company_id', 'child_of', dest_branch_id or dest_parent_company_id), ('company_id', 'in', allowed_company_ids)]"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
+                            <field name="dest_location_id" string="Location" readonly="state != 'draft'"
+                                   options="{'no_create': True}"
+                                   context="{'allowed_company_ids': allowed_company_ids}"/>
                         </group>
                         <group name="planning">
                             <field name="scheduled_date" readonly="state in ('received', 'cancel')"/>
@@ -97,10 +127,11 @@
                                     <field name="company_id" column_invisible="1"/>
                                     <field name="product_uom_category_id" column_invisible="1"/>
                                     <field name="product_tracking" column_invisible="1"/>
-                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_id" options="{'no_create': True}"
+                                           context="{'allowed_company_ids': parent.allowed_company_ids}"/>
                                     <field name="lot_id" optional="show" options="{'no_create': True}"
                                            invisible="product_tracking == 'none'"
-                                           context="{'default_product_id': product_id}"
+                                           context="{'default_product_id': product_id, 'allowed_company_ids': parent.allowed_company_ids}"
                                            groups="stock.group_production_lot"/>
                                     <field name="product_uom_qty"/>
                                     <field name="product_uom_id" options="{'no_create': True}" groups="uom.group_uom"/>
@@ -164,9 +195,9 @@
                 <field name="name"/>
                 <field name="origin"/>
                 <field name="line_ids" string="Product" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
-                <field name="source_company_id"/>
+                <field name="source_company_id" filter_domain="['|', ('source_parent_company_id', 'ilike', self), ('source_company_id', 'ilike', self)]"/>
                 <field name="source_warehouse_id"/>
-                <field name="dest_company_id"/>
+                <field name="dest_company_id" filter_domain="['|', ('dest_parent_company_id', 'ilike', self), ('dest_company_id', 'ilike', self)]"/>
                 <field name="dest_warehouse_id"/>
                 <field name="user_id"/>
                 <filter name="my_transfers" string="My Transfers" domain="[('user_id', '=', uid)]"/>
@@ -181,9 +212,11 @@
                 <separator/>
                 <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_source_company" string="Source Company" context="{'group_by': 'source_company_id'}"/>
+                    <filter name="group_source_company" string="Source Company" context="{'group_by': 'source_parent_company_id'}"/>
+                    <filter name="group_source_branch" string="Source Branch" context="{'group_by': 'source_company_id'}"/>
                     <filter name="group_source_warehouse" string="Source Warehouse" context="{'group_by': 'source_warehouse_id'}"/>
-                    <filter name="group_dest_company" string="Destination Company" context="{'group_by': 'dest_company_id'}"/>
+                    <filter name="group_dest_company" string="Destination Company" context="{'group_by': 'dest_parent_company_id'}"/>
+                    <filter name="group_dest_branch" string="Destination Branch" context="{'group_by': 'dest_company_id'}"/>
                     <filter name="group_dest_warehouse" string="Destination Warehouse" context="{'group_by': 'dest_warehouse_id'}"/>
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
                     <filter name="group_scheduled_date" string="Scheduled Date" context="{'group_by': 'scheduled_date'}"/>

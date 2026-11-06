@@ -14,12 +14,14 @@ class IntercompanyTransferCommon(TransactionCase):
         cls.company_a = Company.create({'name': 'Alpha ICT Co'})
         cls.company_b = Company.create({'name': 'Beta ICT Co'})
         cls.company_c = Company.create({'name': 'Gamma ICT Co'})
+        cls.branch_a = Company.create({'name': 'Alpha ICT Branch', 'parent_id': cls.company_a.id})
         Warehouse = cls.env['stock.warehouse']
         cls.wh_a1 = Warehouse.search([('company_id', '=', cls.company_a.id)], limit=1)
         cls.wh_a2 = Warehouse.create({'name': 'ICT A2', 'code': 'ICTA2', 'company_id': cls.company_a.id})
         cls.wh_b1 = Warehouse.search([('company_id', '=', cls.company_b.id)], limit=1)
         cls.wh_b2 = Warehouse.create({'name': 'ICT B2', 'code': 'ICTB2', 'company_id': cls.company_b.id})
         cls.wh_c1 = Warehouse.search([('company_id', '=', cls.company_c.id)], limit=1)
+        cls.wh_branch_a = Warehouse.search([('company_id', '=', cls.branch_a.id)], limit=1)
         cls.loc_a1 = cls.wh_a1.lot_stock_id
         cls.loc_b1 = cls.wh_b1.lot_stock_id
         cls.shelf_a1 = cls.env['stock.location'].create({
@@ -41,7 +43,7 @@ class IntercompanyTransferCommon(TransactionCase):
         cls.user_ict = Users.create({
             'name': 'ICT User', 'login': 'ict_user', 'email': 'ict_user@example.com',
             'company_id': cls.company_a.id,
-            'company_ids': [Command.set((cls.company_a | cls.company_b).ids)],
+            'company_ids': [Command.set((cls.company_a | cls.company_b | cls.branch_a).ids)],
             'groups_id': [Command.set(base_groups + [cls.group_ict.id])],
         })
         cls.user_stock = Users.create({

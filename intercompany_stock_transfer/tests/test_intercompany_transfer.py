@@ -47,9 +47,15 @@ class TestIntercompanyTransferWorkflow(IntercompanyTransferCommon):
         def domain_result(field, comodel, **ctx):
             return self.env[comodel].search(safe_eval(Transfer._fields[field].domain, ctx))
 
-        src_wh = domain_result('source_warehouse_id', 'stock.warehouse', source_company_id=self.company_a.id)
-        self.assertEqual(src_wh, self.wh_a1 | self.wh_a2)
-        dst_wh = domain_result('dest_warehouse_id', 'stock.warehouse', dest_company_id=self.company_b.id)
+        src_wh = domain_result('source_warehouse_id', 'stock.warehouse',
+                               source_parent_company_id=self.company_a.id, source_branch_id=False)
+        self.assertEqual(src_wh, self.wh_a1 | self.wh_a2 | self.wh_branch_a,
+                         "a company shows its own and its branches' warehouses")
+        branch_wh = domain_result('source_warehouse_id', 'stock.warehouse',
+                                  source_parent_company_id=self.company_a.id, source_branch_id=self.branch_a.id)
+        self.assertEqual(branch_wh, self.wh_branch_a)
+        dst_wh = domain_result('dest_warehouse_id', 'stock.warehouse',
+                               dest_parent_company_id=self.company_b.id, dest_branch_id=False)
         self.assertEqual(dst_wh, self.wh_b1 | self.wh_b2)
 
         src_locs = domain_result('source_location_id', 'stock.location', source_warehouse_id=self.wh_a1.id)
@@ -64,17 +70,17 @@ class TestIntercompanyTransferWorkflow(IntercompanyTransferCommon):
 
     def test_05_onchange_clears_incompatible_selection(self):
         form = Form(self._as(self.user_ict, self.env['intercompany.stock.transfer']))
-        form.source_company_id = self.company_a
+        form.source_parent_company_id = self.company_a
         form.source_warehouse_id = self.wh_a2
         self.assertEqual(form.source_location_id, self.wh_a2.lot_stock_id)
-        form.dest_company_id = self.company_b
+        form.dest_parent_company_id = self.company_b
         form.dest_warehouse_id = self.wh_b1
         form.dest_location_id = self.shelf_b1
         # Switching the destination warehouse drops the incompatible location.
         form.dest_warehouse_id = self.wh_b2
         self.assertEqual(form.dest_location_id, self.wh_b2.lot_stock_id)
         # Switching the company drops the warehouse (B has several: no guess).
-        form.source_company_id = self.company_b
+        form.source_parent_company_id = self.company_b
         self.assertFalse(form.source_warehouse_id)
         self.assertFalse(form.source_location_id)
 
@@ -432,3 +438,104 @@ class TestIntercompanyTransferWorkflow(IntercompanyTransferCommon):
         self.assertEqual(transfer.line_ids.qty_received, 3)
         self.assertEqual(transfer.line_ids.qty_in_transit, 2)
         self.assertEqual(transfer.state, 'in_transit')
+
+
+@tagged('post_install', '-at_install', 'intercompany_stock_transfer')
+class TestIntercompanyTransferBranches(IntercompanyTransferCommon):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.branch_stock = cls.wh_branch_a.lot_stock_id
+        cls._add_stock(cls.product_1, cls.branch_stock, 10)
+        cls._add_stock(cls.product_1, cls.loc_a1, 10)
+
+    def test_new_form_lists_all_user_companies(self):
+        """Regression: the company dropdowns were empty on a new transfer."""
+        Transfer = self.env['intercompany.stock.transfer'].with_user(self.user_ict).with_context(
+            allowed_company_ids=self.company_a.ids)  # only one company ticked in the switcher
+        values = Transfer.onchange({}, [], {
+            'allowed_company_ids': {}, 'allowed_parent_company_ids': {},
+            'source_company_id': {}, 'source_parent_company_id': {}, 'source_has_branches': {},
+        })['value']
+        self.assertEqual(set(values['allowed_company_ids']),
+                         set((self.company_a | self.company_b | self.branch_a).ids))
+        self.assertEqual(set(values['allowed_parent_company_ids']), set((self.company_a | self.company_b).ids),
+                         "branches are chosen in the Branch field, not as top-level companies")
+        self.assertTrue(values['source_has_branches'])
+        # What the dropdowns query, with the field context sent by the form:
+        ctx = {'allowed_company_ids': values['allowed_company_ids']}
+        warehouses = self.env['stock.warehouse'].with_user(self.user_ict).with_context(ctx).search(
+            [('company_id', 'child_of', self.company_b.id)])
+        self.assertEqual(warehouses, self.wh_b1 | self.wh_b2, "warehouses of a company not ticked in the switcher")
+        locations = self.env['stock.location'].with_user(self.user_ict).with_context(ctx).search(
+            [('usage', '=', 'internal'), ('warehouse_id', '=', self.wh_b1.id)])
+        self.assertIn(self.shelf_b1, locations)
+
+    def test_branch_dropdown_and_warehouse_selection(self):
+        form = Form(self._as(self.user_ict, self.env['intercompany.stock.transfer'],
+                             companies=self.company_a))
+        form.source_parent_company_id = self.company_a
+        self.assertTrue(form.source_has_branches)
+        self.assertFalse(form.source_branch_id)
+        # Picking a branch warehouse selects the branch automatically.
+        form.source_warehouse_id = self.wh_branch_a
+        self.assertEqual(form.source_branch_id, self.branch_a)
+        self.assertEqual(form.source_company_id, self.branch_a)
+        self.assertEqual(form.source_location_id, self.branch_stock)
+        # Back to the main company: the branch warehouse is no longer compatible.
+        form.source_branch_id = self.env['res.company']
+        self.assertEqual(form.source_company_id, self.company_a)
+        self.assertNotEqual(form.source_warehouse_id, self.wh_branch_a)
+        # Choosing the branch explicitly proposes its single warehouse.
+        form.source_branch_id = self.branch_a
+        self.assertEqual(form.source_warehouse_id, self.wh_branch_a)
+        form.dest_parent_company_id = self.company_b
+        self.assertFalse(form.dest_has_branches)
+        form.dest_warehouse_id = self.wh_b1
+        with form.line_ids.new() as line:
+            line.product_id = self.product_1
+            line.product_uom_qty = 4
+        transfer = form.save()
+        self.assertEqual(transfer.source_company_id, self.branch_a)
+        self.assertEqual(transfer.source_parent_company_id, self.company_a)
+
+    def test_branch_to_company_full_flow_with_one_company_ticked(self):
+        """Branch -> other company, while only the branch is active in the switcher."""
+        transfer = self._create_transfer(
+            [(self.product_1, 4)],
+            source_company_id=self.branch_a.id, source_warehouse_id=self.wh_branch_a.id,
+            source_location_id=self.branch_stock.id)
+        self.assertEqual(transfer.source_parent_company_id, self.company_a)
+        self.assertEqual(transfer.source_branch_id, self.branch_a)
+        transfer = transfer.with_context(allowed_company_ids=self.branch_a.ids)
+        transfer.action_confirm()
+        dispatch = transfer._get_pickings('dispatch')
+        self.assertEqual(dispatch.company_id, self.branch_a)
+        transfer.action_dispatch()
+        receipt = transfer._get_pickings('receipt')
+        self.assertEqual(receipt.company_id, self.company_b)
+        transfer.action_receive()
+        self.assertEqual(transfer.state, 'received')
+        self.assertEqual(self._on_hand(self.product_1, self.branch_stock), 6)
+        self.assertEqual(self._on_hand(self.product_1, self.loc_a1), 10, "parent company stock untouched")
+        self.assertEqual(self._on_hand(self.product_1, self.loc_b1), 4)
+
+    def test_parent_to_own_branch(self):
+        transfer = self._create_transfer(
+            [(self.product_1, 3)], dest_parent_company_id=self.company_a.id, dest_branch_id=self.branch_a.id,
+            dest_company_id=False, dest_warehouse_id=self.wh_branch_a.id, dest_location_id=self.branch_stock.id)
+        self.assertEqual(transfer.dest_company_id, self.branch_a)
+        transfer.action_confirm()
+        transfer.action_dispatch()
+        transfer.action_receive()
+        self.assertEqual(self._on_hand(self.product_1, self.loc_a1), 7)
+        self.assertEqual(self._on_hand(self.product_1, self.branch_stock), 13)
+
+    def test_inconsistent_branch_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._create_transfer([(self.product_1, 1)], source_parent_company_id=self.company_b.id,
+                                  source_branch_id=self.branch_a.id)
+        with self.assertRaises(ValidationError):
+            self._create_transfer([(self.product_1, 1)], source_company_id=self.company_a.id,
+                                  source_branch_id=self.branch_a.id)

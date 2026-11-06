@@ -14,6 +14,7 @@ GROUP_XMLID = 'intercompany_stock_transfer.group_intercompany_transfer'
 STRUCTURAL_FIELDS = {
     'source_company_id', 'source_warehouse_id', 'source_location_id',
     'dest_company_id', 'dest_warehouse_id', 'dest_location_id', 'line_ids',
+    'source_parent_company_id', 'source_branch_id', 'dest_parent_company_id', 'dest_branch_id',
 }
 
 # Sign of each movement direction on the quantity sitting in transit.
@@ -40,30 +41,55 @@ class IntercompanyStockTransfer(models.Model):
     ], string='Status', default='draft', required=True, readonly=True, copy=False,
         index=True, tracking=True)
 
-    allowed_company_ids = fields.Many2many(
-        'res.company', compute='_compute_allowed_company_ids',
-        help='Technical field: companies the current user may select.')
+    # Plain id lists (Json), not many2many: they are sent back on every
+    # onchange, and a many2many would read companies the switcher hides.
+    allowed_company_ids = fields.Json(
+        compute='_compute_allowed_company_ids',
+        help='Technical field: every company/branch the current user is allowed in, '
+             'whatever is ticked in the company switcher.')
+    allowed_parent_company_ids = fields.Json(
+        compute='_compute_allowed_company_ids',
+        help='Technical field: top-level companies the user may select (a branch is '
+             'chosen in the Branch field).')
     # `company_id` mirrors the source company. It drives `_check_company_auto`
     # for the source-side fields; the destination side is checked explicitly
     # (a transfer legitimately references two different companies).
     company_id = fields.Many2one(
         'res.company', 'Company', related='source_company_id', store=True, index=True)
 
+    # `source_company_id` / `dest_company_id` are the companies that actually own
+    # the stock (a branch is a company in Odoo). The "Company" and "Branch"
+    # fields are only a friendlier way of choosing them.
     source_company_id = fields.Many2one(
-        'res.company', 'Source Company', required=True, tracking=True, index=True,
+        'res.company', 'Source Company / Branch', required=True, tracking=True, index=True,
         default=lambda self: self.env.company)
+    source_parent_company_id = fields.Many2one(
+        'res.company', 'Source Company', compute='_compute_parent_and_branch',
+        store=True, readonly=False, precompute=True, copy=False)
+    source_branch_id = fields.Many2one(
+        'res.company', 'Source Branch', compute='_compute_parent_and_branch',
+        store=True, readonly=False, precompute=True, copy=False)
+    source_has_branches = fields.Boolean(compute='_compute_has_branches')
     source_warehouse_id = fields.Many2one(
         'stock.warehouse', 'Source Warehouse', required=True, tracking=True,
-        check_company=True, domain="[('company_id', '=', source_company_id)]")
+        check_company=True,
+        domain="[('company_id', 'child_of', source_branch_id or source_parent_company_id)]")
     source_location_id = fields.Many2one(
         'stock.location', 'Source Location', required=True, tracking=True,
         check_company=True,
         domain="[('usage', '=', 'internal'), ('warehouse_id', '=', source_warehouse_id)]")
     dest_company_id = fields.Many2one(
-        'res.company', 'Destination Company', required=True, tracking=True, index=True)
+        'res.company', 'Destination Company / Branch', required=True, tracking=True, index=True)
+    dest_parent_company_id = fields.Many2one(
+        'res.company', 'Destination Company', compute='_compute_parent_and_branch',
+        store=True, readonly=False, precompute=True, copy=False)
+    dest_branch_id = fields.Many2one(
+        'res.company', 'Destination Branch', compute='_compute_parent_and_branch',
+        store=True, readonly=False, precompute=True, copy=False)
+    dest_has_branches = fields.Boolean(compute='_compute_has_branches')
     dest_warehouse_id = fields.Many2one(
         'stock.warehouse', 'Destination Warehouse', required=True, tracking=True,
-        domain="[('company_id', '=', dest_company_id)]")
+        domain="[('company_id', 'child_of', dest_branch_id or dest_parent_company_id)]")
     dest_location_id = fields.Many2one(
         'stock.location', 'Destination Location', required=True, tracking=True,
         domain="[('usage', '=', 'internal'), ('warehouse_id', '=', dest_warehouse_id)]")
@@ -106,10 +132,45 @@ class IntercompanyStockTransfer(models.Model):
     # ------------------------------------------------------------------
     # Computes
     # ------------------------------------------------------------------
+    # Real dependencies are required: Odoo does not compute dependency-less
+    # fields on new records, which left the company dropdowns empty.
+    @api.depends('source_company_id', 'dest_company_id')
     @api.depends_context('uid')
     def _compute_allowed_company_ids(self):
+        companies = self.env.user.company_ids
+        parents = companies.filtered(lambda c: c.sudo().parent_id not in companies)
         for transfer in self:
-            transfer.allowed_company_ids = self.env.user.company_ids
+            transfer.allowed_company_ids = companies.ids
+            transfer.allowed_parent_company_ids = parents.ids
+
+    @api.model
+    def _get_parent_company(self, company):
+        """Highest ancestor of `company` the user may access (the company itself
+        when it is not a branch, or when its parent is not accessible)."""
+        allowed = self.env.user.company_ids
+        parent = company
+        while parent.sudo().parent_id and parent.sudo().parent_id in allowed:
+            parent = parent.sudo().parent_id
+        return parent
+
+    @api.depends('source_company_id', 'dest_company_id')
+    def _compute_parent_and_branch(self):
+        for transfer in self:
+            for side in ('source', 'dest'):
+                company = transfer[f'{side}_company_id']
+                parent = self._get_parent_company(company) if company else company
+                transfer[f'{side}_parent_company_id'] = parent
+                transfer[f'{side}_branch_id'] = company if company != parent else False
+
+    @api.depends('source_parent_company_id', 'dest_parent_company_id')
+    @api.depends_context('uid')
+    def _compute_has_branches(self):
+        allowed = self.env.user.company_ids.sudo()
+        for transfer in self:
+            for side in ('source', 'dest'):
+                parent = transfer[f'{side}_parent_company_id'].sudo()
+                transfer[f'{side}_has_branches'] = bool(parent) and any(
+                    c != parent and c.parent_path.startswith(parent.parent_path) for c in allowed)
 
     def _compute_transit_location_id(self):
         transit = self._get_transit_location()
@@ -141,48 +202,102 @@ class IntercompanyStockTransfer(models.Model):
     # ------------------------------------------------------------------
     # Onchanges: keep the selection chain consistent in the UI
     # ------------------------------------------------------------------
-    @api.onchange('source_company_id')
-    def _onchange_source_company_id(self):
-        if self.source_warehouse_id.company_id != self.source_company_id:
-            self.source_warehouse_id = self._default_warehouse(self.source_company_id)
-        self._onchange_source_warehouse_id()
+    # The company switcher may not have every company ticked: read related
+    # ids in sudo (ids/companies only) so onchanges never hit record rules.
+    @api.onchange('source_parent_company_id')
+    def _onchange_source_parent_company_id(self):
+        self._apply_company_choice('source', self.source_parent_company_id)
+
+    @api.onchange('source_branch_id')
+    def _onchange_source_branch_id(self):
+        self._apply_company_choice('source', self.source_branch_id or self.source_parent_company_id, exact=True)
+
+    @api.onchange('dest_parent_company_id')
+    def _onchange_dest_parent_company_id(self):
+        self._apply_company_choice('dest', self.dest_parent_company_id)
+
+    @api.onchange('dest_branch_id')
+    def _onchange_dest_branch_id(self):
+        self._apply_company_choice('dest', self.dest_branch_id or self.dest_parent_company_id, exact=True)
 
     @api.onchange('source_warehouse_id')
     def _onchange_source_warehouse_id(self):
-        if not self.source_warehouse_id:
-            self.source_location_id = False
-        elif self.source_location_id.warehouse_id != self.source_warehouse_id:
-            self.source_location_id = self.source_warehouse_id.lot_stock_id
-
-    @api.onchange('dest_company_id')
-    def _onchange_dest_company_id(self):
-        if self.dest_warehouse_id.company_id != self.dest_company_id:
-            self.dest_warehouse_id = self._default_warehouse(self.dest_company_id)
-        self._onchange_dest_warehouse_id()
+        self._apply_warehouse_choice('source')
 
     @api.onchange('dest_warehouse_id')
     def _onchange_dest_warehouse_id(self):
-        if not self.dest_warehouse_id:
-            self.dest_location_id = False
-        elif self.dest_location_id.warehouse_id != self.dest_warehouse_id:
-            self.dest_location_id = self.dest_warehouse_id.lot_stock_id
+        self._apply_warehouse_choice('dest')
 
-    def _default_warehouse(self, company):
-        """Propose the warehouse only when the company has exactly one."""
+    def _apply_company_choice(self, side, company, exact=False):
+        """Selecting a company (or branch) sets the owning company and clears
+        incompatible warehouse/location selections.
+
+        :param exact: the Branch field was set (or cleared, meaning the main
+            company): the warehouse must belong to exactly that company.
+            Otherwise a top-level company also accepts its branches' warehouses.
+        """
+        self[f'{side}_company_id'] = company
+        warehouse = self[f'{side}_warehouse_id'].sudo()
         if not company:
+            self[f'{side}_warehouse_id'] = False
+        elif not warehouse or (
+                warehouse.company_id != company if exact
+                else not self._company_in_scope(warehouse.company_id, side)):
+            self[f'{side}_warehouse_id'] = self._default_warehouse(side, exact=exact)
+        self._apply_warehouse_choice(side)
+
+    def _apply_warehouse_choice(self, side):
+        warehouse = self[f'{side}_warehouse_id'].sudo()
+        if not warehouse:
+            self[f'{side}_location_id'] = False
+            return
+        # A warehouse of a branch selects that branch.
+        if warehouse.company_id != self[f'{side}_company_id']:
+            self[f'{side}_company_id'] = warehouse.company_id
+            parent = self._get_parent_company(warehouse.company_id)
+            self[f'{side}_parent_company_id'] = parent
+            self[f'{side}_branch_id'] = warehouse.company_id if warehouse.company_id != parent else False
+        if self[f'{side}_location_id'].sudo().warehouse_id != warehouse:
+            self[f'{side}_location_id'] = warehouse.lot_stock_id
+
+    def _company_in_scope(self, company, side):
+        """Is `company` the selected branch, or within the selected company?"""
+        root = (self[f'{side}_branch_id'] or self[f'{side}_parent_company_id']).sudo()
+        return bool(root) and company.sudo().parent_path.startswith(root.parent_path)
+
+    def _default_warehouse(self, side, exact=False):
+        """Propose a warehouse only when the selection contains exactly one."""
+        root = self[f'{side}_branch_id'] or self[f'{side}_parent_company_id']
+        if not root:
             return False
-        warehouses = self.env['stock.warehouse'].search([('company_id', '=', company.id)], limit=2)
+        allowed = self.env.user.company_ids
+        warehouses = self.env['stock.warehouse'].sudo().search(
+            [('company_id', '=' if exact else 'child_of', root.id), ('company_id', 'in', allowed.ids)],
+            limit=2)
         return warehouses if len(warehouses) == 1 else False
 
     # ------------------------------------------------------------------
     # Constraints (server side, independent from the UI domains)
     # ------------------------------------------------------------------
     @api.constrains('source_company_id', 'source_warehouse_id', 'source_location_id',
-                    'dest_company_id', 'dest_warehouse_id', 'dest_location_id')
+                    'dest_company_id', 'dest_warehouse_id', 'dest_location_id',
+                    'source_parent_company_id', 'source_branch_id',
+                    'dest_parent_company_id', 'dest_branch_id')
     def _check_companies_warehouses_locations(self):
         # sudo: pure consistency validation of ids already submitted by the
         # caller; nothing is returned to the user.
         for transfer in self.sudo():
+            for side, label in (('source', _('source')), ('dest', _('destination'))):
+                company = transfer[f'{side}_company_id']
+                parent = transfer[f'{side}_parent_company_id']
+                branch = transfer[f'{side}_branch_id']
+                if branch and (branch == parent or not branch.parent_path.startswith(parent.parent_path)):
+                    raise ValidationError(_(
+                        "The %(side)s branch %(branch)s is not a branch of %(company)s.",
+                        side=label, branch=branch.name, company=parent.name))
+                if company != (branch or parent):
+                    raise ValidationError(_(
+                        "The %(side)s company/branch selection is inconsistent.", side=label))
             if transfer.source_company_id == transfer.dest_company_id:
                 raise ValidationError(_(
                     "Source and destination companies must be different. Use a regular "
@@ -212,6 +327,10 @@ class IntercompanyStockTransfer(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            for side in ('source', 'dest'):
+                choice = vals.get(f'{side}_branch_id') or vals.get(f'{side}_parent_company_id')
+                if choice and not vals.get(f'{side}_company_id'):
+                    vals[f'{side}_company_id'] = choice
             if not vals.get('name') or vals['name'] == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'intercompany.stock.transfer') or _('New')
@@ -220,6 +339,12 @@ class IntercompanyStockTransfer(models.Model):
         return transfers
 
     def write(self, vals):
+        for side in ('source', 'dest'):
+            if {f'{side}_parent_company_id', f'{side}_branch_id'} & set(vals) \
+                    and f'{side}_company_id' not in vals:
+                branch = vals.get(f'{side}_branch_id', self[:1][f'{side}_branch_id'].id)
+                vals[f'{side}_company_id'] = branch or vals.get(
+                    f'{side}_parent_company_id', self[:1][f'{side}_parent_company_id'].id)
         if STRUCTURAL_FIELDS & set(vals):
             if any(transfer.state != 'draft' for transfer in self):
                 raise UserError(_(
@@ -316,7 +441,13 @@ class IntercompanyStockTransfer(models.Model):
         pickings = self.sudo().picking_ids.filtered(lambda p: p.intercompany_role == role)
         if open_only:
             pickings = pickings.filtered(lambda p: p.state not in ('done', 'cancel'))
-        return pickings.with_env(self.env)
+        pickings = pickings.with_env(self.env)
+        # Activate the operation's company so the workflow does not depend on
+        # what is ticked in the company switcher (validated by env.companies).
+        try:
+            return self._with_ict_companies(pickings, 'source' if role in ('dispatch', 'return') else 'dest')
+        except AccessError:
+            return pickings
 
     def _get_balances(self):
         """Aggregate the quantities of every line, in the product's UoM, from the

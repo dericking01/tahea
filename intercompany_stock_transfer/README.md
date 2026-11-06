@@ -17,11 +17,33 @@ boundaries and valuation intact.
 
 | Component | Purpose |
 |---|---|
-| `intercompany.stock.transfer` | Header: reference (`ICT/YYYY/NNNNN`), source company/warehouse/location, destination company/warehouse/location, date, responsible, remarks, status, audit fields, chatter. |
+| `intercompany.stock.transfer` | Header: reference (`ICT/YYYY/NNNNN`), source company (+ optional branch)/warehouse/location, destination company (+ optional branch)/warehouse/location, date, responsible, remarks, status, audit fields, chatter. |
 | `intercompany.stock.transfer.line` | Product, UoM, requested qty, optional lot/serial, plus computed *reserved / dispatched / in transit / received* and *source availability*. No separate balance is stored: every figure is computed from the stock moves. |
 | `stock.picking` (extended) | `intercompany_transfer_id` link and a stored `intercompany_role` (dispatch, receipt, return to source, return from destination). Guards on `_action_done`, `action_cancel` and `unlink`. |
 | `stock.move` (extended) | `intercompany_line_id` link. It is copied on backorders, returns and push moves, so the link survives native splits. |
 | `intercompany.stock.transfer.cancel` | Wizard that records the cancellation reason. |
+
+### Companies and branches
+
+Each side has a **Company** dropdown (top-level companies the user is allowed
+in) and a **Branch** dropdown, shown only when that company has branches the
+user can access. The company that actually owns the stock is stored in
+`source_company_id` / `dest_company_id`: the branch if one is chosen,
+otherwise the company. In Odoo a branch is a company, so stock, valuation and
+security rules apply to it exactly as to any other company.
+
+* With only a Company chosen, the warehouse list shows that company's
+  warehouses **and its branches' warehouses**. Picking a branch warehouse fills
+  in the Branch automatically.
+* Choosing a Branch (or clearing it, meaning "main company") limits the
+  warehouses to exactly that company. Locations are always restricted to the
+  chosen warehouse.
+* Supported: company ↔ company, branch ↔ other company, branch ↔ branch,
+  company ↔ its own branch.
+* The dropdowns list every company the user is allowed in, **whatever is
+  ticked in the company switcher**. The fields send `allowed_company_ids` set
+  to the user's companies, and Odoo itself refuses any company the user is not
+  allowed in.
 
 ### How the stock moves
 
@@ -130,7 +152,9 @@ Stock** creates a new receipt for it.
 * The menu *Inventory → Operations → Inter-Company Transfers* and its window
   action are restricted to the group.
 * Global record rules: a transfer and its lines are visible only if the source
-  **or** the destination company is among the user's active companies.
+  **or** the destination company (or branch) is one of the companies the user
+  is allowed in (`user.company_ids`). This doesn't depend on the company
+  switcher, and nothing of other companies is visible.
 * Server-side checks in every workflow method and on the linked pickings,
   whatever screen or API is used:
   * create / edit / confirm / check availability / dispatch / cancel:
@@ -206,16 +230,16 @@ Activate*. Back up the database first.
 * Products must be **storable** and either shared (no company) or owned by a
   common parent company of both companies. Lots/serials of shared products are
   shared, so the same lot record continues into the destination.
-* Grant users the right (see §2) and give them access to both companies.
-  They select both companies in the company switcher to pick
-  warehouses/locations of both.
+* Grant users the right (see §2) and give them access to both companies
+  (and the branches they use). They don't need to tick them in the company
+  switcher.
 
 ## 5. Usage
 
 1. *Inventory → Operations → Inter-Company Transfers → New*.
-2. Choose source company → warehouse → location, then destination company →
-   warehouse → location. Changing a company or warehouse clears incompatible
-   selections.
+2. Choose the source Company (and Branch if needed) → Warehouse → Location,
+   then the same for the destination. Changing a company, branch or warehouse
+   clears incompatible selections.
 3. Add products and quantities (optional lot/serial). *Source Availability*
    shows the free quantity at the location and its sub-locations.
 4. **Confirm Transfer**, then **Check Availability** if needed. To dispatch

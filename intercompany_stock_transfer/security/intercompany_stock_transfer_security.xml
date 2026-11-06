@@ -19,21 +19,25 @@
         <field name="comment">Create, confirm, dispatch, receive and cancel stock transfers between warehouses of different companies.</field>
     </record>
 
-    <data noupdate="1">
-        <!-- Global multi-company rules: a transfer is visible when one of its
-             two companies is active for the user. Workflow methods additionally
-             require access to the companies they act on. -->
-        <record id="intercompany_transfer_company_rule" model="ir.rule">
-            <field name="name">Inter-company transfer: multi-company</field>
-            <field name="model_id" ref="model_intercompany_stock_transfer"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('source_company_id', 'in', company_ids), ('dest_company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="intercompany_transfer_line_company_rule" model="ir.rule">
-            <field name="name">Inter-company transfer line: multi-company</field>
-            <field name="model_id" ref="model_intercompany_stock_transfer_line"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('transfer_id.source_company_id', 'in', company_ids), ('transfer_id.dest_company_id', 'in', company_ids)]</field>
-        </record>
-    </data>
+    <!-- Multi-company rules. A transfer is visible when its source OR
+         destination company is one the user is allowed in (user.company_ids),
+         independently of what is ticked in the company switcher, so that
+         transfers between companies/branches work without toggling it.
+         Nothing of companies the user is not allowed in is ever visible, and
+         workflow methods additionally require access to the companies they
+         act on. (Replaces the former switcher-based rules.) -->
+    <delete model="ir.rule" search="[('id', '=', ref('intercompany_stock_transfer.intercompany_transfer_company_rule', raise_if_not_found=False))]"/>
+    <delete model="ir.rule" search="[('id', '=', ref('intercompany_stock_transfer.intercompany_transfer_line_company_rule', raise_if_not_found=False))]"/>
+    <record id="intercompany_transfer_user_companies_rule" model="ir.rule">
+        <field name="name">Inter-company transfer: user companies</field>
+        <field name="model_id" ref="model_intercompany_stock_transfer"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('source_company_id', 'in', user.company_ids.ids), ('dest_company_id', 'in', user.company_ids.ids)]</field>
+    </record>
+    <record id="intercompany_transfer_line_user_companies_rule" model="ir.rule">
+        <field name="name">Inter-company transfer line: user companies</field>
+        <field name="model_id" ref="model_intercompany_stock_transfer_line"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('transfer_id.source_company_id', 'in', user.company_ids.ids), ('transfer_id.dest_company_id', 'in', user.company_ids.ids)]</field>
+    </record>
 </odoo>
