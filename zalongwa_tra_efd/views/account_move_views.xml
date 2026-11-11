@@ -10,17 +10,17 @@
 
             <!-- Add TRA button to header -->
             <xpath expr="//header/button[@name='action_post']" position="after">
-                <button name="action_generate_tra_receipt" type="object"
+                <button name="action_generate_tra_receipt" type="object" groups="account.group_account_invoice"
                         string="Generate TRA Receipt"
                         class="btn-primary tra-btn-generate"
                         icon="fa-file-text-o"
                         invisible="state != 'posted' or move_type != 'out_invoice' or tra_receipt_status in ('success', 'pending')"/>
-                <button name="action_check_tra_receipt" type="object"
+                <button name="action_check_tra_receipt" type="object" groups="account.group_account_invoice"
                         string="Check TRA Status"
                         class="btn-secondary"
                         icon="fa-refresh"
                         invisible="tra_receipt_status != 'pending'"/>
-                <button name="action_refresh_tra_ack" type="object"
+                <button name="action_refresh_tra_ack" type="object" groups="account.group_account_invoice"
                         string="Refresh TRA Response"
                         class="btn-secondary"
                         icon="fa-refresh"
@@ -29,6 +29,7 @@
 
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-danger mb-0" role="alert"
+                     groups="account.group_account_readonly,account.group_account_invoice"
                      invisible="tra_receipt_status != 'success' or tra_ack_state != 'rejected'">
                     <strong>TRA rejected this receipt: </strong>
                     <field name="tra_ack_message" readonly="1"/>
@@ -36,7 +37,7 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <page string="TRA EFD" name="tra_efd" invisible="not tra_receipt_id">
+                <page string="TRA EFD" name="tra_efd" groups="account.group_account_readonly,account.group_account_invoice" invisible="not tra_receipt_id">
                     <group>
                         <field name="tra_receipt_id"/>
                         <field name="tra_receipt_status"/>
@@ -70,12 +71,12 @@
         <field name="inherit_id" ref="account.view_out_invoice_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date_due']" position="after">
-                <field name="tra_receipt_number" optional="hide" string="TRA Receipt #"/>
-                <field name="tra_receipt_status" optional="show" widget="badge"
+                <field groups="account.group_account_readonly,account.group_account_invoice" name="tra_receipt_number" optional="hide" string="TRA Receipt #"/>
+                <field groups="account.group_account_readonly,account.group_account_invoice" name="tra_receipt_status" optional="show" widget="badge"
                        decoration-success="tra_receipt_status == 'success'"
                        decoration-danger="tra_receipt_status == 'failed'"
                        string="TRA Status"/>
-                <field name="tra_ack_state" optional="hide" widget="badge"
+                <field groups="account.group_account_readonly,account.group_account_invoice" name="tra_ack_state" optional="hide" widget="badge"
                        decoration-success="tra_ack_state == 'confirmed'"
                        decoration-warning="tra_ack_state == 'waiting'"
                        decoration-danger="tra_ack_state == 'rejected'"

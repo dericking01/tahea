@@ -1,6 +1,7 @@
 import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from .tra_config import check_tra_access
 
 _logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class TraZReport(models.Model):
     @api.model
     def action_sync_zreports(self):
         """Pull all Z-Reports from API and sync locally."""
+        check_tra_access(self.env)
         config = self.env['tra.efd.config'].get_active_config()
         data = config._api_get('zreport')
         # API errors can arrive as HTTP 200, so a missing key is a failure, not an empty list

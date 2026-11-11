@@ -1,6 +1,6 @@
 {
     'name': 'Zalongwa TRA EFD Integration',
-    'version': '18.0.1.4.0',
+    'version': '18.0.1.5.0',
     'summary': 'Tanzania TRA Electronic Fiscal Device (EFD) Integration via Zalongwa WebSHOP VEFD API',
     'description': """
         Full TRA EFD integration for Odoo 18:

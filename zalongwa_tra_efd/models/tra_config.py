@@ -2,9 +2,23 @@ import requests
 import logging
 from datetime import datetime, timedelta
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
+# Same audience as Odoo's Invoicing/Accounting app: read-only auditors may view,
+# invoicing users and above may also issue receipts and sync.
+TRA_VIEW_GROUPS = ('account.group_account_readonly', 'account.group_account_invoice')
+TRA_OPERATE_GROUPS = ('account.group_account_invoice',)
+
+
+def check_tra_access(env, operate=True):
+    """Raise unless the user is in Finance. Buttons can be called directly, so views are not enough."""
+    if env.su:
+        return
+    groups = TRA_OPERATE_GROUPS if operate else TRA_VIEW_GROUPS
+    if not any(env.user.has_group(group) for group in groups):
+        raise AccessError(_('Only Finance users can use TRA EFD.'))
 
 
 class TraEfdUncertainError(UserError):

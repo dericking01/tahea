@@ -2,7 +2,7 @@ import logging
 import re
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from .tra_config import TraEfdUncertainError
+from .tra_config import TraEfdUncertainError, check_tra_access
 
 _logger = logging.getLogger(__name__)
 
@@ -256,6 +256,7 @@ class AccountMove(models.Model):
 
     def _check_tra_receipt_allowed(self):
         self.ensure_one()
+        check_tra_access(self.env)
         if self.move_type == 'out_refund':
             raise UserError(_('The TRA EFD API has no credit note support. '
                               'Credit notes cannot be sent as receipts.'))
@@ -297,6 +298,7 @@ class AccountMove(models.Model):
     def action_refresh_tra_ack(self):
         """Ask the API for TRA's acknowledgement of this invoice's receipt."""
         self.ensure_one()
+        check_tra_access(self.env)
         self.tra_receipt_id._sync_tra_ack()
         if self.tra_ack_state == 'confirmed':
             return self._tra_notification(
@@ -310,6 +312,7 @@ class AccountMove(models.Model):
     def action_check_tra_receipt(self):
         """Resolve a pending receipt by asking the API whether the invoice was issued."""
         self.ensure_one()
+        check_tra_access(self.env)
         receipt = self.tra_receipt_id
         if receipt.status != 'pending':
             raise UserError(_('This invoice has no receipt with an unknown result.'))

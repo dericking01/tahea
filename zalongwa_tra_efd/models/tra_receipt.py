@@ -111,7 +111,8 @@ class TraReceipt(models.Model):
                     'mail.mail_activity_data_todo',
                     summary=_('TRA rejected receipt #%s', receipt.receipt_number),
                     note=_('TRA response %s: %s', receipt.tra_ack_code, receipt.tra_ack_message),
-                    user_id=(move.invoice_user_id or move.create_uid).id,
+                    # Whoever issued the receipt is in Finance, unlike the salesperson
+                    user_id=receipt.create_uid.id,
                 )
 
     @api.model

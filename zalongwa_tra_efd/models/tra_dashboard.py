@@ -1,6 +1,7 @@
 from datetime import timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from .tra_config import check_tra_access
 
 
 class TraReceipt(models.Model):
@@ -9,6 +10,7 @@ class TraReceipt(models.Model):
     @api.model
     def get_dashboard_data(self):
         """Return everything the TRA EFD dashboard shows, except the WebSHOP totals."""
+        check_tra_access(self.env, operate=False)
         today = fields.Date.context_today(self)
         month_start = today.replace(day=1)
         trend_start = today - timedelta(days=13)
@@ -88,6 +90,7 @@ class TraReceipt(models.Model):
             self, config.last_connection).strftime('%Y-%m-%d %H:%M')
 
         return {
+            'can_sync': self.env.user.has_group('account.group_account_invoice'),
             'attention': attention,
             'totals': totals,
             'trend': trend,
@@ -122,6 +125,7 @@ class TraReceipt(models.Model):
     @api.model
     def get_dashboard_api_totals(self):
         """Live totals from WebSHOP, loaded separately so a slow API cannot block the dashboard."""
+        check_tra_access(self.env, operate=False)
         try:
             data = self.env['tra.efd.config'].get_active_config()._api_get('dashboard')
         except UserError as e:
@@ -138,6 +142,7 @@ class TraReceipt(models.Model):
     @api.model
     def action_dashboard_sync(self):
         """Refresh TRA acknowledgements and Z-Reports from the dashboard."""
+        check_tra_access(self.env)
         self._cron_sync_tra_ack()
         try:
             self.env['tra.zreport'].action_sync_zreports()

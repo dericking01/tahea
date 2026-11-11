@@ -5,13 +5,14 @@
     <menuitem id="menu_tra_efd_root"
               name="TRA EFD"
               web_icon="zalongwa_tra_efd,static/src/img/tralogo.png"
+              groups="account.group_account_readonly,account.group_account_invoice"
               sequence="95"/>
 
     <menuitem id="menu_tra_dashboard"
               name="Dashboard"
               parent="menu_tra_efd_root"
               action="action_tra_dashboard"
-              groups="account.group_account_invoice"
+              groups="account.group_account_readonly,account.group_account_invoice"
               sequence="5"/>
 
     <!-- Receipts Menu -->
@@ -42,6 +43,7 @@
               name="Sync Z-Reports"
               parent="menu_tra_reports"
               action="action_sync_zreports"
+              groups="account.group_account_invoice"
               sequence="20"/>
 
     <!-- Configuration Menu -->

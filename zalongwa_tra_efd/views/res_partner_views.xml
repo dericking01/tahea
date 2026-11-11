@@ -7,8 +7,8 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='vat']" position="after">
-                <field name="tra_tin" placeholder="e.g. 150-145-147" readonly="parent_id"/>
-                <field name="tra_vrn" placeholder="e.g. 40-041972-Q" readonly="parent_id"/>
+                <field name="tra_tin" groups="account.group_account_readonly,account.group_account_invoice" placeholder="e.g. 150-145-147" readonly="parent_id"/>
+                <field name="tra_vrn" groups="account.group_account_readonly,account.group_account_invoice" placeholder="e.g. 40-041972-Q" readonly="parent_id"/>
             </xpath>
         </field>
     </record>

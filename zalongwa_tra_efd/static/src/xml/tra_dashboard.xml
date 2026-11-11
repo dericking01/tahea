@@ -12,7 +12,7 @@
                         <t t-esc="state.data.connection.auto ? 'Automatic receipts' : 'Manual receipts'"/>
                     </small>
                 </div>
-                <button class="btn btn-primary" t-on-click="() => this.sync()" t-att-disabled="state.syncing">
+                <button t-if="state.data.can_sync" class="btn btn-primary" t-on-click="() => this.sync()" t-att-disabled="state.syncing">
                     <i class="fa fa-refresh me-1" t-att-class="{'fa-spin': state.syncing}"/>
                     <t t-esc="state.syncing ? 'Syncing…' : 'Sync with TRA'"/>
                 </button>

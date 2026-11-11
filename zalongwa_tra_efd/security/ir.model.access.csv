@@ -1,9 +1,12 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tra_efd_config_manager,tra.efd.config manager,model_tra_efd_config,account.group_account_manager,1,1,1,1
 access_tra_receipt_manager,tra.receipt manager,model_tra_receipt,account.group_account_manager,1,1,1,1
-access_tra_receipt_user,tra.receipt user,model_tra_receipt,base.group_user,1,0,0,0
+access_tra_receipt_readonly,tra.receipt finance readonly,model_tra_receipt,account.group_account_readonly,1,0,0,0
+access_tra_receipt_invoice,tra.receipt finance,model_tra_receipt,account.group_account_invoice,1,0,0,0
 access_tra_receipt_item_manager,tra.receipt.item manager,model_tra_receipt_item,account.group_account_manager,1,1,1,1
-access_tra_receipt_item_user,tra.receipt.item user,model_tra_receipt_item,base.group_user,1,0,0,0
+access_tra_receipt_item_readonly,tra.receipt.item finance readonly,model_tra_receipt_item,account.group_account_readonly,1,0,0,0
+access_tra_receipt_item_invoice,tra.receipt.item finance,model_tra_receipt_item,account.group_account_invoice,1,0,0,0
 access_tra_zreport_manager,tra.zreport manager,model_tra_zreport,account.group_account_manager,1,1,1,1
-access_tra_zreport_user,tra.zreport user,model_tra_zreport,base.group_user,1,0,0,0
+access_tra_zreport_readonly,tra.zreport finance readonly,model_tra_zreport,account.group_account_readonly,1,0,0,0
+access_tra_zreport_invoice,tra.zreport finance,model_tra_zreport,account.group_account_invoice,1,0,0,0
 access_tra_receipt_confirm,tra.receipt.confirm,model_tra_receipt_confirm,account.group_account_invoice,1,1,1,0

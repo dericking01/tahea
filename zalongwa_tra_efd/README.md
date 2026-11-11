@@ -57,6 +57,18 @@ the customer is identified by telephone. Mobile numbers are normalised to `0XXXX
 
 ---
 
+## Access
+Only Finance users see TRA EFD, matching Odoo's Invoicing/Accounting app:
+
+| Group | Can |
+|---|---|
+| Accounting: Read-only | View the menu, dashboard, receipts, Z-Reports, invoice TRA tab and customer TIN/VRN |
+| Accounting: Invoicing and above | Also generate receipts, check status, refresh TRA responses and sync |
+| Accounting: Administrator | Also configure the API and use Mark as Failed |
+
+Other users see nothing of TRA EFD in Odoo, but invoices they print still carry the TRA QR code.
+Automatic generation runs whoever confirms the invoice.
+
 ## Usage
 
 1. Confirm a customer invoice and click **Generate TRA Receipt**, or enable automatic generation.
