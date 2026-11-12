@@ -26,7 +26,7 @@
                             class="oe_stat_button"
                             icon="fa-exclamation-triangle"
                             groups="ask_grn_picking.group_grn_picking_user"
-                            invisible="remaining_to_bill == 0 or origin"
+                            invisible="remaining_to_bill == 0 or state != 'done'"
                             string="Remaining to Bill">
                         <field name="remaining_to_bill" widget="statinfo"/>
                     </button>
@@ -45,14 +45,16 @@
                     </button>
                 </xpath>
 
-                <!-- Create Bill Button - Hidden if origin exists or bill already created -->
+                <!-- Create Bill Button - Works for Inventory and Purchase Order GRNs.
+                     Hidden only while partially billed (Create Remaining Bill is shown instead);
+                     on a fully billed GRN it stays visible and shows a warning toast. -->
                 <xpath expr="//button[@name='action_cancel']" position="after">
                     <button name="action_create_vendor_bill"
                             type="object"
                             class="oe_highlight"
                             icon="fa-plus"
                             groups="ask_grn_picking.group_grn_picking_user"
-                            invisible="vendor_bill_ids or state != 'done' or origin"
+                            invisible="state != 'done' or (vendor_bill_ids and has_remaining_items)"
                             string="Create Bill">
                     </button>
                 </xpath>
@@ -64,7 +66,7 @@
                             class="oe_highlight"
                             icon="fa-plus"
                             groups="ask_grn_picking.group_grn_picking_user"
-                            invisible="not vendor_bill_ids or not has_remaining_items or state != 'done' or origin"
+                            invisible="not vendor_bill_ids or not has_remaining_items or state != 'done'"
                             string="Create Remaining Bill">
                     </button>
                 </xpath>
@@ -79,14 +81,14 @@
             <field name="arch" type="xml">
                 <!-- Color code items in Operations tab -->
                 <xpath expr="//field[@name='move_ids_without_package']//list" position="attributes">
-                    <attribute name="decoration-warning">is_remaining and state == 'done' and not parent.origin</attribute>
+                    <attribute name="decoration-warning">is_remaining and state == 'done'</attribute>
                 </xpath>
 
                 <!-- Add remaining_qty column to picking lines -->
                 <xpath expr="//field[@name='move_ids_without_package']//list" position="inside">
                     <field name="remaining_qty" 
                            groups="ask_grn_picking.group_grn_picking_user"
-                           invisible="not remaining_qty or state == 'draft' or parent.origin"
+                           invisible="not remaining_qty or state == 'draft'"
                            column_invisible="parent.state == 'draft'"
                            string="Remaining Qty"
                            optional="show"/>

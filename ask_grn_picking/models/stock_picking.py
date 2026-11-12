@@ -217,6 +217,64 @@ class StockPicking(models.Model):
     # CREATE VENDOR BILL
     # ------------------------------------------------------------
 
+    # ------------------------------------------------------------
+    # HELPERS
+    # ------------------------------------------------------------
+
+    def _grn_fully_billed_notification(self):
+        """Toast shown when the user tries to bill an already fully billed GRN."""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Already Fully Billed"),
+                'message': _("GRN %s is already fully billed. No further bill can be created.") % self.name,
+                'type': 'warning',
+                'sticky': False,
+            },
+        }
+
+    def _prepare_grn_bill_line(self, move, qty):
+        """Bill line values for a GRN move.
+
+        For GRNs coming from a Purchase Order, use the PO line price and link the
+        bill line to the PO line so the PO's billed quantity stays in sync.
+        Otherwise fall back to the product cost.
+        """
+        vals = {
+            'product_id': move.product_id.id,
+            'name': move.product_id.display_name,
+            'quantity': qty,
+            'price_unit': move.product_id.standard_price,
+        }
+        po_line = 'purchase_line_id' in move._fields and move.purchase_line_id
+        if po_line:
+            vals.update({
+                'name': po_line.name or move.product_id.display_name,
+                'price_unit': po_line.price_unit,
+                'tax_ids': [(6, 0, po_line.taxes_id.ids)],
+                'purchase_line_id': po_line.id,
+            })
+        return vals
+
+    def _prepare_grn_bill_vals(self, invoice_lines):
+        vals = {
+            'move_type': 'in_invoice',
+            'partner_id': self.partner_id.id,
+            'invoice_date': fields.Date.context_today(self),
+            'picking_id': self.id,
+            'invoice_origin': self.origin or self.name,
+            'invoice_line_ids': invoice_lines,
+        }
+        purchase = 'purchase_id' in self._fields and self.purchase_id
+        if purchase:
+            vals['currency_id'] = purchase.currency_id.id
+        return vals
+
+    # ------------------------------------------------------------
+    # CREATE VENDOR BILL
+    # ------------------------------------------------------------
+
     def action_create_vendor_bill(self):
 
         self.ensure_one()
@@ -224,17 +282,18 @@ class StockPicking(models.Model):
         if not self.env.user.has_group('ask_grn_picking.group_grn_picking_user'):
             raise UserError(_("You are not allowed to create Vendor Bills from GRN."))
 
-        if self.origin:
-            raise UserError(
-                _("This GRN was created from a source document (%s). "
-                  "Please create the bill from the source document instead.") % self.origin
-            )
-
         if not self.partner_id:
             raise UserError(_("Please set a Vendor on the GRN."))
 
         if self.state != 'done':
             raise UserError(_("GRN must be validated (Done) before creating a bill."))
+
+        bills = self.vendor_bill_ids.filtered(lambda b: b.state != 'cancel')
+        if bills:
+            if not self.has_remaining_items:
+                return self._grn_fully_billed_notification()
+            # Partially billed: only bill what is left.
+            return self.action_create_remaining_bill()
 
         invoice_lines = []
 
@@ -243,23 +302,12 @@ class StockPicking(models.Model):
             if move.quantity <= 0:
                 continue
 
-            invoice_lines.append((0, 0, {
-                'product_id': move.product_id.id,
-                'name': move.product_id.display_name,
-                'quantity': move.quantity,
-                'price_unit': move.product_id.standard_price,
-            }))
+            invoice_lines.append((0, 0, self._prepare_grn_bill_line(move, move.quantity)))
 
         if not invoice_lines:
             raise UserError(_("No quantities available for billing."))
 
-        bill = self.env['account.move'].create({
-            'move_type': 'in_invoice',
-            'partner_id': self.partner_id.id,
-            'invoice_date': fields.Date.context_today(self),
-            'picking_id': self.id,
-            'invoice_line_ids': invoice_lines,
-        })
+        bill = self.env['account.move'].create(self._prepare_grn_bill_vals(invoice_lines))
 
         # bill.message_post(
         #     body=_("Vendor Bill created from GRN: ") +
@@ -311,23 +359,12 @@ class StockPicking(models.Model):
             if move.remaining_qty <= 0:
                 continue
 
-            invoice_lines.append((0, 0, {
-                'product_id': move.product_id.id,
-                'name': move.product_id.display_name,
-                'quantity': move.remaining_qty,
-                'price_unit': move.product_id.standard_price,
-            }))
+            invoice_lines.append((0, 0, self._prepare_grn_bill_line(move, move.remaining_qty)))
 
         if not invoice_lines:
-            raise UserError(_("All items are already fully billed."))
+            return self._grn_fully_billed_notification()
 
-        bill = self.env['account.move'].create({
-            'move_type': 'in_invoice',
-            'partner_id': self.partner_id.id,
-            'invoice_date': fields.Date.context_today(self),
-            'picking_id': self.id,
-            'invoice_line_ids': invoice_lines,
-        })
+        bill = self.env['account.move'].create(self._prepare_grn_bill_vals(invoice_lines))
 
         self.message_post(
             body=_("Remaining Bill created: ") +
