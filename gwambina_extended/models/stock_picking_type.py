@@ -61,6 +61,37 @@ class StockPickingType(models.Model):
         return data
 
     @api.model
+    @api.model
+    def _gw_custom_receipt_default_type(self):
+        """ Operation type proposed for a new GRN created from the Custom Receipts card: a receipt
+        type (code 'incoming' first, then types named "Receipt...") delivering to one of the user's
+        allowed locations. Receipt confirmation types are never proposed. """
+        locations = self._gw_custom_receipt_locations()
+        if not locations:
+            return self.browse()
+        rc_types = self.env['stock.warehouse'].sudo().with_context(active_test=False).search([]).gw_receipt_confirm_type_id
+        domain = [
+            ('default_location_dest_id', 'child_of', locations.ids),
+            ('id', 'not in', rc_types.ids),
+            ('company_id', 'in', self.env.companies.ids),
+        ]
+        return (self.search(domain + [('code', '=', 'incoming')], limit=1)
+                or self.search(domain + [('name', '=ilike', 'receipt%')], limit=1))
+
+    @api.model
+    def _gw_custom_receipts_create_context(self):
+        context = {
+            'contact_display': 'partner_address',
+            'default_company_id': self.env.company.id,
+        }
+        picking_type = self._gw_custom_receipt_default_type()
+        if picking_type:
+            context.update({
+                'default_picking_type_id': picking_type.id,
+                'default_location_dest_id': picking_type.default_location_dest_id.id,
+            })
+        return context
+
     def gw_action_custom_receipts(self, filter_key=None):
         if filter_key == 'operations':
             action = self.env['ir.actions.act_window']._for_xml_id('stock.action_get_picking_type_ready_moves')
@@ -74,7 +105,7 @@ class StockPickingType(models.Model):
             action.update({
                 'name': _('Custom Receipts'),
                 'domain': self._gw_custom_receipts_domain() + self._gw_custom_receipts_filters().get(filter_key, []),
-                'context': {'contact_display': 'partner_address', 'create': False},
+                'context': self._gw_custom_receipts_create_context(),
             })
         for key in ('path', 'help'):
             action.pop(key, None)

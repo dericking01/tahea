@@ -100,3 +100,25 @@ class TestCustomReceipts(GwStockCommon):
         self.assertGreaterEqual(data['backorders'], 1)
         self.assertGreaterEqual(data['late'], 1)
         self.assertGreaterEqual(data['operations'], 1)
+
+    def test_new_grn_from_custom_receipts(self):
+        self.stock_user.restrict_stock_locations = True
+        action = self.env['stock.picking.type'].with_user(self.stock_user).gw_action_custom_receipts()
+        self.assertNotEqual(action['context'].get('create'), False)
+        self.assertEqual(action['context']['default_picking_type_id'], self.type_a.id)
+        picking_env = self.env['stock.picking'].with_user(self.stock_user).with_context(action['context'])
+        with Form(picking_env) as form:
+            self.assertEqual(form.picking_type_id, self.type_a)
+            self.assertEqual(form.location_dest_id, self.loc_a)
+            form.partner_id = self.partner_a
+            with form.move_ids_without_package.new() as move:
+                move.product_id = self.product_a
+                move.product_uom_qty = 4
+        grn = form.record
+        self.assertEqual(grn.picking_type_code, 'incoming')
+        self.assertIn(grn, self._grns(self.stock_user))
+        grn.action_confirm()
+        grn.move_ids.quantity = 4
+        grn.button_validate()
+        self.assertEqual(grn.state, 'done')
+        self.assertEqual(self._on_hand(self.product_a, self.loc_a), 4)
