@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Stock Picking Form View - Add Vendor Bill Button in button_box -->
+        <record id="stock_picking_form_grn_vendor_bill" model="ir.ui.view">
+            <field name="name">stock.picking.form - Vendor Bill Button</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- Add buttons to button_box -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <!-- Vendor Bill Button - Only show if bill exists -->
+                    <button name="action_view_vendor_bill"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-invoice-dollar"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="not vendor_bill_ids"
+                            string="Vendor Bill">
+                        <field name="vendor_bill_ids" widget="statinfo" options="{'label_field': 'name'}"/>
+                    </button>
+
+                    <!-- Remaining to Bill - Show when items are partially billed -->
+                    <button name="action_view_vendor_bill"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-exclamation-triangle"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="remaining_to_bill == 0 or origin"
+                            string="Remaining to Bill">
+                        <field name="remaining_to_bill" widget="statinfo"/>
+                    </button>
+
+                    <!-- Fully Billed Status Button -->
+                    <button name="action_view_vendor_bill"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-check-circle"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="not is_fully_billed or state == 'draft'"
+                            string="Fully Billed">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Fully Billed</span>
+                        </div>
+                    </button>
+                </xpath>
+
+                <!-- Create Bill Button - Hidden if origin exists or bill already created -->
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_create_vendor_bill"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-plus"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="vendor_bill_ids or state != 'done' or origin"
+                            string="Create Bill">
+                    </button>
+                </xpath>
+
+                <!-- Create Remaining Bill Button - Show when items are partially billed -->
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_create_remaining_bill"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-plus"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="not vendor_bill_ids or not has_remaining_items or state != 'done' or origin"
+                            string="Create Remaining Bill">
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add remaining_qty field to picking lines with color coding -->
+        <record id="stock_picking_form_remaining_items" model="ir.ui.view">
+            <field name="name">stock.picking.form - Remaining Items Color</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <!-- Color code items in Operations tab -->
+                <xpath expr="//field[@name='move_ids_without_package']//list" position="attributes">
+                    <attribute name="decoration-warning">is_remaining and state == 'done' and not parent.origin</attribute>
+                </xpath>
+
+                <!-- Add remaining_qty column to picking lines -->
+                <xpath expr="//field[@name='move_ids_without_package']//list" position="inside">
+                    <field name="remaining_qty" 
+                           groups="ask_grn_picking.group_grn_picking_user"
+                           invisible="not remaining_qty or state == 'draft' or parent.origin"
+                           column_invisible="parent.state == 'draft'"
+                           string="Remaining Qty"
+                           optional="show"/>
+                    <field name="is_remaining" column_invisible="True"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

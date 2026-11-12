@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Account Move (Vendor Bill) Form View - Add GRN Reference Button -->
+        <record id="account_move_form_grn_reference" model="ir.ui.view">
+            <field name="name">account.move.form - GRN Reference</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Add GRN Reference button in button_box - Only show if created from picking -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_open_picking_stat"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-dolly"
+                            groups="ask_grn_picking.group_grn_picking_user"
+                            invisible="not picking_id or move_type != 'in_invoice'"
+                            string="GRN Reference">
+                        <field name="picking_id" widget="statinfo" options="{'label_field': 'name'}"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- List View for Vendor Bills - Add GRN Reference Column -->
+        <record id="account_move_list_grn_reference" model="ir.ui.view">
+            <field name="name">account.move.list - GRN Reference</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_tree"/>
+            <field name="arch" type="xml">
+                <field name="date" position="after">
+                    <field name="picking_id" 
+                           groups="ask_grn_picking.group_grn_picking_user"
+                           optional="show"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

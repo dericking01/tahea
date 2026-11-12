@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Group for creating vendor bills from GRN Picking -->
+        <record id="group_grn_picking_user" model="res.groups">
+            <field name="name">GRN Picking Bill Creator</field>
+            <field name="category_id" ref="base.module_category_accounting"/>
+            <field name="comment">User can create Vendor Bills from Goods Receipt Notes (GRN) Picking</field>
+        </record>
+    </data>
+</odoo>

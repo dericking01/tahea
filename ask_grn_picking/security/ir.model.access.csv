@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_picking_grn_all,stock.picking GRN - All Users,stock.model_stock_picking,,1,0,0,0
+access_stock_picking_grn_picking_user,stock.picking GRN - GRN Picking Bill Creator,stock.model_stock_picking,ask_grn_picking.group_grn_picking_user,1,1,0,0
+access_account_move_grn_all,account.move GRN Reference - All Users,account.model_account_move,,1,0,0,0
+access_account_move_grn_picking_user,account.move GRN Reference - GRN Picking Bill Creator,account.model_account_move,ask_grn_picking.group_grn_picking_user,1,1,1,0
+access_res_partner_grn_all,res.partner GRN - All Users,base.model_res_partner,,1,0,0,0
+access_res_partner_grn_picking_user,res.partner GRN - GRN Picking Bill Creator,base.model_res_partner,ask_grn_picking.group_grn_picking_user,1,1,0,0

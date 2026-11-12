@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vendor Bill From GRN Picking - ASKSOL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"/>
+    <style>
+        :root {
+          --primary-color: #10b981;
+          --bg-white: #fff;
+          --text-color: #121212;
+          --text-color-light: #64728f;
+        }
+        body{
+          font-family: "Montserrat", sans-serif;
+        }
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+            color: var(--text-color);
+            font-family: Montserrat;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            border-radius: 30px;
+            line-height: normal;
+            text-transform: capitalize;
+            background-color: #F5F5F5;
+            border: none;
+            margin-bottom: 0;
+            padding: 12px 24px;
+      }
+      .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+      border-color: transparent;
+      isolation: isolate;
+      }
+      .nav-tabs .nav-link:focus-visible {
+      border-color: transparent;
+      box-shadow: none;
+      }
+      /* owl-carousel */
+    .owl-carousel .owl-nav {
+      position: absolute;
+      top: 42%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-42%);
+    }
+    .owl-carousel .owl-nav button.owl-prev {
+      position: absolute;
+      right: -36px;
+      font-size: 28px;
+      background-color: #e4e4e4;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .owl-carousel .owl-nav button.owl-next {
+      position: absolute;
+      left: -36px;
+      font-size: 28px;
+      background-color: #e4e4e4;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="my-5">
+
+        <!-- version support -->
+        <div class="my-3 d-flex align-items-center justify-content-end">
+            <div class="text-center"
+                 style="background-color:#017E84 !important; font-size:0.8rem !important; color:#fff !important; font-weight:500 !important; padding:4px !important; margin:0 3px !important; border-radius:50px !important; min-width:120px !important">
+                Community
+            </div>
+            <div class="text-center"
+                 style="background-color:#10b981 !important; font-size:0.8rem !important; color:#fff !important; font-weight:500 !important; padding:4px !important; margin:0 3px !important; border-radius:50px !important; min-width:120px !important">
+                Odoo 18
+            </div>
+        </div>
+
+        <div class="tab-content" id="myTabContent">
+            <!-- description -->
+            <div class="tab-pane fade show active" id="home" role="tabpanel"
+                 aria-labelledby="home-tab">
+
+                <!-- ═══ HERO ═══ -->
+                <div class="position-relative"
+                     style="border-radius: 16px; background: #f8f8f8; padding: 20px 0;">
+                    <div class="row" style="padding: 2rem 0rem 0 !important;">
+                        <div class="col-lg-8 mx-auto gap-4 d-flex flex-column align-items-center">
+
+                            <!-- ASKSOL LOGO -->
+                            <img src="./assets/screenshots/ASKSOL_logo.png"
+                                 alt="ASKSOL"
+                                 style="height:52px; width:auto; object-fit:contain;"/>
+
+                            <p class="my-1 text-center text-uppercase"
+                               style="letter-spacing: 4px !important; color: var(--primary-color); font-weight: bold; text-align: center; font-size: 14px; font-weight: 600; line-height: 15.96px; text-transform: uppercase;">
+                                Link Goods Receipt Notes (GRN) with Vendor Bills seamlessly.
+                            </p>
+                            <h1 class="text-center text-uppercase my-0"
+                                style="color: var(--text-color); font-size: 46px; font-weight: 700; line-height: normal;">
+                                Vendor Bill From <span style="color: var(--primary-color);">GRN Picking</span>
+                            </h1>
+                        </div>
+
+                        <div class="col-md-12 text-center" style="margin-top: 2rem;">
+                            <a href="mailto:Roshaan@asksol.pk"
+                               target="_blank"
+                               style="background-color: transparent; border-radius: 35px; font-family: Montserrat; display: inline-block; padding: 7px 33px; border: 1px solid var(--primary-color); color: var(--primary-color); text-decoration: none;"
+                               class="mx-1 mb-2">
+                                <i class="fa fa-envelope" style="width:24px; font-size:18px; vertical-align:middle;"></i>
+                                <span class="pl-2" style="font-size: 16px; vertical-align: middle">Email Us</span>
+                            </a>
+                            <a href="https://wa.me/923008628884"
+                               target="_blank"
+                               style="background-color: #10b981; font-family: Montserrat; display: inline-block; padding: 7px 33px; border: 1px solid #10b981; border-radius: 35px; text-decoration: none;"
+                               class="mx-1 mb-2">
+                                <i class="fa-brands fa-whatsapp" style="width:24px; font-size:18px; color:#fff; vertical-align:middle;"></i>
+                                <span class="pl-2" style="color: #fff; font-size: 16px; vertical-align: middle">WhatsApp Us</span>
+                            </a>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-2 px-4">
+                            <img src="./assets/screenshots/1.png"
+                                 class="w-100"
+                                 style="z-index: 3; height: auto; border-radius:10px; margin-top:2rem;"/>
+                        </div>
+                    </div>
+
+                    <div class="position-absolute" style="bottom: 0; z-index: 1; width: 100%;">
+                        <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;display:block;">
+                            <path fill="#10b981" fill-opacity="0.08" d="M0,30 C480,60 960,0 1440,30 L1440,60 L0,60 Z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- ═══ KEY HIGHLIGHTS ═══ -->
+                <div class="" style="border-radius: 16px; padding: 60px 40px; border: 1px solid #EBEEF2; background: #F5F5F7; box-shadow: 0px 5px 20px -11px rgba(0, 0, 0, 0.25);">
+                    <div class="row">
+                        <div class="col-lg-12 d-flex flex-column justify-content-center align-items-center">
+                            <h2 style="color: var(--text-color); text-align: center; font-size: 40px; font-weight: 700; text-transform: uppercase; padding-bottom: 50px;">
+                                Key Highlights
+                            </h2>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981 !important; border-radius:8px !important; height:42px; width:42px">
+<i class="fa-solid fa-link" style="color:#fff; font-size:20px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    Seamless GRN-to-Bill Linking.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Automatic bi-directional references between Goods Receipt Notes (GRN) Picking and Vendor Bills.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981 !important; border-radius:8px !important; height:42px; width:42px">
+<i class="fa-solid fa-calculator" style="color:#fff; font-size:18px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    Track Remaining Quantities.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Real-time tracking of quantities remaining to be billed with automatic calculations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981 !important; border-radius:8px !important; height:42px; width:42px">
+<i class="fa-solid fa-shield-halved" style="color:#fff; font-size:20px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    Role-Based Access Control.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Only authorized accountants can create Vendor Bills from GRN — inventory teams create GRNs.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981; border-radius:8px !important; height:42px; width:42px">
+                                    <i class="fa-solid fa-comments" style="color:#fff; font-size:18px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    Chatter Integration.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Clickable links between GRN and Vendor Bills in chatter for full traceability.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981; border-radius:8px !important; height:42px; width:42px">
+                                    <i class="fa-solid fa-clipboard-check" style="color:#fff; font-size:18px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    One-Click Bill Creation.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Create Vendor Bills directly from validated GRN Pickings with a single click.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="mb-4 d-flex flex-column justify-content-center gap-3"
+                                 style="border-radius: 12px; border: 1px solid #B6BCCD; background: #FFF; padding:32px">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#10b981; border-radius:8px !important; height:42px; width:42px">
+                                    <i class="fa-solid fa-file-invoice" style="color:#fff; font-size:18px;"></i>
+                                </div>
+                                <h5 class="m-0" style="color:#000 !important; font-weight:bold">
+                                    Partial Billing Support.
+                                </h5>
+                                <p class="m-0" style="font-size:0.9rem; color:var(--text-color-light); font-size: 16px; font-weight: 400;">
+                                    Create bills for remaining quantities only — perfect for partial invoices or repeat billing.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ═══ DARK BANNER ═══ -->
+                <div class="my-5">
+                    <div style="padding: 5rem 4rem 5rem 4rem; background-color: #0A1425; border-radius: 12px; position: relative;">
+                        <div class="wrapper-info" style="display: flex; flex-direction: column; gap: 20px;">
+
+                            <!-- Logo white -->
+                            <img src="./assets/screenshots/ASKSOL_logo.png"
+                                 alt="ASKSOL"
+                                 style="height:44px; width:auto; object-fit:contain; filter:brightness(0) invert(1); opacity:0.9; margin-bottom:4px;"/>
+
+                            <span class="wrapper-subtitle"
+                                  style="font-size: 40px; font-weight: 700; color: #fff; line-height: 60px; text-transform: capitalize; max-width: 500px;">
+                                Vendor Bill From GRN Picking
+                            </span>
+                            <h3 class="wrapper-details"
+                                style="font-size: 20px; font-weight: 400; color: #fff; line-height: 32px;">
+                                Streamline your procurement billing workflow today!<br>Link GRN with Bills seamlessly.
+                            </h3>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <a href="mailto:Roshaan@asksol.pk" class="shop-btn"
+                                   style="cursor: pointer; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,0.20); background: linear-gradient(93deg, rgba(255,255,255,0.08) 6.01%, rgba(255,255,255,0.17) 90.83%); backdrop-filter: blur(10px); color: #fff; padding: 12px 16px 12px 16px; text-decoration: none;">
+                                    <span style="border-radius: 12px; background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); padding: 12px;">
+                                        <i class="fa fa-envelope" style="color:#fff; font-size:18px;"></i>
+                                    </span>
+                                    <span style="font-weight: 500;">Roshaan@asksol.pk</span>
+                                </a>
+                                <a href="https://wa.me/923008628884" target="_blank" class="shop-btn"
+                                   style="cursor: pointer; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,0.20); background: linear-gradient(93deg, rgba(255,255,255,0.08) 6.01%, rgba(255,255,255,0.17) 90.83%); backdrop-filter: blur(10px); color: #fff; padding: 12px 22px 12px 18px; text-decoration: none;">
+                                    <span style="border-radius: 12px; background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); padding: 12px;">
+                                        <i class="fa-brands fa-whatsapp" style="color:#fff; font-size:18px;"></i>
+                                    </span>
+                                    <span style="font-weight: 500;">+92 300 8628884</span>
+                                </a>
+                                <a href="https://www.asksol.pk" target="_blank" class="shop-btn"
+                                   style="cursor: pointer; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,0.20); background: linear-gradient(93deg, rgba(255,255,255,0.08) 6.01%, rgba(255,255,255,0.17) 90.83%); backdrop-filter: blur(10px); color: #fff; padding: 12px 22px 12px 18px; text-decoration: none;">
+                                    <span style="border-radius: 12px; background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); padding: 12px;">
+                                        <i class="fa fa-globe" style="color:#fff; font-size:18px;"></i>
+                                    </span>
+                                    <span style="font-weight: 500;">www.asksol.pk</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div style="position: absolute; bottom: 0; right: 0;">
+                            <svg width="540" height="280" viewBox="0 0 540 280" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="460" cy="240" r="200" fill="#10b981" fill-opacity="0.12"/>
+                                <circle cx="310" cy="60" r="130" fill="#06b6d4" fill-opacity="0.08"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TABS: Screenshots / Features / FAQs / Releases ═══ -->
+                <div class="mb-4 bg-white"
+                     style="border: 1px solid #EBEEF2; border-radius: 6px; box-shadow: 0px 8px 20px -4px rgba(0, 0, 0, 0.10); border: 1px solid #EBEEF2;">
+                    <div>
+                        <ul class="nav nav-tabs justify-content-center bg-white py-2"
+                            id="myTab" role="tablist"
+                            style="border-radius: 6px 6px 0 0;">
+                            <li class="nav-item">
+                                <a aria-controls="overview" aria-bs-selected="true"
+                                   class="nav-link active" data-bs-toggle="tab"
+                                   href="#overview" id="overview-tab" role="tab"
+                                   style="color:#121212; font-weight:500; font-size:16px">Screenshots</a>
+                            </li>
+                            <li class="nav-item">
+                                <a aria-controls="feature" aria-bs-selected="false"
+                                   class="nav-link py-2" data-bs-toggle="tab"
+                                   href="#feature" id="feature-tab" role="tab"
+                                   style="color:#121212; font-weight:500; font-size:16px">Features</a>
+                            </li>
+                            <li class="nav-item">
+                                <a aria-controls="faq" aria-bs-selected="false"
+                                   class="nav-link" data-bs-toggle="tab"
+                                   href="#faq" id="faq-tab" role="tab"
+                                   style="color:#121212; font-weight:500; font-size:16px">FAQs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a aria-controls="releases" aria-bs-selected="false"
+                                   class="nav-link" data-bs-toggle="tab"
+                                   href="#releases" id="releases-tab" role="tab"
+                                   style="color:#121212; font-weight:500; font-size:16px">Releases</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content p-md-5 p-2 py-3" id="myTabContent2">
+
+                        <!-- ─── SCREENSHOTS ─── -->
+                        <div aria-labelledby="overview-tab"
+                             class="tab-pane fade show active" id="overview" role="tabpanel">
+
+                            <!-- Screenshot 1 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">GRN Picking </span>
+                                                <span style="color: var(--primary-color)">List View</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                View all your <strong>Goods Receipt Notes</strong> with the <strong>Vendor Bills Count</strong> column showing how many bills have been created for each GRN.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="GRN Picking List View" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/1.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 2 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">GRN Form </span>
+                                                <span style="color: var(--primary-color)">Billing Status</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                The GRN Picking form shows the <strong>Vendor Bills</strong> smart button, <strong>Fully Billed</strong> status, and <strong>Remaining to Bill</strong> quantities at a glance.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="GRN Form Billing Status" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/2.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 3 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">Create </span>
+                                                <span style="color: var(--primary-color)">Vendor Bill</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                Click the <strong>Create Vendor Bill</strong> button on a validated GRN to instantly generate a vendor bill with all products and quantities.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="Create Vendor Bill" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/3.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 4 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">Vendor Bill </span>
+                                                <span style="color: var(--primary-color)">GRN Reference</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                The created Vendor Bill automatically links back to the <strong>GRN Reference</strong> with a clickable link in the form.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="Vendor Bill GRN Reference" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/4.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 5 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">Open GRN </span>
+                                                <span style="color: var(--primary-color)">from Vendor Bill</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                Use the <strong>Open GRN</strong> stat button on the Vendor Bill to instantly navigate to the linked Goods Receipt Note.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="Open GRN from Vendor Bill" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/5.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 6 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">Remaining Qty </span>
+                                                <span style="color: var(--primary-color)">to Bill</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                Each stock move line shows <strong>Remaining Qty to Bill</strong> and <strong>Has Remaining</strong> indicators — making it easy to track what hasn't been billed yet.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="Remaining Qty to Bill" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/6.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screenshot 7 -->
+                            <div class="position-relative mb-4"
+                                 style="border-radius:10px; background-color:#f4f4f4">
+                                <div class="p-md-5 p-3 position-relative">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h1 style="font-weight:bold; line-height:120%; text-align:center; text-transform:capitalize; font-size: 40px; font-weight: 700;">
+                                                <span style="color:#121212">Security </span>
+                                                <span style="color: var(--primary-color)">Access Control</span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-md-12 mb-4">
+                                            <p style="font-weight:400; font-size:16px; line-height:150%; text-align:center; color:var(--text-color-light)">
+                                                Configure <strong>Access Rights</strong> with the <code>group_grn_picking_user</code> group — ensuring only authorized accountants can create Vendor Bills from GRN.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <div class="d-inline-block p-3 shadow-sm"
+                                                 style="background-color:#fff; border-radius:10px; width:100%">
+                                                <img alt="Security Access Control" class="img-fluid" loading="lazy"
+                                                     src="./assets/screenshots/7.png" style="min-height: 1px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- end screenshots -->
+
+                        <!-- ─── FEATURES ─── -->
+                        <div aria-labelledby="feature-tab"
+                             class="tab-pane fade show py-1" id="feature" role="tabpanel">
+                            <div class="row py-4">
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-link" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                GRN-to-Bill Linking.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Seamless bi-directional linking between Goods Receipt Notes (GRN) Picking and Vendor Bills with automatic references.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-calculator" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                Remaining Quantity Tracking.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Automatic calculation of remaining quantities to bill for each product on the GRN. View "Remaining Qty to Bill" on every stock move line.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-user-shield" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                Role-Based Access Control.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Only users with <code>group_grn_picking_user</code> access can create Vendor Bills from GRN. Inventory staff creates GRNs, accountants create bills.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-clipboard-list" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                One-Click Bill Creation.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Generate Vendor Bills instantly from validated GRN Pickings. All products and quantities are automatically populated in the bill.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-file-invoice-dollar" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                Partial Billing Support.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Create bills for remaining quantities only using "Create Remaining Bill" action. Perfect for invoices that need to be split across multiple bills.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-comments" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                Chatter Integration.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Full chatter tracking with clickable links between GRN Picking and Vendor Bills. Every action is logged for complete traceability.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-check-circle" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                Fully Billed Status.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Automatically calculated "Fully Billed" boolean field on GRN. Shows whether all received quantities have been billed.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 p-3">
+                                    <div class="d-flex flex-column align-items-start h-100"
+                                         style="padding:30px; border-radius:12px; background-color:#f0fdf4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="d-flex align-items-center justify-content-center"
+                                                 style="width:36px; height:36px; border-radius:50%; background-color:#10b981; margin-right:10px">
+                                                <i class="fa fa-eye" style="color:#fff; font-size:14px"></i>
+                                            </div>
+                                            <p style="color:#1A202C; font-weight:600; font-size:1.1rem; margin-bottom:2px">
+                                                View Vendor Bills.</p>
+                                        </div>
+                                        <div class="ms-5">
+                                            <p class="m-0" style="color:#718096">
+                                                Smart button on GRN to view all linked Vendor Bills. Navigate easily between GRN and its associated bills.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- end features -->
+
+                        <!-- ─── FAQs ─── -->
+                        <div aria-labelledby="faq-tab"
+                             class="tab-pane fade show" id="faq" role="tabpanel">
+                            <div class="row" style="background-color:#fff !important">
+                                <div class="col-md-12">
+                                    <div class="accordion mb-4" id="accordion6">
+                                        <div style="background-color:#fff">
+                                            <div class="accordion" id="accordion_faq">
+
+                                                <!-- Q1 -->
+                                                <div style="margin:1rem 0rem">
+                                                    <div aria-expanded="true"
+                                                         class="card-header"
+                                                         data-bs-toggle="collapse"
+                                                         data-bs-target="#collapseFAQOne"
+                                                         href="#collapseFAQOne"
+                                                         aria-controls="collapseFAQOne"
+                                                         style="cursor: pointer; background-color:#f8f8f8; border:none; border-top-right-radius:10px; border-top-left-radius:10px; padding: 12px 24px;">
+                                                        <a class="card-title text-decoration-none"
+                                                           style="font-size:18px; line-height:30px; font-weight:500; color:#040f3a">
+                                                            Which Odoo version does this module support?
+                                                            <i class="fa fa-chevron-up float-end" style="font-size:16px; margin-top:6px;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordion_faq"
+                                                         id="collapseFAQOne"
+                                                         style="box-shadow: rgba(0,0,0,0.05) 0px 6px 24px 0px; border: 1px solid #f8f8f8; border-bottom-right-radius:10px; border-bottom-left-radius:10px">
+                                                        <p style="padding:0.75rem 1.25rem; font-size:16px; line-height:27px; color:#888; font-weight:normal;">
+                                                            This module is designed for <strong>Odoo 18 Community Edition</strong>. It depends on the <code>stock</code> and <code>account</code> modules.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Q2 -->
+                                                <div style="margin:1rem 0rem">
+                                                    <div aria-expanded="true"
+                                                         class="card-header"
+                                                         data-bs-toggle="collapse"
+                                                         data-bs-target="#collapseFAQTwo"
+                                                         aria-controls="collapseFAQTwo"
+                                                         style="cursor: pointer; background-color:#f8f8f8; border:1px solid #f8f8f8; border-top-right-radius:10px; border-top-left-radius:10px; padding: 12px 24px">
+                                                        <a class="card-title text-decoration-none"
+                                                           style="font-size:18px; line-height:30px; font-weight:500; color:#040f3a">
+                                                            Who can create Vendor Bills from GRN?
+                                                            <i class="fa fa-chevron-up float-end" style="font-size:16px; margin-top:6px;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordion_faq"
+                                                         id="collapseFAQTwo"
+                                                         style="box-shadow: rgba(0,0,0,0.05) 0px 6px 24px 0px; border: 1px solid #f8f8f8; border-bottom-right-radius:10px; border-bottom-left-radius:10px">
+                                                        <p style="padding:0.75rem 1.25rem; font-size:16px; line-height:27px; color:#888; font-weight:normal;">
+                                                            Only users with <code>group_grn_picking_user</code> access rights can create Vendor Bills from GRN. This ensures proper separation of duties — inventory staff creates GRNs, while authorized accountants create bills.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Q3 -->
+                                                <div style="margin:1rem 0rem">
+                                                    <div aria-expanded="true"
+                                                         class="card-header"
+                                                         data-bs-toggle="collapse"
+                                                         data-bs-target="#collapseFAQThree"
+                                                         aria-controls="collapseFAQThree"
+                                                         style="cursor: pointer; background-color:#f8f8f8; border:1px solid #f8f8f8; border-top-right-radius:10px; border-top-left-radius:10px; padding: 12px 24px">
+                                                        <a class="card-title text-decoration-none"
+                                                           style="font-size:18px; line-height:30px; font-weight:500; color:#040f3a">
+                                                            Can I create partial bills for remaining quantities?
+                                                            <i class="fa fa-chevron-up float-end" style="font-size:16px; margin-top:6px;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordion_faq"
+                                                         id="collapseFAQThree"
+                                                         style="box-shadow: rgba(0,0,0,0.05) 0px 6px 24px 0px; border: 1px solid #f8f8f8; border-bottom-right-radius:10px; border-bottom-left-radius:10px">
+                                                        <p style="padding:0.75rem 1.25rem; font-size:16px; line-height:27px; color:#888; font-weight:normal;">
+                                                            Yes! Use the <strong>Create Remaining Bill</strong> action to bill only the quantities that haven't been billed yet. This is useful for split invoices or recurring partial billing scenarios.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Q4 -->
+                                                <div style="margin:1rem 0rem">
+                                                    <div aria-expanded="true"
+                                                         class="card-header"
+                                                         data-bs-toggle="collapse"
+                                                         data-bs-target="#collapseFAQFour"
+                                                         aria-controls="collapseFAQFour"
+                                                         style="cursor: pointer; background-color:#f8f8f8; border:1px solid #f8f8f8; border-top-right-radius:10px; border-top-left-radius:10px; padding: 12px 24px">
+                                                        <a class="card-title text-decoration-none"
+                                                           style="font-size:18px; line-height:30px; font-weight:500; color:#040f3a">
+                                                            What happens if a GRN was created from a purchase order?
+                                                            <i class="fa fa-chevron-up float-end" style="font-size:16px; margin-top:6px;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordion_faq"
+                                                         id="collapseFAQFour"
+                                                         style="box-shadow: rgba(0,0,0,0.05) 0px 6px 24px 0px; border: 1px solid #f8f8f8; border-bottom-right-radius:10px; border-bottom-left-radius:10px">
+                                                        <p style="padding:0.75rem 1.25rem; font-size:16px; line-height:27px; color:#888; font-weight:normal;">
+                                                            If the GRN has an <code>origin</code> (i.e., it was created from a Purchase Order), the system will prevent creating a bill from the GRN and prompt you to create the bill from the source document instead. This maintains proper audit trails.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Q5 -->
+                                                <div style="margin:1rem 0rem">
+                                                    <div aria-expanded="true"
+                                                         class="card-header"
+                                                         data-bs-toggle="collapse"
+                                                         data-bs-target="#collapseFAQFive"
+                                                         aria-controls="collapseFAQFive"
+                                                         style="cursor: pointer; background-color:#f8f8f8; border:1px solid #f8f8f8; border-top-right-radius:10px; border-top-left-radius:10px; padding: 12px 24px">
+                                                        <a class="card-title text-decoration-none"
+                                                           style="font-size:18px; line-height:30px; font-weight:500; color:#040f3a">
+                                                            Is there a way to track if a GRN is fully billed?
+                                                            <i class="fa fa-chevron-up float-end" style="font-size:16px; margin-top:6px;"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordion_faq"
+                                                         id="collapseFAQFive"
+                                                         style="box-shadow: rgba(0,0,0,0.05) 0px 6px 24px 0px; border: 1px solid #f8f8f8; border-bottom-right-radius:10px; border-bottom-left-radius:10px">
+                                                        <p style="padding:0.75rem 1.25rem; font-size:16px; line-height:27px; color:#888; font-weight:normal;">
+                                                            Yes! The GRN form includes <strong>Fully Billed</strong> and <strong>Remaining to Bill</strong> fields. Additionally, each stock move line shows <strong>Remaining Qty to Bill</strong> so you can see exactly what hasn't been billed yet.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end faq -->
+
+                        <!-- ─── RELEASES ─── -->
+                        <div aria-labelledby="releases-tab"
+                             class="tab-pane fade show" id="releases" role="tabpanel">
+                            <div class="row pt-5 m-0">
+                                <div class="col-md-3">
+                                    <h4 style="font-size:16px; font-weight:600; color:#514F4F; margin:0; line-height:26px;">
+                                        Latest Release 18.0.1.0
+                                    </h4>
+                                    <span style="font-size:14px; color:#7A7979; display:block; margin-bottom:20px;">
+                                        2025
+                                    </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <div style="padding:0 0 40px">
+                                        <div style="margin:0 0 10px">
+                                            <div style="display:inline-block; padding:0px 8px; color:#514F4F; background-color:#D1FAE5; border-radius:20px">
+                                                Add
+                                            </div>
+                                        </div>
+                                        <div class="d-flex m-0" style="color:#7A7979;">
+                                            <ul class="pl-3 mb-0">
+                                                <li>Initial release for Odoo 18 Community Edition</li>
+                                                <li>GRN Picking to Vendor Bill linking</li>
+                                                <li>One-click Vendor Bill creation from GRN</li>
+                                                <li>Remaining quantity tracking per product</li>
+                                                <li>Partial billing with "Create Remaining Bill"</li>
+                                                <li>Role-based access control (group_grn_picking_user)</li>
+                                                <li>Chatter integration with clickable links</li>
+                                                <li>Fully Billed status indicator on GRN</li>
+                                                <li>Bi-directional navigation between GRN and Bills</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div style="padding:0 0 0; border-bottom:1px solid #E3E3E3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end releases -->
+
+                    </div>
+                </div>
+                <!-- end tab section -->
+
+                <!-- ═══ SERVICES ═══ -->
+                <section id="services" class="mt-5"
+                         style="border-radius: 16px; border: 1px solid #EBEEF2; background: var(--Neutral-N0, #FFF); padding: 60px 40px; box-shadow: 0px 5px 20px -11px rgba(0, 0, 0, 0.25);">
+                    <div class="text-center mt-4">
+                        <h3 class="mb-0"
+                            style="color: #000; text-align: center; font-family: Montserrat; font-size: 40px; font-style: normal; font-weight: 700; line-height: normal; text-transform: uppercase; padding-bottom: 50px;">
+                            Our Services
+                        </h3>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#FFE2E5; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#FA5A7D; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-cogs" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Customization</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#FFF4DE; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#FF947A; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-wrench" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Implementation</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#DCFCE7; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#3CD856; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-life-ring" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Support</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#F3E8FF; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#BF83FF; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-exchange" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Migration</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#F1F9FF; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#01649C; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-plug" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Integration</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#EDF8ED; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#69CC70; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-comments" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Consultancy</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#F1F6FF; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#2E4556; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-certificate" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Odoo Licensing</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-sm-12 mb-3">
+                            <div class="btn-lg btn-block p-4 mb-2 d-flex flex-column justify-content-center align-items-center"
+                                 style="font-size:25px; font-weight:bold; background-color:#FAF6EA; margin:auto; gap: 16px; border-radius: 8px;">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="background-color:#FCD12C; border-radius:50%; height:56px; width:56px">
+                                    <i class="fa fa-user-plus" style="color:#fff; font-size:22px;"></i>
+                                </div>
+                                <span style="font-size: 18px; color: var(--text-color); font-weight: 600;">Hire Odoo Developer</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+    $('.owl-carousel').owlCarousel({
+        rtl: true,
+        loop: true,
+        margin: 10,
+        nav: true,
+        responsive: {
+            0:    { items: 1 },
+            600:  { items: 3 },
+            1000: { items: 3 }
+        }
+    })
+</script>
+</body>
+</html>
