@@ -68,3 +68,16 @@ class TestPurchaseLock(GwStockCommon):
     def test_form_view_readonly_modifiers(self):
         arch = self.env['purchase.order'].get_views([(False, 'form')])['views']['form']['arch']
         self.assertIn("state in ('to approve', 'purchase', 'done')", arch)
+
+    def test_po_cannot_be_deleted(self):
+        po = self._po()
+        for view_type in ('form', 'list', 'kanban'):
+            arch = self.env['purchase.order'].with_user(self.purchase_admin).get_views(
+                [(False, view_type)])['views'][view_type]['arch']
+            self.assertIn('delete="0"', arch)
+        with self.assertRaises(UserError):
+            po.unlink()
+        po.button_cancel()
+        with self.assertRaises(UserError):
+            po.unlink()
+        self.assertTrue(po.exists())

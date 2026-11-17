@@ -1,4 +1,5 @@
 from odoo import _, api, models
+from odoo.api import ondelete
 from odoo.exceptions import UserError
 
 # A purchase order is frozen as soon as it is submitted for approval or confirmed.
@@ -34,9 +35,18 @@ class PurchaseOrder(models.Model):
                 raise _gw_locked_error(locked)
         return super().write(vals)
 
+    @ondelete(at_uninstall=False)
+    def _gw_unlink_never(self):
+        # Purchase orders / RFQs are never deleted (cancel them instead), administrators included.
+        if not self.env.su:
+            raise UserError(_("Purchase orders cannot be deleted. Cancel them instead."))
+
     @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
         arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type in ('form', 'list', 'kanban'):
+            # No "Delete" in the Action menu, for every user.
+            arch.set('delete', '0')
         if view_type == 'form':
             lock = "state in %s" % (GW_PO_LOCKED_STATES,)
             # Top-level fields only: the order lines become read-only through their one2many.
