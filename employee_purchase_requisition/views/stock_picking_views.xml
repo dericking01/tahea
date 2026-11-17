@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <!-- Remove the old In-Transit view from the database before views are re-validated
+         (it references action_mark_in_transit, which is now commented out). -->
+    <delete model="ir.ui.view" id="view_picking_form_in_transit"/>
+
     <!-- Adding field in the stock picking form view -->
     <record id="view_picking_form" model="ir.ui.view">
         <field name="name">stock.picking.view.form.inherit.employee.purchase.requisition</field>
