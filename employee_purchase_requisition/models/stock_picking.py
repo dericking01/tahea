@@ -27,23 +27,24 @@ class Picking(models.Model):
     """Class to add new field in stock picking"""
     _inherit = 'stock.picking'
 
-    state = fields.Selection(selection_add=[('in_transit', 'In Transit')])
+    # In-Transit logic disabled: no longer needed.
+    # state = fields.Selection(selection_add=[('in_transit', 'In Transit')])
 
     requisition_order = fields.Char(string='Requisition Order', help='Requisition order sequence')
 
-    def button_validate(self):
-        for rec in self:
-            if rec.state not in ('in_transit', 'assigned'):
-                raise UserError("You can only validate a picking in the In-Transit or Assigned state.")
-        return super().button_validate()
-
-
-    def action_mark_in_transit(self):
-        """Mark picking as In Transit"""
-        for picking in self:
-            if picking.state != 'assigned':
-                continue
-            picking.state = 'in_transit'
+    # def button_validate(self):
+    #     for rec in self:
+    #         if rec.state not in ('in_transit', 'assigned'):
+    #             raise UserError("You can only validate a picking in the In-Transit or Assigned state.")
+    #     return super().button_validate()
+    #
+    #
+    # def action_mark_in_transit(self):
+    #     """Mark picking as In Transit"""
+    #     for picking in self:
+    #         if picking.state != 'assigned':
+    #             continue
+    #         picking.state = 'in_transit'
 
 
     

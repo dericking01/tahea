@@ -13,13 +13,15 @@
             </xpath>
         </field>
     </record>
+    <!-- In-Transit logic disabled: no longer needed.
+         (Inner comments were converted to "[note]" lines since XML comments cannot be nested.)
     <record id="view_picking_form_in_transit" model="ir.ui.view">
         <field name="name">stock.picking.form.in.transit</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
 
-            <!-- Add Mark In-Transit button in header -->
+            [note] Add Mark In-Transit button in header
             <header position="inside">
                 <button name="action_mark_in_transit"
                         string="Mark In-Transit"
@@ -30,10 +32,10 @@
             </header>
 
         <xpath expr="//header/button[@name='button_validate'][@class='o_btn_validate']" position="replace">
-            <!-- Empty - removes the button completely -->
+            [note] Empty - removes the button completely
         </xpath>
-        
-        <!-- Modify the first validate button to show in multiple conditions -->
+
+        [note] Modify the first validate button to show in multiple conditions
         <xpath expr="//header/button[@name='button_validate'][@class='oe_highlight']" position="attributes">
             <attribute name="invisible">
                 not (
@@ -42,7 +44,7 @@
                     (picking_type_code == 'outgoing' and state == 'assigned')
                 )
             </attribute>
-            <!-- Optionally change the string based on picking type -->
+            [note] Optionally change the string based on picking type
             <attribute name="string">
                 Validate
                 <t t-if="picking_type_code == 'internal'">In-Transit</t>
@@ -52,4 +54,5 @@
 
         </field>
     </record>
+    -->
 </odoo>
