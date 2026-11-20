@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_re_property" model="ir.sequence">
+            <field name="name">Property Code</field>
+            <field name="code">re.property</field>
+            <field name="prefix">PRP-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_lease" model="ir.sequence">
+            <field name="name">Lease</field>
+            <field name="code">re.lease</field>
+            <field name="prefix">LSE/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_lease_amendment" model="ir.sequence">
+            <field name="name">Lease Amendment</field>
+            <field name="code">re.lease.amendment</field>
+            <field name="prefix">AMD/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_deposit" model="ir.sequence">
+            <field name="name">Security Deposit</field>
+            <field name="code">re.security.deposit</field>
+            <field name="prefix">DEP/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_ticket" model="ir.sequence">
+            <field name="name">Tenant Request</field>
+            <field name="code">re.tenant.ticket</field>
+            <field name="prefix">TKT/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_collection" model="ir.sequence">
+            <field name="name">Collection Case</field>
+            <field name="code">re.collection.case</field>
+            <field name="prefix">COL/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_exception" model="ir.sequence">
+            <field name="name">Control Exception</field>
+            <field name="code">re.exception</field>
+            <field name="prefix">EXC/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_work_order" model="ir.sequence">
+            <field name="name">Work Order</field>
+            <field name="code">re.work.order</field>
+            <field name="prefix">WO/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_equipment" model="ir.sequence">
+            <field name="name">Building Equipment Asset ID</field>
+            <field name="code">re.equipment</field>
+            <field name="prefix">AST-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_billing_run" model="ir.sequence">
+            <field name="name">Billing Run</field>
+            <field name="code">re.billing.run</field>
+            <field name="prefix">BILL/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_re_investment" model="ir.sequence">
+            <field name="name">Investment</field>
+            <field name="code">re.investment</field>
+            <field name="prefix">INV-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

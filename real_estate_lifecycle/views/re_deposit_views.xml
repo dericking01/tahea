@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_deposit_search" model="ir.ui.view">
+        <field name="name">re.security.deposit.search</field>
+        <field name="model">re.security.deposit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="lease_id"/>
+                <field name="property_id"/>
+                <filter name="held" string="Held" domain="[('state', '=', 'held')]"/>
+                <filter name="outstanding" string="Not Received" domain="[('state', 'in', ('draft', 'invoiced'))]"/>
+                <filter name="refund" string="Refund in Progress" domain="[('state', 'in', ('refund_requested', 'refund_approved'))]"/>
+                <group>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_deposit_list" model="ir.ui.view">
+        <field name="name">re.security.deposit.list</field>
+        <field name="model">re.security.deposit</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="lease_id"/>
+                <field name="tenant_id"/>
+                <field name="property_id" optional="show"/>
+                <field name="purpose"/>
+                <field name="amount" sum="Required"/>
+                <field name="received_amount" sum="Received"/>
+                <field name="held_amount" sum="Liability"/>
+                <field name="refund_amount" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'held'" decoration-warning="state in ('draft', 'invoiced', 'refund_requested')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_deposit_form" model="ir.ui.view">
+        <field name="name">re.security.deposit.form</field>
+        <field name="model">re.security.deposit</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_invoice" type="object" string="Issue Deposit Invoice" class="btn-primary" invisible="state != 'draft'" groups="real_estate_lifecycle.group_re_accountant"/>
+                    <button name="action_request_refund" type="object" string="Request Refund" invisible="state != 'held'"/>
+                    <button name="action_approve_refund" type="object" string="Approve Refund" class="btn-primary" invisible="not re_can_approve"/>
+                    <button name="action_re_open_reject_wizard" type="object" string="Reject Refund" invisible="not re_can_approve"/>
+                    <button name="action_create_refund" type="object" string="Create Refund Credit Note" class="btn-primary" invisible="state != 'refund_approved'" groups="real_estate_lifecycle.group_re_accountant"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'invoiced')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,invoiced,held,refund_requested,refund_approved,refunded"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_re_view_approval_log" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="re_approval_log_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <field name="re_can_approve" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="lease_id" readonly="state != 'draft'"/>
+                            <field name="tenant_id"/>
+                            <field name="property_id"/>
+                            <field name="purpose"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'" groups="base.group_multi_currency"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="invoice_id"/>
+                            <field name="received_amount"/>
+                            <field name="receipt_date"/>
+                            <field name="held_amount"/>
+                            <field name="refund_move_id"/>
+                            <field name="refund_payment_state" invisible="not refund_move_id"/>
+                        </group>
+                    </group>
+                    <field name="refund_conditions"/>
+                    <separator string="Deductions"/>
+                    <field name="deduction_ids" readonly="state not in ('held',)">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="account_id" optional="show"/>
+                            <field name="work_order_id" optional="show"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="deduction_total"/>
+                        <field name="refund_amount" class="oe_subtotal_footer_separator"/>
+                    </group>
+                    <group string="Approval">
+                        <field name="re_approval_state"/>
+                        <field name="re_requested_by_id"/>
+                        <field name="re_approved_by_id"/>
+                        <field name="re_approved_date"/>
+                        <field name="re_rejection_reason" invisible="not re_rejection_reason"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_deposit" model="ir.actions.act_window">
+        <field name="name">Security Deposits</field>
+        <field name="res_model">re.security.deposit</field>
+        <field name="view_mode">list,form,pivot</field>
+    </record>
+</odoo>

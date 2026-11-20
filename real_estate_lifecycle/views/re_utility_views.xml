@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_tariff_list" model="ir.ui.view">
+        <field name="name">re.utility.tariff.list</field>
+        <field name="model">re.utility.tariff</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="utility_type"/>
+                <field name="uom_label"/>
+                <field name="rate"/>
+                <field name="fixed_charge"/>
+                <field name="currency_id"/>
+                <field name="date_from"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="note" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_re_tariff" model="ir.actions.act_window">
+        <field name="name">Utility Tariffs</field>
+        <field name="res_model">re.utility.tariff</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_re_meter_list" model="ir.ui.view">
+        <field name="name">re.meter.list</field>
+        <field name="model">re.meter</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="utility_type"/>
+                <field name="scope"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="unit_id"/>
+                <field name="tariff_id"/>
+                <field name="prepaid"/>
+                <field name="last_reading"/>
+                <field name="last_reading_date"/>
+                <field name="external_ref" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_re_meter_form" model="ir.ui.view">
+        <field name="name">re.meter.form</field>
+        <field name="model">re.meter</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="utility_type"/>
+                            <field name="scope"/>
+                            <field name="property_id"/>
+                            <field name="building_id"/>
+                            <field name="unit_id"/>
+                            <field name="equipment_id" invisible="utility_type != 'equipment_hours'"/>
+                        </group>
+                        <group>
+                            <field name="tariff_id"/>
+                            <field name="multiplier"/>
+                            <field name="initial_reading"/>
+                            <field name="prepaid"/>
+                            <field name="external_ref"/>
+                            <field name="last_reading"/>
+                        </group>
+                    </group>
+                    <field name="reading_ids" context="{'default_meter_id': id}">
+                        <list editable="top">
+                            <field name="date"/>
+                            <field name="previous_reading"/>
+                            <field name="current_reading"/>
+                            <field name="rollover" optional="hide"/>
+                            <field name="consumption"/>
+                            <field name="cost"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="tenant_id"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_meter" model="ir.actions.act_window">
+        <field name="name">Meters</field>
+        <field name="res_model">re.meter</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_re_reading_search" model="ir.ui.view">
+        <field name="name">re.meter.reading.search</field>
+        <field name="model">re.meter.reading</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="meter_id"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="tenant_id"/>
+                <filter name="unbilled" string="Billable, not billed" domain="[('billable', '=', True), ('state', 'in', ('draft', 'confirmed'))]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <group>
+                    <filter name="g_type" string="Utility" context="{'group_by': 'utility_type'}"/>
+                    <filter name="g_building" string="Building" context="{'group_by': 'building_id'}"/>
+                    <filter name="g_month" string="Month" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_re_reading_list" model="ir.ui.view">
+        <field name="name">re.meter.reading.list</field>
+        <field name="model">re.meter.reading</field>
+        <field name="arch" type="xml">
+            <list editable="top">
+                <field name="meter_id"/>
+                <field name="utility_type" optional="show"/>
+                <field name="property_id" optional="show"/>
+                <field name="date"/>
+                <field name="previous_reading"/>
+                <field name="current_reading"/>
+                <field name="rollover" optional="hide"/>
+                <field name="consumption" sum="Consumption"/>
+                <field name="rate" optional="show"/>
+                <field name="cost" sum="Cost"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="tenant_id"/>
+                <field name="billable"/>
+                <field name="source" optional="hide"/>
+                <field name="invoice_id" optional="show"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_re_reading_graph" model="ir.ui.view">
+        <field name="name">re.meter.reading.graph</field>
+        <field name="model">re.meter.reading</field>
+        <field name="arch" type="xml">
+            <graph string="Consumption Trend" type="line">
+                <field name="date" interval="month"/>
+                <field name="building_id"/>
+                <field name="consumption" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_re_reading_pivot" model="ir.ui.view">
+        <field name="name">re.meter.reading.pivot</field>
+        <field name="model">re.meter.reading</field>
+        <field name="arch" type="xml">
+            <pivot string="Utility Consumption &amp; Cost">
+                <field name="building_id" type="row"/>
+                <field name="utility_type" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="consumption" type="measure"/>
+                <field name="cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_re_reading" model="ir.actions.act_window">
+        <field name="name">Meter Readings</field>
+        <field name="res_model">re.meter.reading</field>
+        <field name="view_mode">list,graph,pivot</field>
+    </record>
+    <record id="action_server_re_bill_readings" model="ir.actions.server">
+        <field name="name">Bill Readings</field>
+        <field name="model_id" ref="model_re_meter_reading"/>
+        <field name="binding_model_id" ref="model_re_meter_reading"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('real_estate_lifecycle.group_re_accountant'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_bill()</field>
+    </record>
+    <record id="action_server_re_confirm_readings" model="ir.actions.server">
+        <field name="name">Confirm Readings</field>
+        <field name="model_id" ref="model_re_meter_reading"/>
+        <field name="binding_model_id" ref="model_re_meter_reading"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_confirm()</field>
+    </record>
+</odoo>

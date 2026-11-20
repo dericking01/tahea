@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_re" model="ir.ui.view">
+        <field name="name">crm.lead.form.re</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_re_submit_application" type="object" string="Application Received" invisible="not re_is_rental or re_application_date"/>
+                <button name="action_re_create_lease" type="object" string="Prepare Lease Offer" class="btn-primary" invisible="not re_is_rental or re_lease_id or re_screening_state not in ('passed', 'conditional')"/>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page string="Rental Enquiry" name="re_rental" invisible="not re_is_rental">
+                    <group>
+                        <group string="Interest">
+                            <field name="re_property_id"/>
+                            <field name="re_unit_ids" widget="many2many_tags"/>
+                            <field name="re_lease_type_id"/>
+                            <field name="re_budget_monthly"/>
+                            <field name="re_move_in_date"/>
+                            <field name="re_term_months"/>
+                        </group>
+                        <group string="Viewing, Application &amp; Screening">
+                            <field name="re_viewing_date"/>
+                            <field name="re_viewing_done"/>
+                            <field name="re_application_date"/>
+                            <field name="re_screening_state"/>
+                            <field name="re_proposed_rent"/>
+                            <field name="re_lease_id"/>
+                        </group>
+                    </group>
+                    <field name="re_screening_notes"/>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="re_is_rental"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_re_prospects" model="ir.actions.act_window">
+        <field name="name">Rental Prospects</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="domain">[('re_is_rental', '=', True)]</field>
+        <field name="context">{'default_re_is_rental': True, 'default_type': 'opportunity'}</field>
+    </record>
+
+    <record id="action_re_applications" model="ir.actions.act_window">
+        <field name="name">Lease Applications</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('re_is_rental', '=', True), ('re_application_date', '!=', False)]</field>
+        <field name="context">{'default_re_is_rental': True, 'default_type': 'opportunity'}</field>
+    </record>
+</odoo>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_re" name="Real Estate Portal Entries" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+            <t t-set="portal_vendor_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/real_estate_lifecycle/static/description/icon.png'"/>
+                <t t-set="title">My Leases</t>
+                <t t-set="text">Lease agreements, renewal requests</t>
+                <t t-set="url" t-value="'/my/leases'"/>
+                <t t-set="placeholder_count" t-value="'re_lease_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/portal/static/src/img/portal-connection.svg'"/>
+                <t t-set="title">Requests &amp; Complaints</t>
+                <t t-set="text">Maintenance requests, complaints, billing disputes, announcements</t>
+                <t t-set="url" t-value="'/my/re/requests'"/>
+                <t t-set="placeholder_count" t-value="'re_request_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/portal/static/src/img/portal-addresses.svg'"/>
+                <t t-set="title">Account Statement</t>
+                <t t-set="text">Invoices, payments and balance</t>
+                <t t-set="url" t-value="'/my/re/statement'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+        <div id="portal_vendor_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/real_estate_lifecycle/static/description/icon.png'"/>
+                <t t-set="title">Assigned Jobs</t>
+                <t t-set="text">Work orders assigned to your company</t>
+                <t t-set="url" t-value="'/my/re/jobs'"/>
+                <t t-set="placeholder_count" t-value="'re_job_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_my_leases" name="My Leases">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar"><t t-set="title">Leases</t></t>
+            <t t-if="not leases"><p class="alert alert-info">You have no leases.</p></t>
+            <t t-if="leases" t-call="portal.portal_table">
+                <thead><tr><th>Lease</th><th>Property / Units</th><th>Start</th><th>End</th><th class="text-end">Monthly Rent</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr t-foreach="leases.sudo()" t-as="lease">
+                        <td><a t-attf-href="/my/leases/#{lease.id}" t-out="lease.name"/></td>
+                        <td><t t-out="lease.property_id.name"/> – <t t-out="', '.join(lease.unit_ids.mapped('name'))"/></td>
+                        <td t-out="lease.date_start"/>
+                        <td t-out="lease.effective_end_date"/>
+                        <td class="text-end"><span t-out="lease.current_rent" t-options="{'widget': 'monetary', 'display_currency': lease.currency_id}"/></td>
+                        <td><span class="badge text-bg-secondary" t-field="lease.state"/></td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_my_lease" name="Lease">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <div t-if="success == 'renewal'" class="alert alert-success">Your renewal request was sent to property management.</div>
+                <h3>Lease <t t-out="lease.name"/> <span class="badge text-bg-secondary" t-field="lease.state"/></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr><th>Property</th><td t-out="lease.property_id.name"/></tr>
+                            <tr><th>Units</th><td t-out="', '.join(lease.unit_ids.mapped('display_name'))"/></tr>
+                            <tr><th>Term</th><td><t t-out="lease.date_start"/> – <t t-out="lease.effective_end_date"/></td></tr>
+                            <tr><th>Current monthly rent</th><td><span t-out="lease.current_rent" t-options="{'widget': 'monetary', 'display_currency': lease.currency_id}"/></td></tr>
+                            <tr><th>Billing</th><td><span t-field="lease.billing_frequency"/></td></tr>
+                            <tr><th>Notice period</th><td><t t-out="lease.notice_period_days"/> days</td></tr>
+                            <tr><th>Deposit held</th><td><span t-out="lease.deposit_held" t-options="{'widget': 'monetary', 'display_currency': lease.company_currency_id}"/></td></tr>
+                            <tr><th>Balance due</th><td><span t-out="lease.amount_due" t-options="{'widget': 'monetary', 'display_currency': lease.company_currency_id}"/></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Documents</h5>
+                        <ul>
+                            <li t-foreach="attachments" t-as="att"><a t-attf-href="/web/content/#{att.id}?download=true&amp;access_token=#{att.sudo().generate_access_token()[0]}" t-out="att.name"/></li>
+                            <li t-if="not attachments" class="text-muted">The signed agreement will appear here once filed.</li>
+                        </ul>
+                        <p><a href="/my/invoices">View invoices &amp; pay online</a> · <a href="/my/re/statement">Account statement</a></p>
+                        <form t-if="lease.state in ('active', 'expiring')" t-attf-action="/my/leases/#{lease.id}/renewal" method="post" class="mt-3">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="form-label">Request a renewal</label>
+                            <textarea name="message" class="form-control mb-2" rows="3" placeholder="Preferred term, any changes requested..."/>
+                            <button type="submit" class="btn btn-primary">Send renewal request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_statement" name="Tenant Statement">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <h3>Account Statement <a href="/my/re/statement/pdf" class="btn btn-sm btn-secondary ms-2">Download PDF</a></h3>
+                <table class="table table-sm">
+                    <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Due</th><th class="text-end">Debit</th><th class="text-end">Credit</th><th class="text-end">Balance</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="data['rows']" t-as="r">
+                            <td t-out="r['date']"/><td t-out="r['ref']"/>
+                            <td><t t-out="r['label']"/> <span t-if="r['disputed']" class="badge text-bg-info">Disputed</span></td>
+                            <td t-out="r['due'] or ''"/>
+                            <td class="text-end"><span t-out="r['debit']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                            <td class="text-end"><span t-out="r['credit']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                            <td class="text-end"><span t-out="r['balance']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                        </tr>
+                    </tbody>
+                    <tfoot><tr class="fw-bold"><td colspan="6">Balance</td><td class="text-end"><span t-out="data['closing']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td></tr></tfoot>
+                </table>
+                <p class="text-muted">To pay, open an invoice under <a href="/my/invoices">My Invoices</a> and use the configured payment methods.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_requests" name="My Requests">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <div t-if="success" class="alert alert-success">Request <t t-out="success"/> received. Thank you.</div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Requests &amp; Complaints</h3>
+                    <a href="/my/re/requests/new" class="btn btn-primary">New request</a>
+                </div>
+                <t t-if="announcements">
+                    <h5 class="mt-3">Announcements</h5>
+                    <div t-foreach="announcements.sudo()" t-as="a" class="alert alert-light border">
+                        <strong t-out="a.name"/> <small class="text-muted" t-out="a.date"/>
+                        <div t-field="a.body"/>
+                    </div>
+                </t>
+                <h5 class="mt-3">Maintenance</h5>
+                <table class="table table-sm">
+                    <thead><tr><th>Reference</th><th>Problem</th><th>Date</th><th>Status</th><th/></tr></thead>
+                    <tbody>
+                        <tr t-foreach="work_orders.sudo()" t-as="wo">
+                            <td t-out="wo.name"/><td t-out="wo.title"/><td t-out="wo.date_request"/>
+                            <td><span class="badge text-bg-secondary" t-field="wo.state"/></td>
+                            <td>
+                                <form t-if="wo.state in ('completed', 'tenant_confirmation')" t-attf-action="/my/re/wo/#{wo.id}/confirm" method="post" class="d-flex gap-1">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <select name="rating" class="form-select form-select-sm">
+                                        <option value="5">Excellent</option><option value="4">Good</option><option value="3">Average</option><option value="2">Poor</option><option value="1">Very poor</option>
+                                    </select>
+                                    <input name="feedback" class="form-control form-control-sm" placeholder="Feedback"/>
+                                    <button class="btn btn-sm btn-success">Confirm done</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr t-if="not work_orders"><td colspan="5" class="text-muted">No maintenance requests.</td></tr>
+                    </tbody>
+                </table>
+                <h5 class="mt-3">Other requests</h5>
+                <table class="table table-sm">
+                    <thead><tr><th>Reference</th><th>Type</th><th>Subject</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="tickets.sudo()" t-as="t">
+                            <td><a t-attf-href="/my/re/requests/#{t.id}" t-out="t.name"/></td>
+                            <td><span t-field="t.ticket_type"/></td><td t-out="t.subject"/>
+                            <td><span class="badge text-bg-secondary" t-field="t.state"/></td>
+                        </tr>
+                        <tr t-if="not tickets"><td colspan="4" class="text-muted">No requests.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_request" name="Request">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <h3><t t-out="ticket.name"/> – <t t-out="ticket.subject"/> <span class="badge text-bg-secondary" t-field="ticket.state"/></h3>
+                <p><strong>Type:</strong> <span t-field="ticket.ticket_type"/> · <strong>Category:</strong> <t t-out="ticket.category_id.name or '-'"/></p>
+                <div t-field="ticket.description"/>
+                <div t-if="ticket.resolution" class="alert alert-success mt-3"><strong>Resolution:</strong> <t t-out="ticket.resolution"/></div>
+                <div class="mt-4">
+                    <t t-call="portal.message_thread">
+                        <t t-set="object" t-value="ticket"/>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_request_form" name="New Request">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <h3>New request</h3>
+                <form action="/my/re/requests/new" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-2">
+                        <label class="form-label">Lease</label>
+                        <select name="lease_id" class="form-select" required="1">
+                            <t t-foreach="leases.sudo()" t-as="l"><option t-att-value="l.id"><t t-out="l.name"/> – <t t-out="', '.join(l.unit_ids.mapped('name'))"/></option></t>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Type</label>
+                        <select name="request_type" class="form-select">
+                            <option value="maintenance">Maintenance / repair</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="billing_dispute">Billing dispute</option>
+                            <option value="renewal_request">Lease renewal</option>
+                            <option value="document">Submit a document</option>
+                            <option value="enquiry">General enquiry</option>
+                            <option value="feedback">Feedback</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Category</label>
+                        <select name="category_id" class="form-select">
+                            <option value="">-</option>
+                            <t t-foreach="categories" t-as="c"><option t-att-value="c.id" t-out="c.name"/></t>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Disputed invoice (billing disputes)</label>
+                        <select name="invoice_id" class="form-select">
+                            <option value="">-</option>
+                            <t t-foreach="invoices.sudo()" t-as="inv"><option t-att-value="inv.id"><t t-out="inv.name"/> (<t t-out="inv.amount_total" t-options="{'widget': 'monetary', 'display_currency': inv.currency_id}"/>)</option></t>
+                        </select>
+                    </div>
+                    <div class="mb-2"><label class="form-label">Subject</label><input name="subject" class="form-control" required="1" maxlength="200"/></div>
+                    <div class="mb-2"><label class="form-label">Details</label><textarea name="description" class="form-control" rows="4"/></div>
+                    <div class="mb-3"><label class="form-label">Photos / documents (max 10 MB each)</label><input type="file" name="attachments" class="form-control" multiple="multiple"/></div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_jobs" name="Assigned Jobs">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <h3>Assigned Jobs</h3>
+                <table class="table table-sm">
+                    <thead><tr><th>Work Order</th><th>Problem</th><th>Property</th><th>Target</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="jobs.sudo()" t-as="wo">
+                            <td><a t-attf-href="/my/re/jobs/#{wo.id}" t-out="wo.name"/></td>
+                            <td t-out="wo.title"/><td><t t-out="wo.property_id.name"/> <t t-out="wo.unit_id.name or ''"/></td>
+                            <td t-out="wo.date_target"/><td><span class="badge text-bg-secondary" t-field="wo.state"/></td>
+                        </tr>
+                        <tr t-if="not jobs"><td colspan="5" class="text-muted">No jobs assigned.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_job" name="Job">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <div t-if="error" class="alert alert-danger" t-out="error"/>
+                <h3><t t-out="wo.name"/> – <t t-out="wo.title"/> <span class="badge text-bg-secondary" t-field="wo.state"/></h3>
+                <table class="table table-sm">
+                    <tr><th>Location</th><td><t t-out="wo.property_id.name"/> <t t-out="wo.building_id.name or ''"/> <t t-out="wo.unit_id.name or ''"/></td></tr>
+                    <tr><th>Equipment</th><td t-out="wo.equipment_id.name or '-'"/></tr>
+                    <tr><th>Target date</th><td t-out="wo.date_target or '-'"/></tr>
+                    <tr><th>Approved budget</th><td><span t-out="wo.approved_budget" t-options="{'widget': 'monetary', 'display_currency': wo.currency_id}"/></td></tr>
+                </table>
+                <div t-field="wo.description"/>
+                <h5 class="mt-3">Completion report so far</h5>
+                <div t-field="wo.completion_report"/>
+                <form t-if="wo.state in ('assigned', 'in_progress', 'pending')" t-attf-action="/my/re/jobs/#{wo.id}" method="post" enctype="multipart/form-data" class="mt-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="mb-2"><label class="form-label">Progress / completion notes</label><textarea name="report" class="form-control" rows="4"/></div>
+                    <div class="mb-2"><label class="form-label">Evidence photos / documents</label><input type="file" name="attachments" class="form-control" multiple="multiple"/></div>
+                    <button t-if="wo.state == 'assigned'" name="action" value="start" class="btn btn-secondary">Start work</button>
+                    <button name="action" value="update" class="btn btn-secondary">Save update</button>
+                    <button t-if="wo.state in ('in_progress', 'pending')" name="action" value="complete" class="btn btn-success">Mark completed</button>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

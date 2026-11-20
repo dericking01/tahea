@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_re_root" name="Real Estate" sequence="5" web_icon="real_estate_lifecycle,static/description/icon.png"
+              groups="group_re_investor,group_re_technician,group_re_leasing_officer,group_re_accountant,group_re_procurement,group_re_investment_manager,group_re_maintenance_manager"/>
+
+    <menuitem id="menu_re_dashboard" name="Dashboard" parent="menu_re_root" action="action_re_dashboard" sequence="1"/>
+
+    <!-- REAL ESTATE -->
+    <menuitem id="menu_re_properties_top" name="Properties" parent="menu_re_root" sequence="10"/>
+    <menuitem id="menu_re_properties" name="Properties" parent="menu_re_properties_top" action="action_re_property" sequence="1"/>
+    <menuitem id="menu_re_buildings" name="Buildings" parent="menu_re_properties_top" action="action_re_building" sequence="2"/>
+    <menuitem id="menu_re_floors" name="Floors" parent="menu_re_properties_top" action="action_re_floor" sequence="3"/>
+    <menuitem id="menu_re_units" name="Rental Units" parent="menu_re_properties_top" action="action_re_unit" sequence="4"/>
+    <menuitem id="menu_re_land" name="Land &amp; Plots" parent="menu_re_properties_top" action="action_re_land" sequence="5"/>
+    <menuitem id="menu_re_plots" name="Plots" parent="menu_re_properties_top" action="action_re_plot" sequence="6"/>
+    <menuitem id="menu_re_portfolios" name="Portfolios" parent="menu_re_properties_top" action="action_re_portfolio" sequence="7"/>
+    <menuitem id="menu_re_ownership" name="Ownership Register" parent="menu_re_properties_top" action="action_re_ownership" sequence="8"/>
+
+    <!-- INVESTMENTS -->
+    <menuitem id="menu_re_investments_top" name="Investments" parent="menu_re_root" sequence="15" groups="group_re_investment_manager,group_re_investor,group_re_finance_manager,group_re_portfolio_manager"/>
+    <menuitem id="menu_re_investment" name="Investment Opportunities" parent="menu_re_investments_top" action="action_re_investment" sequence="1"/>
+    <menuitem id="menu_re_feasibility" name="Feasibility Studies" parent="menu_re_investments_top" action="action_re_feasibility" sequence="2"/>
+    <menuitem id="menu_re_investment_portfolio" name="Investment Portfolio" parent="menu_re_investments_top" action="action_re_investment_portfolio" sequence="3"/>
+    <menuitem id="menu_re_valuations" name="Valuations" parent="menu_re_investments_top" action="action_re_valuation" sequence="4"/>
+    <menuitem id="menu_re_investment_perf" name="Investment Performance" parent="menu_re_investments_top" action="action_re_report_investment" sequence="5"/>
+
+    <!-- LEASING -->
+    <menuitem id="menu_re_leasing_top" name="Leasing" parent="menu_re_root" sequence="20" groups="group_re_leasing_officer,group_re_accountant"/>
+    <menuitem id="menu_re_prospects" name="Prospects" parent="menu_re_leasing_top" action="action_re_prospects" sequence="1" groups="group_re_leasing_officer"/>
+    <menuitem id="menu_re_tenants" name="Tenants" parent="menu_re_leasing_top" action="action_re_tenant" sequence="2"/>
+    <menuitem id="menu_re_applications" name="Lease Applications" parent="menu_re_leasing_top" action="action_re_applications" sequence="3" groups="group_re_leasing_officer"/>
+    <menuitem id="menu_re_leases" name="Leases" parent="menu_re_leasing_top" action="action_re_lease" sequence="4"/>
+    <menuitem id="menu_re_amendments" name="Amendments" parent="menu_re_leasing_top" action="action_re_amendment" sequence="5"/>
+    <menuitem id="menu_re_escalations" name="Rent Escalations" parent="menu_re_leasing_top" action="action_re_escalation" sequence="6"/>
+    <menuitem id="menu_re_renewals" name="Renewals" parent="menu_re_leasing_top" action="action_re_lease_renewals" sequence="7"/>
+    <menuitem id="menu_re_expirations" name="Lease Expirations" parent="menu_re_leasing_top" action="action_re_lease_expiring" sequence="8"/>
+    <menuitem id="menu_re_tenant_experience" name="Tenant Experience" parent="menu_re_leasing_top" sequence="20"/>
+    <menuitem id="menu_re_tickets" name="Requests &amp; Complaints" parent="menu_re_tenant_experience" action="action_re_ticket" sequence="1"/>
+    <menuitem id="menu_re_issues" name="Shared Building Issues" parent="menu_re_tenant_experience" action="action_re_building_issue" sequence="2"/>
+    <menuitem id="menu_re_announcements" name="Announcements" parent="menu_re_tenant_experience" action="action_re_announcement" sequence="3"/>
+
+    <!-- FINANCE -->
+    <menuitem id="menu_re_finance_top" name="Finance" parent="menu_re_root" sequence="30" groups="group_re_accountant,group_re_leasing_officer"/>
+    <menuitem id="menu_re_billing" name="Rental Billing" parent="menu_re_finance_top" action="action_re_billing_schedule" sequence="1"/>
+    <menuitem id="menu_re_billing_run_wizard" name="Run Billing" parent="menu_re_finance_top" action="action_re_billing_run_wizard" sequence="2" groups="group_re_accountant"/>
+    <menuitem id="menu_re_billing_runs" name="Billing Runs" parent="menu_re_finance_top" action="action_re_billing_run" sequence="3"/>
+    <menuitem id="menu_re_rental_invoices" name="Rental Invoices" parent="menu_re_finance_top" action="action_re_rental_invoices" sequence="4" groups="account.group_account_invoice"/>
+    <menuitem id="menu_re_ageing" name="Tenant Accounts" parent="menu_re_finance_top" action="action_re_ageing" sequence="5"/>
+    <menuitem id="menu_re_collections" name="Collections" parent="menu_re_finance_top" action="action_re_collection" sequence="6"/>
+    <menuitem id="menu_re_disputes" name="Disputed Invoices" parent="menu_re_finance_top" action="action_re_disputed_invoices" sequence="7" groups="account.group_account_invoice"/>
+    <menuitem id="menu_re_deposits" name="Security Deposits" parent="menu_re_finance_top" action="action_re_deposit" sequence="8"/>
+    <menuitem id="menu_re_service_charges" name="Service Charges" parent="menu_re_finance_top" action="action_re_sc_budget" sequence="9"/>
+    <menuitem id="menu_re_turnover" name="Turnover Reports" parent="menu_re_finance_top" action="action_re_turnover" sequence="10"/>
+    <menuitem id="menu_re_utilities" name="Utilities" parent="menu_re_finance_top" sequence="11"/>
+    <menuitem id="menu_re_meters" name="Meters" parent="menu_re_utilities" action="action_re_meter" sequence="1"/>
+    <menuitem id="menu_re_readings" name="Meter Readings" parent="menu_re_utilities" action="action_re_reading" sequence="2"/>
+    <menuitem id="menu_re_revenue_assurance" name="Revenue Assurance" parent="menu_re_finance_top" action="action_re_exception" sequence="12"/>
+    <menuitem id="menu_re_profitability" name="Property Profitability" parent="menu_re_finance_top" action="action_re_property_profitability" sequence="13" groups="group_re_accountant"/>
+
+    <!-- MAINTENANCE -->
+    <menuitem id="menu_re_maintenance_top" name="Maintenance" parent="menu_re_root" sequence="40" groups="group_re_technician,group_re_procurement,group_re_accountant"/>
+    <menuitem id="menu_re_equipment" name="Equipment Register" parent="menu_re_maintenance_top" action="action_re_equipment" sequence="1"/>
+    <menuitem id="menu_re_requests" name="Maintenance Requests" parent="menu_re_maintenance_top" action="action_re_maintenance_request" sequence="2"/>
+    <menuitem id="menu_re_work_orders" name="Work Orders" parent="menu_re_maintenance_top" action="action_re_work_order" sequence="3"/>
+    <menuitem id="menu_re_plans" name="Preventive Maintenance" parent="menu_re_maintenance_top" action="action_re_plan" sequence="4"/>
+    <menuitem id="menu_re_replacement" name="Asset Replacement" parent="menu_re_maintenance_top" action="action_re_asset_replacement" sequence="5"/>
+
+    <!-- VENDORS -->
+    <menuitem id="menu_re_vendors_top" name="Vendors" parent="menu_re_root" sequence="50" groups="group_re_procurement,group_re_maintenance_manager,group_re_property_manager,group_re_accountant"/>
+    <menuitem id="menu_re_vendor_register" name="Vendor Register" parent="menu_re_vendors_top" action="action_re_vendor" sequence="1"/>
+    <menuitem id="menu_re_vendor_contracts" name="Contracts" parent="menu_re_vendors_top" action="action_re_contract" sequence="2"/>
+    <menuitem id="menu_re_vendor_quotes" name="Quotations" parent="menu_re_vendors_top" action="action_re_rfq" sequence="3" groups="purchase.group_purchase_user"/>
+    <menuitem id="menu_re_vendor_pos" name="Purchase Orders" parent="menu_re_vendors_top" action="action_re_po" sequence="4" groups="purchase.group_purchase_user"/>
+    <menuitem id="menu_re_vendor_perf" name="Performance" parent="menu_re_vendors_top" action="action_re_vendor_performance" sequence="5"/>
+
+    <!-- REPORTING -->
+    <menuitem id="menu_re_reporting_top" name="Reporting" parent="menu_re_root" sequence="60"/>
+    <menuitem id="menu_re_rep_dashboard" name="Portfolio Dashboard" parent="menu_re_reporting_top" action="action_re_dashboard" sequence="1"/>
+    <menuitem id="menu_re_rep_performance" name="Property Performance" parent="menu_re_reporting_top" action="action_re_report_performance" sequence="2"/>
+    <menuitem id="menu_re_rep_property" name="Property &amp; Occupancy Reports" parent="menu_re_reporting_top" action="action_re_report_property" sequence="3"/>
+    <menuitem id="menu_re_rep_leasing" name="Rental Reports" parent="menu_re_reporting_top" action="action_re_report_leasing" sequence="4" groups="group_re_leasing_officer,group_re_accountant"/>
+    <menuitem id="menu_re_rep_financial" name="Financial Reports" parent="menu_re_reporting_top" action="action_re_report_financial" sequence="5" groups="group_re_accountant,group_re_property_manager"/>
+    <menuitem id="menu_re_rep_maintenance" name="Maintenance Reports" parent="menu_re_reporting_top" action="action_re_report_maintenance" sequence="6" groups="group_re_technician,group_re_procurement"/>
+    <menuitem id="menu_re_rep_investment" name="Investment Reports" parent="menu_re_reporting_top" action="action_re_report_investment" sequence="7" groups="group_re_investment_manager,group_re_investor,group_re_finance_manager,group_re_portfolio_manager"/>
+    <menuitem id="menu_re_rep_approvals" name="Approval Audit Trail" parent="menu_re_reporting_top" action="action_re_approval_log" sequence="8" groups="group_re_portfolio_manager,group_re_finance_manager"/>
+
+    <!-- CONFIGURATION -->
+    <menuitem id="menu_re_config_top" name="Configuration" parent="menu_re_root" sequence="90" groups="group_re_admin"/>
+    <menuitem id="menu_re_settings" name="Settings" parent="menu_re_config_top" action="action_re_settings" sequence="1"/>
+    <menuitem id="menu_re_property_types" name="Property Types" parent="menu_re_config_top" action="action_re_property_type" sequence="2"/>
+    <menuitem id="menu_re_lease_types" name="Lease Types" parent="menu_re_config_top" action="action_re_lease_type" sequence="3"/>
+    <menuitem id="menu_re_approval_rules" name="Approval Rules" parent="menu_re_config_top" action="action_re_approval_rule" sequence="4"/>
+    <menuitem id="menu_re_controls" name="Revenue Assurance Controls" parent="menu_re_config_top" action="action_re_control" sequence="5"/>
+    <menuitem id="menu_re_tariffs" name="Utility Tariffs" parent="menu_re_config_top" action="action_re_tariff" sequence="6"/>
+    <menuitem id="menu_re_maint_categories" name="Maintenance Categories" parent="menu_re_config_top" action="action_re_maintenance_category" sequence="7"/>
+    <menuitem id="menu_re_asset_categories" name="Asset Categories" parent="menu_re_config_top" action="action_re_asset_category" sequence="8"/>
+    <menuitem id="menu_re_service_categories" name="Contractor Service Categories" parent="menu_re_config_top" action="action_re_service_category" sequence="9"/>
+    <menuitem id="menu_re_complaint_categories" name="Request Categories" parent="menu_re_config_top" action="action_re_complaint_category" sequence="10"/>
+    <menuitem id="menu_re_area_units" name="Area Units" parent="menu_re_config_top" action="action_re_area_unit" sequence="11"/>
+</odoo>

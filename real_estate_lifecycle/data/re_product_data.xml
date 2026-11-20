@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Taxes are intentionally NOT set: the accountant configures taxes on these products
+         and/or fiscal positions per lease type according to the local tax treatment. -->
+    <data noupdate="1">
+        <record id="product_re_rent" model="product.product">
+            <field name="name">Rent</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-RENT</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_service_charge" model="product.product">
+            <field name="name">Service Charge</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-SERVICE_CHARGE</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_parking" model="product.product">
+            <field name="name">Parking Fee</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-PARKING</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_marketing_levy" model="product.product">
+            <field name="name">Marketing Levy</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-MARKETING_LEVY</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_utility" model="product.product">
+            <field name="name">Utility Recharge</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-UTILITY</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_turnover_rent" model="product.product">
+            <field name="name">Turnover Rent</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-TURNOVER_RENT</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_other_charge" model="product.product">
+            <field name="name">Other Lease Charge</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-OTHER_CHARGE</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+        </record>
+        <record id="product_re_maintenance_service" model="product.product">
+            <field name="name">Maintenance &amp; Repair Services</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-MAINTENANCE_SERVICE</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="purchase_method">purchase</field>
+        </record>
+        <record id="product_re_capital_works" model="product.product">
+            <field name="name">Capital Works (CAPEX)</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="list_price">0</field>
+            <field name="default_code">RE-CAPITAL_WORKS</field>
+            <field name="taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="supplier_taxes_id" eval="[(5, 0, 0)]"/>
+            <field name="purchase_method">purchase</field>
+        </record>
+    </data>
+</odoo>

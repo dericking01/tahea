@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_building_list" model="ir.ui.view">
+        <field name="name">re.building.list</field>
+        <field name="model">re.building</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="property_id"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="building_use" optional="show"/>
+                <field name="year_built" optional="hide"/>
+                <field name="floor_count"/>
+                <field name="unit_count" sum="Units"/>
+                <field name="occupied_unit_count" sum="Occupied"/>
+                <field name="occupancy_rate" widget="progressbar"/>
+                <field name="lettable_area_sqm" sum="Area"/>
+                <field name="condition" optional="show"/>
+                <field name="manager_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_building_search" model="ir.ui.view">
+        <field name="name">re.building.search</field>
+        <field name="model">re.building</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="portfolio_id"/>
+                <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                <filter name="g_use" string="Use" context="{'group_by': 'building_use'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_building_form" model="ir.ui.view">
+        <field name="name">re.building.form</field>
+        <field name="model">re.building</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_floors" type="object" class="oe_stat_button" icon="fa-bars">
+                            <field name="floor_count" widget="statinfo" string="Floors"/>
+                        </button>
+                        <button name="action_view_units" type="object" class="oe_stat_button" icon="fa-th-large">
+                            <field name="unit_count" widget="statinfo" string="Units"/>
+                        </button>
+                        <button name="action_view_equipment" type="object" class="oe_stat_button" icon="fa-cogs">
+                            <field name="equipment_count" widget="statinfo" string="Equipment"/>
+                        </button>
+                        <button name="action_view_work_orders" type="object" class="oe_stat_button" icon="fa-wrench">
+                            <field name="work_order_count" widget="statinfo" string="Work Orders"/>
+                        </button>
+                        <button name="action_view_issues" type="object" class="oe_stat_button text-warning" icon="fa-bullhorn" invisible="not issue_count">
+                            <field name="issue_count" widget="statinfo" string="Shared Issues"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Block A"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="property_id" options="{'no_create': True}"/>
+                            <field name="code"/>
+                            <field name="building_use"/>
+                            <field name="condition"/>
+                        </group>
+                        <group>
+                            <field name="year_built"/>
+                            <field name="commissioning_date"/>
+                            <field name="gross_area"/>
+                            <field name="lettable_area_sqm"/>
+                            <field name="occupancy_rate" widget="progressbar"/>
+                            <field name="analytic_account_id" groups="real_estate_lifecycle.group_re_accountant"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Floors" name="floors">
+                            <field name="floor_ids" context="{'default_building_id': id}">
+                                <list editable="bottom">
+                                    <field name="level"/>
+                                    <field name="name"/>
+                                    <field name="area"/>
+                                    <field name="unit_count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Units" name="units">
+                            <field name="unit_ids" context="{'default_building_id': id, 'default_property_id': property_id}">
+                                <list editable="bottom" decoration-success="occupancy_status == 'occupied'" decoration-warning="occupancy_status == 'vacant'">
+                                    <field name="property_id" column_invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="floor_id" domain="[('building_id', '=', parent.id)]" options="{'no_create': True}"/>
+                                    <field name="unit_type"/>
+                                    <field name="area"/>
+                                    <field name="area_unit_id" options="{'no_create': True}"/>
+                                    <field name="is_lettable"/>
+                                    <field name="market_rent"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="occupancy_status"/>
+                                    <field name="rental_status" widget="badge"/>
+                                    <field name="tenant_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_building_kanban" model="ir.ui.view">
+        <field name="name">re.building.kanban</field>
+        <field name="model">re.building</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="property_id" class="text-muted"/>
+                        <div><field name="occupied_unit_count"/> / <field name="unit_count"/> occupied · <field name="floor_count"/> floors</div>
+                        <field name="occupancy_rate" widget="progressbar"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_re_building" model="ir.actions.act_window">
+        <field name="name">Buildings</field>
+        <field name="res_model">re.building</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+    <record id="view_re_floor_list" model="ir.ui.view">
+        <field name="name">re.floor.list</field>
+        <field name="model">re.floor</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="building_id"/>
+                <field name="level"/>
+                <field name="name"/>
+                <field name="area"/>
+                <field name="unit_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_re_floor" model="ir.actions.act_window">
+        <field name="name">Floors</field>
+        <field name="res_model">re.floor</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

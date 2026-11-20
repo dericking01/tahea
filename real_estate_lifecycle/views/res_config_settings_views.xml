@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_re" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.re</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Real Estate" string="Real Estate" name="real_estate_lifecycle" groups="real_estate_lifecycle.group_re_admin">
+                    <block title="Rental Billing" name="re_billing">
+                        <setting string="Invoice products" help="Products (income account and taxes configured by the accountant) used for each charge type." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_product_rent_id" class="col-lg-4 o_light_label"/><field name="re_product_rent_id"/></div>
+                                <div class="row"><label for="re_product_service_charge_id" class="col-lg-4 o_light_label"/><field name="re_product_service_charge_id"/></div>
+                                <div class="row"><label for="re_product_parking_id" class="col-lg-4 o_light_label"/><field name="re_product_parking_id"/></div>
+                                <div class="row"><label for="re_product_marketing_id" class="col-lg-4 o_light_label"/><field name="re_product_marketing_id"/></div>
+                                <div class="row"><label for="re_product_utility_id" class="col-lg-4 o_light_label"/><field name="re_product_utility_id"/></div>
+                                <div class="row"><label for="re_product_turnover_id" class="col-lg-4 o_light_label"/><field name="re_product_turnover_id"/></div>
+                                <div class="row"><label for="re_product_other_id" class="col-lg-4 o_light_label"/><field name="re_product_other_id"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Invoicing" help="Journal and posting policy for generated rental invoices." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_rental_journal_id" class="col-lg-4 o_light_label"/><field name="re_rental_journal_id"/></div>
+                                <div class="row"><label for="re_auto_post_invoices" class="col-lg-4 o_light_label"/><field name="re_auto_post_invoices"/></div>
+                                <div class="row"><label for="re_billing_grace_days" class="col-lg-4 o_light_label"/><field name="re_billing_grace_days"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Security deposits" help="Deposits are recorded as a liability, never as income." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_deposit_account_id" class="col-lg-4 o_light_label"/><field name="re_deposit_account_id"/></div>
+                                <div class="row"><label for="re_deposit_deduction_account_id" class="col-lg-4 o_light_label"/><field name="re_deposit_deduction_account_id"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Lease alerts" help="Comma separated days before expiry (e.g. 120,90,60,30)." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_lease_alert_days" class="col-lg-4 o_light_label"/><field name="re_lease_alert_days"/></div>
+                                <div class="row"><label for="re_expiring_days" class="col-lg-4 o_light_label"/><field name="re_expiring_days"/></div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Financial Controls" name="re_controls">
+                        <setting string="Tenant credit notes" company_dependent="1">
+                            <field name="re_block_unapproved_tenant_credit"/>
+                        </setting>
+                        <setting string="Vendor bills vs approved work-order budget" company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_block_bill_over_approved" class="col-lg-4 o_light_label"/><field name="re_block_bill_over_approved"/></div>
+                                <div class="row"><label for="re_bill_tolerance_pct" class="col-lg-4 o_light_label"/><field name="re_bill_tolerance_pct"/></div>
+                                <div class="row"><label for="re_require_po_for_contractor" class="col-lg-4 o_light_label"/><field name="re_require_po_for_contractor"/></div>
+                                <div class="row"><label for="re_wo_tolerance_pct" class="col-lg-4 o_light_label"/><field name="re_wo_tolerance_pct"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Maintenance products" company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_product_maintenance_id" class="col-lg-4 o_light_label"/><field name="re_product_maintenance_id"/></div>
+                                <div class="row"><label for="re_product_capex_id" class="col-lg-4 o_light_label"/><field name="re_product_capex_id"/></div>
+                            </div>
+                        </setting>
+                        <setting string="NOI policy" help="Revenue = Income accounts; Opex = Expense and Cost of Revenue accounts; capex (fixed asset accounts) always excluded." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_noi_include_other_income" class="col-lg-4 o_light_label"/><field name="re_noi_include_other_income"/></div>
+                                <div class="row"><label for="re_noi_excluded_account_ids" class="col-lg-4 o_light_label"/><field name="re_noi_excluded_account_ids" widget="many2many_tags"/></div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Tenant Experience &amp; Collections" name="re_tenant">
+                        <setting string="Shared building issues" help="Number of tenants reporting the same category in a building within the window." company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_cluster_threshold" class="col-lg-4 o_light_label"/><field name="re_cluster_threshold"/></div>
+                                <div class="row"><label for="re_cluster_window_days" class="col-lg-4 o_light_label"/><field name="re_cluster_window_days"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Collection cases" company_dependent="1">
+                            <div class="content-group">
+                                <div class="row"><label for="re_collection_case_days" class="col-lg-4 o_light_label"/><field name="re_collection_case_days"/></div>
+                                <div class="row"><label for="re_collection_min_amount" class="col-lg-4 o_light_label"/><field name="re_collection_min_amount"/></div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_re_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'real_estate_lifecycle', 'bin_size': False}</field>
+    </record>
+</odoo>

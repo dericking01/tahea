@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_investment_list" model="ir.ui.view">
+        <field name="name">re.investment.list</field>
+        <field name="model">re.investment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="version"/>
+                <field name="scenario_name" optional="show"/>
+                <field name="property_type_id" optional="show"/>
+                <field name="total_investment"/>
+                <field name="noi_year1"/>
+                <field name="net_yield"/>
+                <field name="npv"/>
+                <field name="irr"/>
+                <field name="payback_years"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state in ('approved', 'acquired')" decoration-muted="state == 'superseded'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_investment_form" model="ir.ui.view">
+        <field name="name">re.investment.form</field>
+        <field name="model">re.investment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_compute_cashflows" type="object" string="Recalculate" invisible="state not in ('draft', 'rejected')"/>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" invisible="state != 'draft' or is_scenario"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="not re_can_approve"/>
+                    <button name="action_re_open_reject_wizard" type="object" string="Reject" invisible="not re_can_approve"/>
+                    <button name="action_create_scenario" type="object" string="Simulate Scenario"/>
+                    <button name="action_create_revision" type="object" string="Create Authorised Revision" invisible="state not in ('approved', 'acquired')"/>
+                    <button name="action_mark_acquired" type="object" string="Mark Acquired" invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,under_review,approved,acquired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_scenarios" type="object" class="oe_stat_button" icon="fa-code-fork" string="Versions &amp; Scenarios"/>
+                        <button name="action_re_view_approval_log" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="re_approval_log_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Scenario" bg_color="text-bg-info" invisible="not is_scenario"/>
+                    <widget name="web_ribbon" title="Superseded" bg_color="text-bg-secondary" invisible="state != 'superseded'"/>
+                    <div class="alert alert-info" role="alert">All figures on this form are <b>projections</b> derived from the assumptions below. They are not actual results.</div>
+                    <div class="oe_title">
+                        <field name="code" class="text-muted"/>
+                        <h1><field name="name"/></h1>
+                        <span>Version <field name="version" class="oe_inline"/></span>
+                        <field name="scenario_name" invisible="not is_scenario" placeholder="Scenario name"/>
+                    </div>
+                    <field name="re_can_approve" invisible="1"/>
+                    <field name="is_scenario" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="property_type_id"/>
+                            <field name="location"/>
+                            <field name="region"/>
+                            <field name="funding_source"/>
+                            <field name="manager_id" widget="many2one_avatar_user"/>
+                            <field name="property_id"/>
+                        </group>
+                        <group>
+                            <field name="original_id" invisible="not original_id"/>
+                            <field name="parent_id" invisible="not parent_id"/>
+                            <field name="scenario_of_id" invisible="not scenario_of_id"/>
+                            <field name="revision_reason" invisible="not parent_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Assumptions" name="assumptions">
+                            <group>
+                                <group string="Investment Costs">
+                                    <field name="purchase_price" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="land_cost" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="construction_cost" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="professional_fees" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="other_costs" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="total_investment"/>
+                                </group>
+                                <group string="Financing">
+                                    <field name="loan_amount" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="interest_rate" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="loan_term_years" readonly="state not in ('draft', 'rejected')"/>
+                                </group>
+                                <group string="Operations">
+                                    <field name="annual_gross_rent" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="expected_occupancy" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="annual_opex" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="annual_maintenance" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="annual_capex" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="rent_growth" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="opex_growth" readonly="state not in ('draft', 'rejected')"/>
+                                </group>
+                                <group string="Valuation">
+                                    <field name="holding_years" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="discount_rate" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="exit_cap_rate" readonly="state not in ('draft', 'rejected')"/>
+                                    <field name="selling_costs_pct" readonly="state not in ('draft', 'rejected')"/>
+                                </group>
+                            </group>
+                            <field name="assumptions_note" placeholder="Sources: market rent survey, contractor estimates, bank term sheet..."/>
+                        </page>
+                        <page string="Appraisal" name="appraisal">
+                            <group>
+                                <group string="Returns">
+                                    <field name="npv"/>
+                                    <field name="irr"/>
+                                    <field name="equity_irr"/>
+                                    <field name="roi"/>
+                                    <field name="payback_years"/>
+                                    <field name="payback_note" invisible="not payback_note"/>
+                                </group>
+                                <group string="Income &amp; Risk">
+                                    <field name="noi_year1"/>
+                                    <field name="gross_yield"/>
+                                    <field name="net_yield"/>
+                                    <field name="annual_debt_service"/>
+                                    <field name="dscr_year1"/>
+                                    <field name="break_even_occupancy"/>
+                                </group>
+                            </group>
+                            <field name="cashflow_ids">
+                                <list>
+                                    <field name="year"/>
+                                    <field name="gpr"/>
+                                    <field name="vacancy"/>
+                                    <field name="egi"/>
+                                    <field name="opex"/>
+                                    <field name="noi" sum="NOI"/>
+                                    <field name="capex"/>
+                                    <field name="debt_service"/>
+                                    <field name="sale_proceeds"/>
+                                    <field name="net_cf" sum="Net CF"/>
+                                    <field name="discounted_cf" sum="PV"/>
+                                    <field name="cumulative_cf"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Actual vs Projected" name="actual" invisible="not property_id">
+                            <group>
+                                <field name="compare_year"/>
+                                <field name="materiality_pct"/>
+                            </group>
+                            <group>
+                                <group string="Projected">
+                                    <field name="projected_revenue"/>
+                                    <field name="projected_opex"/>
+                                    <field name="projected_maintenance"/>
+                                    <field name="projected_noi"/>
+                                    <field name="expected_occupancy" string="Projected Occupancy (%)" readonly="1"/>
+                                    <field name="total_investment" string="Projected Investment"/>
+                                </group>
+                                <group string="Actual (from Accounting)">
+                                    <field name="actual_revenue"/>
+                                    <field name="actual_opex"/>
+                                    <field name="actual_maintenance"/>
+                                    <field name="actual_noi"/>
+                                    <field name="actual_occupancy"/>
+                                    <field name="actual_investment"/>
+                                </group>
+                            </group>
+                            <field name="variance_explanation"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_investment_search" model="ir.ui.view">
+        <field name="name">re.investment.search</field>
+        <field name="model">re.investment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="cases" string="Investment Cases" domain="[('is_scenario', '=', False)]"/>
+                <filter name="scenarios" string="Scenarios" domain="[('is_scenario', '=', True)]"/>
+                <filter name="approved" string="Approved / Acquired" domain="[('state', 'in', ('approved', 'acquired'))]"/>
+                <filter name="feasibility" string="Feasibility (draft / review)" domain="[('state', 'in', ('draft', 'under_review'))]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_re_investment" model="ir.actions.act_window">
+        <field name="name">Investment Opportunities</field>
+        <field name="res_model">re.investment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_cases': 1}</field>
+    </record>
+    <record id="action_re_feasibility" model="ir.actions.act_window">
+        <field name="name">Feasibility Studies</field>
+        <field name="res_model">re.investment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_feasibility': 1}</field>
+    </record>
+    <record id="action_re_investment_portfolio" model="ir.actions.act_window">
+        <field name="name">Investment Portfolio</field>
+        <field name="res_model">re.investment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_approved': 1}</field>
+    </record>
+</odoo>

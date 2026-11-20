@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_billing_schedule_search" model="ir.ui.view">
+        <field name="name">re.billing.schedule.search</field>
+        <field name="model">re.billing.schedule</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="lease_id"/>
+                <field name="tenant_id"/>
+                <field name="property_id"/>
+                <field name="invoice_id"/>
+                <filter name="pending" string="To Invoice" domain="[('state', '=', 'pending')]"/>
+                <filter name="due" string="Due Now" domain="[('state', '=', 'pending'), ('invoice_date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="late" string="Billing Overdue" domain="[('is_late', '=', True)]"/>
+                <filter name="invoiced" string="Invoiced" domain="[('state', '=', 'invoiced')]"/>
+                <filter name="waived" string="Waived / Rent-free" domain="[('state', '=', 'waived')]"/>
+                <separator/>
+                <filter name="rent" string="Rent" domain="[('charge_type', '=', 'rent')]"/>
+                <filter name="sc" string="Service Charge" domain="[('charge_type', '=', 'service_charge')]"/>
+                <group>
+                    <filter name="group_period" string="Invoice Month" context="{'group_by': 'invoice_date:month'}"/>
+                    <filter name="g_lease" string="Lease" context="{'group_by': 'lease_id'}"/>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_type" string="Charge Type" context="{'group_by': 'charge_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_billing_schedule_list" model="ir.ui.view">
+        <field name="name">re.billing.schedule.list</field>
+        <field name="model">re.billing.schedule</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-muted="state == 'waived'" decoration-success="state == 'invoiced'">
+                <field name="lease_id"/>
+                <field name="tenant_id" optional="show"/>
+                <field name="property_id" optional="show"/>
+                <field name="charge_type"/>
+                <field name="name"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="invoice_date"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="explanation" optional="hide"/>
+                <field name="invoice_id"/>
+                <field name="payment_state" widget="badge" optional="show"/>
+                <field name="state" widget="badge" decoration-warning="state == 'pending'" decoration-success="state == 'invoiced'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_billing_schedule_pivot" model="ir.ui.view">
+        <field name="name">re.billing.schedule.pivot</field>
+        <field name="model">re.billing.schedule</field>
+        <field name="arch" type="xml">
+            <pivot string="Billing">
+                <field name="property_id" type="row"/>
+                <field name="invoice_date" interval="month" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_re_billing_schedule" model="ir.actions.act_window">
+        <field name="name">Rental Billing Schedule</field>
+        <field name="res_model">re.billing.schedule</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'search_default_due': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">No billing obligations</p>
+            <p>Billing obligations are generated from active leases. Use "Run Billing" to create native customer invoices; running it twice never duplicates an invoice.</p>
+        </field>
+    </record>
+
+    <record id="action_server_re_invoice_selected" model="ir.actions.server">
+        <field name="name">Create Invoices</field>
+        <field name="model_id" ref="model_re_billing_schedule"/>
+        <field name="binding_model_id" ref="model_re_billing_schedule"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('real_estate_lifecycle.group_re_accountant'))]"/>
+        <field name="state">code</field>
+        <field name="code">moves = records._re_create_invoices()
+if moves:
+    action = {'type': 'ir.actions.act_window', 'res_model': 'account.move', 'view_mode': 'list,form', 'domain': [('id', 'in', moves.ids)], 'name': 'Rental Invoices'}</field>
+    </record>
+
+    <record id="view_re_billing_run_list" model="ir.ui.view">
+        <field name="name">re.billing.run.list</field>
+        <field name="model">re.billing.run</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="date_to"/>
+                <field name="user_id"/>
+                <field name="invoice_count"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_billing_run_form" model="ir.ui.view">
+        <field name="name">re.billing.run.form</field>
+        <field name="model">re.billing.run</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="invoice_count" widget="statinfo" string="Invoices Created"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <field name="date"/>
+                        <field name="date_to"/>
+                        <field name="user_id"/>
+                        <field name="state"/>
+                    </group>
+                    <separator string="Errors" invisible="not error_log"/>
+                    <field name="error_log" invisible="not error_log"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_billing_run" model="ir.actions.act_window">
+        <field name="name">Billing Runs</field>
+        <field name="res_model">re.billing.run</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Turnover -->
+    <record id="view_re_turnover_list" model="ir.ui.view">
+        <field name="name">re.turnover.report.list</field>
+        <field name="model">re.turnover.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="lease_id"/>
+                <field name="tenant_id"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="gross_sales" sum="Sales"/>
+                <field name="turnover_rent" sum="Turnover Rent"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_turnover_form" model="ir.ui.view">
+        <field name="name">re.turnover.report.form</field>
+        <field name="model">re.turnover.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_verify" type="object" string="Verify &amp; Calculate" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" class="btn-primary" invisible="state != 'verified'" groups="real_estate_lifecycle.group_re_accountant"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="lease_id" readonly="state != 'draft'"/>
+                            <field name="period_start" readonly="state != 'draft'"/>
+                            <field name="period_end" readonly="state != 'draft'"/>
+                            <field name="gross_sales" readonly="state != 'draft'"/>
+                            <field name="source"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="rate"/>
+                            <field name="breakpoint"/>
+                            <field name="mode"/>
+                            <field name="base_rent_billed"/>
+                            <field name="turnover_rent"/>
+                            <field name="verified_by_id"/>
+                            <field name="verified_date"/>
+                            <field name="invoice_id"/>
+                        </group>
+                    </group>
+                    <field name="calculation_note"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_turnover" model="ir.actions.act_window">
+        <field name="name">Turnover Reports</field>
+        <field name="res_model">re.turnover.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

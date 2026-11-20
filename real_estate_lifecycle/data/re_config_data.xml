@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="analytic_plan_property" model="account.analytic.plan">
+            <field name="name">Real Estate Properties</field>
+            <field name="default_applicability">optional</field>
+        </record>
+        <record id="analytic_plan_building" model="account.analytic.plan">
+            <field name="name">Real Estate Buildings</field>
+            <field name="default_applicability">optional</field>
+        </record>
+        <record id="area_unit_sqm" model="re.area.unit">
+            <field name="name">Square metre (m²)</field>
+            <field name="code">sqm</field>
+            <field name="factor_to_sqm" eval="1.0"/>
+            <field name="sequence" eval="1"/>
+        </record>
+        <record id="area_unit_sqft" model="re.area.unit">
+            <field name="name">Square foot (ft²)</field>
+            <field name="code">sqft</field>
+            <field name="factor_to_sqm" eval="0.09290304"/>
+            <field name="sequence" eval="2"/>
+        </record>
+        <record id="area_unit_acre" model="re.area.unit">
+            <field name="name">Acre</field>
+            <field name="code">acre</field>
+            <field name="factor_to_sqm" eval="4046.8564224"/>
+            <field name="sequence" eval="3"/>
+        </record>
+        <record id="area_unit_ha" model="re.area.unit">
+            <field name="name">Hectare</field>
+            <field name="code">ha</field>
+            <field name="factor_to_sqm" eval="10000.0"/>
+            <field name="sequence" eval="4"/>
+        </record>
+        <record id="property_type_residential" model="re.property.type">
+            <field name="name">Residential Property</field>
+            <field name="code">RESIDENTIAL</field>
+            <field name="category">residential</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="0"/>
+        </record>
+        <record id="property_type_apartment" model="re.property.type">
+            <field name="name">Apartment Building</field>
+            <field name="code">APARTMENT</field>
+            <field name="category">residential</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="10"/>
+        </record>
+        <record id="property_type_estate" model="re.property.type">
+            <field name="name">Residential Estate</field>
+            <field name="code">ESTATE</field>
+            <field name="category">residential</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="20"/>
+        </record>
+        <record id="property_type_commercial" model="re.property.type">
+            <field name="name">Commercial Building</field>
+            <field name="code">COMMERCIAL</field>
+            <field name="category">commercial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="30"/>
+        </record>
+        <record id="property_type_office" model="re.property.type">
+            <field name="name">Office Building</field>
+            <field name="code">OFFICE</field>
+            <field name="category">commercial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="40"/>
+        </record>
+        <record id="property_type_mall" model="re.property.type">
+            <field name="name">Shopping Mall</field>
+            <field name="code">MALL</field>
+            <field name="category">commercial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="50"/>
+        </record>
+        <record id="property_type_retail" model="re.property.type">
+            <field name="name">Retail Shops</field>
+            <field name="code">RETAIL</field>
+            <field name="category">commercial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="60"/>
+        </record>
+        <record id="property_type_industrial" model="re.property.type">
+            <field name="name">Industrial Building</field>
+            <field name="code">INDUSTRIAL</field>
+            <field name="category">industrial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="70"/>
+        </record>
+        <record id="property_type_warehouse" model="re.property.type">
+            <field name="name">Warehouse</field>
+            <field name="code">WAREHOUSE</field>
+            <field name="category">industrial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="80"/>
+        </record>
+        <record id="property_type_ind_park" model="re.property.type">
+            <field name="name">Industrial Park</field>
+            <field name="code">IND_PARK</field>
+            <field name="category">industrial</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="90"/>
+        </record>
+        <record id="property_type_hotel" model="re.property.type">
+            <field name="name">Hotel</field>
+            <field name="code">HOTEL</field>
+            <field name="category">hospitality</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="100"/>
+        </record>
+        <record id="property_type_serviced" model="re.property.type">
+            <field name="name">Serviced Apartments</field>
+            <field name="code">SERVICED</field>
+            <field name="category">hospitality</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="110"/>
+        </record>
+        <record id="property_type_mixed" model="re.property.type">
+            <field name="name">Mixed-use Property</field>
+            <field name="code">MIXED</field>
+            <field name="category">mixed</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="120"/>
+        </record>
+        <record id="property_type_land" model="re.property.type">
+            <field name="name">Undeveloped Land</field>
+            <field name="code">LAND</field>
+            <field name="category">land</field>
+            <field name="is_land" eval="True"/>
+            <field name="sequence" eval="130"/>
+        </record>
+        <record id="property_type_res_plots" model="re.property.type">
+            <field name="name">Residential Plots</field>
+            <field name="code">RES_PLOTS</field>
+            <field name="category">land</field>
+            <field name="is_land" eval="True"/>
+            <field name="sequence" eval="140"/>
+        </record>
+        <record id="property_type_com_land" model="re.property.type">
+            <field name="name">Commercial Land</field>
+            <field name="code">COM_LAND</field>
+            <field name="category">land</field>
+            <field name="is_land" eval="True"/>
+            <field name="sequence" eval="150"/>
+        </record>
+        <record id="property_type_special" model="re.property.type">
+            <field name="name">Special-purpose Property</field>
+            <field name="code">SPECIAL</field>
+            <field name="category">special</field>
+            <field name="is_land" eval="False"/>
+            <field name="sequence" eval="160"/>
+        </record>
+        <record id="lease_type_residential" model="re.lease.type">
+            <field name="name">Residential Tenancy</field>
+            <field name="category">residential</field>
+            <field name="default_billing_frequency">monthly</field>
+            <field name="default_notice_days" eval="30"/>
+            <field name="default_deposit_months" eval="2"/>
+        </record>
+        <record id="lease_type_commercial" model="re.lease.type">
+            <field name="name">Commercial Lease</field>
+            <field name="category">commercial</field>
+            <field name="default_billing_frequency">quarterly</field>
+            <field name="default_notice_days" eval="90"/>
+            <field name="default_deposit_months" eval="3"/>
+        </record>
+        <record id="lease_type_industrial" model="re.lease.type">
+            <field name="name">Industrial Lease</field>
+            <field name="category">industrial</field>
+            <field name="default_billing_frequency">quarterly</field>
+            <field name="default_notice_days" eval="90"/>
+            <field name="default_deposit_months" eval="3"/>
+        </record>
+        <record id="lease_type_land" model="re.lease.type">
+            <field name="name">Land Lease</field>
+            <field name="category">land</field>
+            <field name="default_billing_frequency">annual</field>
+            <field name="default_notice_days" eval="180"/>
+            <field name="default_deposit_months" eval="0"/>
+        </record>
+        <record id="lease_type_short" model="re.lease.type">
+            <field name="name">Short-term Let</field>
+            <field name="category">short_term</field>
+            <field name="default_billing_frequency">monthly</field>
+            <field name="default_notice_days" eval="7"/>
+            <field name="default_deposit_months" eval="1"/>
+        </record>
+        <record id="asset_category_elevator" model="re.asset.category">
+            <field name="name">Elevators / Lifts</field>
+            <field name="expected_life_years" eval="20"/>
+            <field name="default_criticality">critical</field>
+        </record>
+        <record id="asset_category_hvac" model="re.asset.category">
+            <field name="name">Air Conditioning (HVAC)</field>
+            <field name="expected_life_years" eval="12"/>
+            <field name="default_criticality">high</field>
+        </record>
+        <record id="asset_category_generator" model="re.asset.category">
+            <field name="name">Generators</field>
+            <field name="expected_life_years" eval="15"/>
+            <field name="default_criticality">critical</field>
+        </record>
+        <record id="asset_category_pump" model="re.asset.category">
+            <field name="name">Water Pumps</field>
+            <field name="expected_life_years" eval="10"/>
+            <field name="default_criticality">high</field>
+        </record>
+        <record id="asset_category_electrical" model="re.asset.category">
+            <field name="name">Electrical Installations</field>
+            <field name="expected_life_years" eval="25"/>
+            <field name="default_criticality">critical</field>
+        </record>
+        <record id="asset_category_fire" model="re.asset.category">
+            <field name="name">Fire Protection Systems</field>
+            <field name="expected_life_years" eval="15"/>
+            <field name="default_criticality">critical</field>
+        </record>
+        <record id="asset_category_solar" model="re.asset.category">
+            <field name="name">Solar Installations</field>
+            <field name="expected_life_years" eval="20"/>
+            <field name="default_criticality">medium</field>
+        </record>
+        <record id="asset_category_security" model="re.asset.category">
+            <field name="name">Security / CCTV / Access Control</field>
+            <field name="expected_life_years" eval="8"/>
+            <field name="default_criticality">high</field>
+        </record>
+        <record id="asset_category_plumbing" model="re.asset.category">
+            <field name="name">Plumbing Systems</field>
+            <field name="expected_life_years" eval="25"/>
+            <field name="default_criticality">medium</field>
+        </record>
+        <record id="asset_category_other" model="re.asset.category">
+            <field name="name">Other Building Equipment</field>
+            <field name="expected_life_years" eval="10"/>
+            <field name="default_criticality">medium</field>
+        </record>
+        <record id="service_category_electrical" model="re.service.category">
+            <field name="name">Electrical</field>
+        </record>
+        <record id="service_category_plumbing" model="re.service.category">
+            <field name="name">Plumbing</field>
+        </record>
+        <record id="service_category_hvac" model="re.service.category">
+            <field name="name">HVAC / Air Conditioning</field>
+        </record>
+        <record id="service_category_lifts" model="re.service.category">
+            <field name="name">Lifts &amp; Escalators</field>
+        </record>
+        <record id="service_category_civil" model="re.service.category">
+            <field name="name">Civil / Building Works</field>
+        </record>
+        <record id="service_category_cleaning" model="re.service.category">
+            <field name="name">Cleaning</field>
+        </record>
+        <record id="service_category_security" model="re.service.category">
+            <field name="name">Security Services</field>
+        </record>
+        <record id="service_category_pest" model="re.service.category">
+            <field name="name">Pest Control</field>
+        </record>
+        <record id="service_category_landscaping" model="re.service.category">
+            <field name="name">Landscaping</field>
+        </record>
+        <record id="service_category_fire" model="re.service.category">
+            <field name="name">Fire Safety</field>
+        </record>
+        <record id="service_category_generator" model="re.service.category">
+            <field name="name">Generator Servicing</field>
+        </record>
+        <record id="maintenance_category_electrical" model="re.maintenance.category">
+            <field name="name">Electrical</field>
+            <field name="service_category_id" ref="service_category_electrical"/>
+            <field name="default_priority">2</field>
+            <field name="target_days" eval="2"/>
+        </record>
+        <record id="maintenance_category_plumbing" model="re.maintenance.category">
+            <field name="name">Plumbing &amp; Water</field>
+            <field name="service_category_id" ref="service_category_plumbing"/>
+            <field name="default_priority">1</field>
+            <field name="target_days" eval="3"/>
+        </record>
+        <record id="maintenance_category_hvac" model="re.maintenance.category">
+            <field name="name">Air Conditioning</field>
+            <field name="service_category_id" ref="service_category_hvac"/>
+            <field name="default_priority">1</field>
+            <field name="target_days" eval="5"/>
+        </record>
+        <record id="maintenance_category_lifts" model="re.maintenance.category">
+            <field name="name">Lifts</field>
+            <field name="service_category_id" ref="service_category_lifts"/>
+            <field name="default_priority">3</field>
+            <field name="target_days" eval="1"/>
+        </record>
+        <record id="maintenance_category_civil" model="re.maintenance.category">
+            <field name="name">Building Fabric</field>
+            <field name="service_category_id" ref="service_category_civil"/>
+            <field name="default_priority">1</field>
+            <field name="target_days" eval="14"/>
+        </record>
+        <record id="maintenance_category_generator" model="re.maintenance.category">
+            <field name="name">Generator</field>
+            <field name="service_category_id" ref="service_category_generator"/>
+            <field name="default_priority">2</field>
+            <field name="target_days" eval="2"/>
+        </record>
+        <record id="maintenance_category_fire" model="re.maintenance.category">
+            <field name="name">Fire Safety</field>
+            <field name="service_category_id" ref="service_category_fire"/>
+            <field name="default_priority">3</field>
+            <field name="target_days" eval="1"/>
+        </record>
+        <record id="maintenance_category_general" model="re.maintenance.category">
+            <field name="name">General Repairs</field>
+            <field name="service_category_id" ref="service_category_civil"/>
+            <field name="default_priority">1</field>
+            <field name="target_days" eval="7"/>
+        </record>
+        <record id="complaint_category_water" model="re.complaint.category">
+            <field name="name">Water Supply</field>
+            <field name="maintenance_category_id" ref="maintenance_category_plumbing"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_power" model="re.complaint.category">
+            <field name="name">Electricity / Power</field>
+            <field name="maintenance_category_id" ref="maintenance_category_electrical"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_lift" model="re.complaint.category">
+            <field name="name">Lift Not Working</field>
+            <field name="maintenance_category_id" ref="maintenance_category_lifts"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_ac" model="re.complaint.category">
+            <field name="name">Air Conditioning</field>
+            <field name="maintenance_category_id" ref="maintenance_category_hvac"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_security" model="re.complaint.category">
+            <field name="name">Security</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_cleaning" model="re.complaint.category">
+            <field name="name">Cleanliness / Waste</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="True"/>
+        </record>
+        <record id="complaint_category_noise" model="re.complaint.category">
+            <field name="name">Noise / Neighbours</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="False"/>
+        </record>
+        <record id="complaint_category_repairs" model="re.complaint.category">
+            <field name="name">Repairs in Unit</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="False"/>
+        </record>
+        <record id="complaint_category_billing" model="re.complaint.category">
+            <field name="name">Billing / Invoice</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="False"/>
+        </record>
+        <record id="complaint_category_other" model="re.complaint.category">
+            <field name="name">Other</field>
+            <field name="maintenance_category_id" ref="maintenance_category_general"/>
+            <field name="is_building_wide" eval="False"/>
+        </record>
+        <record id="approval_rule_lease" model="re.approval.rule">
+            <field name="name">Lease approval</field>
+            <field name="document_type">lease</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_portfolio_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_amendment" model="re.approval.rule">
+            <field name="name">Lease amendments &amp; rental changes</field>
+            <field name="document_type">lease_amendment</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_portfolio_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_concession" model="re.approval.rule">
+            <field name="name">Rental concessions</field>
+            <field name="document_type">rent_concession</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_director"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_escalation" model="re.approval.rule">
+            <field name="name">Non-contractual rent escalations</field>
+            <field name="document_type">rent_escalation</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_portfolio_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_deposit" model="re.approval.rule">
+            <field name="name">Security deposit refunds</field>
+            <field name="document_type">deposit_refund</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_finance_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_credit" model="re.approval.rule">
+            <field name="name">Tenant credit notes / adjustments</field>
+            <field name="document_type">tenant_credit_note</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_finance_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_wo" model="re.approval.rule">
+            <field name="name">Maintenance expenditure (property manager authority)</field>
+            <field name="document_type">work_order</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_property_manager"/>
+            <field name="segregation" eval="False"/>
+        </record>
+        <record id="approval_rule_capex" model="re.approval.rule">
+            <field name="name">Capital expenditure</field>
+            <field name="document_type">capex</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_director"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_sc" model="re.approval.rule">
+            <field name="name">Service-charge budgets</field>
+            <field name="document_type">service_charge_budget</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_finance_manager"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_valuation" model="re.approval.rule">
+            <field name="name">Property valuations</field>
+            <field name="document_type">valuation</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_director"/>
+            <field name="segregation" eval="True"/>
+        </record>
+        <record id="approval_rule_investment" model="re.approval.rule">
+            <field name="name">Investment acquisitions</field>
+            <field name="document_type">investment</field>
+            <field name="min_amount" eval="0"/>
+            <field name="group_id" ref="group_re_director"/>
+            <field name="segregation" eval="True"/>
+        </record>
+    </data>
+</odoo>

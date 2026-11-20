@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="real_estate_lifecycle.PortfolioDashboard">
+        <div class="o_re_dashboard o_action h-100 overflow-auto bg-view">
+            <div class="o_re_filters d-flex flex-wrap gap-2 align-items-end p-3 border-bottom bg-100">
+                <h4 class="me-3 mb-0">Portfolio Dashboard</h4>
+                <t t-set="meta" t-value="state.data and state.data.filters_meta"/>
+                <label class="small">From<input type="date" class="form-control form-control-sm" name="date_from" t-att-value="state.filters.date_from" t-on-change="onFilter"/></label>
+                <label class="small">To<input type="date" class="form-control form-control-sm" name="date_to" t-att-value="state.filters.date_to" t-on-change="onFilter"/></label>
+                <t t-if="meta">
+                    <label class="small" t-if="meta.companies.length > 1">Company
+                        <select class="form-select form-select-sm" name="company_id" t-on-change="onFilter">
+                            <option value="">All allowed</option>
+                            <t t-foreach="meta.companies" t-as="o" t-key="o.id"><option t-att-value="o.id" t-att-selected="state.filters.company_id == o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Portfolio
+                        <select class="form-select form-select-sm" name="portfolio_id" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="meta.portfolios" t-as="o" t-key="o.id"><option t-att-value="o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Property
+                        <select class="form-select form-select-sm" name="property_id" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="meta.properties" t-as="o" t-key="o.id"><option t-att-value="o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Building
+                        <select class="form-select form-select-sm" name="building_id" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="buildings" t-as="o" t-key="o.id"><option t-att-value="o.id" t-att-selected="state.filters.building_id == o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Type
+                        <select class="form-select form-select-sm" name="property_type_id" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="meta.types" t-as="o" t-key="o.id"><option t-att-value="o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Region
+                        <select class="form-select form-select-sm" name="region" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="meta.regions" t-as="o" t-key="o"><option t-att-value="o" t-esc="o"/></t>
+                        </select>
+                    </label>
+                    <label class="small">Manager
+                        <select class="form-select form-select-sm" name="manager_id" t-on-change="onFilter">
+                            <option value="">All</option>
+                            <t t-foreach="meta.managers" t-as="o" t-key="o.id"><option t-att-value="o.id" t-esc="o.name"/></t>
+                        </select>
+                    </label>
+                </t>
+                <button class="btn btn-sm btn-secondary" t-on-click="() => this.state.showDefinitions = !this.state.showDefinitions">KPI definitions</button>
+                <button class="btn btn-sm btn-outline-primary" t-on-click="runChecks">Run control checks</button>
+            </div>
+
+            <div t-if="state.loading and !state.data" class="p-5 text-center text-muted">Loading…</div>
+            <div t-if="state.data" class="p-3">
+                <t t-set="k" t-value="state.data.kpis"/>
+                <p class="text-muted small mb-2">Period <t t-esc="state.data.period.date_from"/> → <t t-esc="state.data.period.date_to"/> (<t t-esc="state.data.period.days"/> days) · amounts in <t t-esc="state.data.currency.name"/> · hover a figure for its definition</p>
+
+                <div t-if="state.showDefinitions" class="alert alert-light border small">
+                    <dl class="mb-0">
+                        <t t-foreach="Object.entries(state.data.definitions)" t-as="d" t-key="d[0]"><dt t-esc="d[0]"/><dd t-esc="d[1]"/></t>
+                    </dl>
+                </div>
+
+                <h6 class="text-uppercase text-muted mt-2">Portfolio &amp; Occupancy</h6>
+                <div class="o_re_cards">
+                    <div class="o_re_card" t-on-click="openProperties" t-att-title="def('properties')"><span>Properties</span><b t-esc="k.properties"/></div>
+                    <div class="o_re_card" t-on-click="() => this.openUnits()" t-att-title="def('units')"><span>Rentable units</span><b t-esc="k.units"/></div>
+                    <div class="o_re_card" t-att-title="def('area')"><span>Lettable area</span><b><t t-esc="num(k.area)"/> m²</b></div>
+                    <div class="o_re_card" t-on-click="openOccupied" t-att-title="def('occupied')"><span>Occupied units</span><b t-esc="k.occupied"/></div>
+                    <div class="o_re_card" t-on-click="openVacant" t-att-title="def('vacant')"><span>Vacant units</span><b t-esc="k.vacant"/></div>
+                    <div class="o_re_card" t-att-title="def('physical_occupancy')"><span>Physical occupancy</span><b t-esc="pct(k.physical_occupancy)"/></div>
+                    <div class="o_re_card" t-att-title="def('area_occupancy')"><span>Area-weighted occupancy</span><b t-esc="pct(k.area_occupancy)"/></div>
+                    <div class="o_re_card" t-att-title="def('economic_occupancy')"><span>Economic occupancy</span><b t-esc="pct(k.economic_occupancy)"/><small>effective rent <t t-esc="money(k.effective_rent)"/> / GPR <t t-esc="money(k.gpr)"/></small></div>
+                    <div class="o_re_card" t-att-title="def('value')"><span>Property value</span><b t-esc="money(k.value)"/></div>
+                </div>
+
+                <h6 class="text-uppercase text-muted mt-3">Revenue &amp; Collections</h6>
+                <div class="o_re_cards">
+                    <div class="o_re_card" t-on-click="openInvoices" t-att-title="def('invoiced')"><span>Rental income invoiced</span><b t-esc="money(k.invoiced)"/></div>
+                    <div class="o_re_card" t-att-title="def('collected')"><span>Collected &amp; allocated</span><b t-esc="money(k.collected)"/></div>
+                    <div class="o_re_card" t-att-title="def('total_collections')"><span>Total tenant receipts</span><b t-esc="money(k.total_collections)"/></div>
+                    <div class="o_re_card" t-att-title="def('collection_efficiency')"><span>Collection efficiency (period)</span><b t-esc="pct(k.collection_efficiency)"/><small><t t-esc="money(k.paid_in_period)"/> of <t t-esc="money(k.due_in_period)"/> due</small></div>
+                    <div class="o_re_card o_re_warn" t-on-click="openAgeing" t-att-title="def('outstanding')"><span>Outstanding rent</span><b t-esc="money(k.outstanding)"/><small>of which disputed <t t-esc="money(k.disputed)"/></small></div>
+                    <div class="o_re_card" t-on-click="openServiceCharges" t-att-title="def('service_charge')"><span>Service charges</span><b><t t-esc="money(k.sc_actual)"/></b><small>budget <t t-esc="money(k.sc_budget)"/> · billed <t t-esc="money(k.sc_billed)"/> · collected <t t-esc="money(k.sc_collected)"/></small></div>
+                </div>
+
+                <h6 class="text-uppercase text-muted mt-3">Profitability</h6>
+                <div class="o_re_cards">
+                    <div class="o_re_card" t-on-click="openLedger" t-att-title="def('noi')"><span>Net Operating Income</span><b t-esc="money(k.noi)"/><small>revenue <t t-esc="money(k.revenue)"/></small></div>
+                    <div class="o_re_card" t-on-click="openLedger" t-att-title="def('opex')"><span>Operating expenses</span><b t-esc="money(k.opex)"/></div>
+                    <div class="o_re_card" t-att-title="def('gross_yield')"><span>Gross yield (annualised)</span><b t-esc="pct(k.gross_yield)"/></div>
+                    <div class="o_re_card" t-att-title="def('net_yield')"><span>Net yield (annualised)</span><b t-esc="pct(k.net_yield)"/></div>
+                    <div class="o_re_card" t-on-click="openMaintenance" t-att-title="def('maintenance')"><span>Maintenance expenditure</span><b t-esc="money(k.maintenance)"/></div>
+                    <div class="o_re_card" t-att-title="def('capex_variance')"><span>Capex variance</span><b t-esc="money(k.capex_variance)"/><small>actual <t t-esc="money(k.capex_actual)"/> vs approved <t t-esc="money(k.capex_approved)"/></small></div>
+                </div>
+
+                <h6 class="text-uppercase text-muted mt-3">Attention Required</h6>
+                <div class="o_re_cards">
+                    <div class="o_re_card o_re_warn" t-on-click="openExpiring" t-att-title="def('expirations')"><span>Leases expiring ≤ 90 days</span><b t-esc="k.expirations"/></div>
+                    <div class="o_re_card o_re_danger" t-on-click="openOverdueWos" t-att-title="def('overdue_wo')"><span>Overdue work orders</span><b t-esc="k.overdue_wo"/><small><t t-esc="k.open_wo"/> open</small></div>
+                    <div class="o_re_card o_re_danger" t-on-click="openExceptions"><span>Open exceptions</span><b t-esc="k.open_exceptions"/><small>at risk <t t-esc="money(k.exception_amount)"/></small></div>
+                </div>
+
+                <div class="row mt-3 g-3">
+                    <div class="col-lg-6">
+                        <div class="card"><div class="card-header fw-bold">Tenant ageing</div>
+                            <table class="table table-sm mb-0">
+                                <thead><tr><th>Current</th><th>1-30</th><th>31-60</th><th>61-90</th><th>90+</th><th>Disputed</th></tr></thead>
+                                <tbody><tr>
+                                    <td t-esc="money(state.data.ageing.current)"/><td t-esc="money(state.data.ageing['1_30'])"/><td t-esc="money(state.data.ageing['31_60'])"/>
+                                    <td t-esc="money(state.data.ageing['61_90'])"/><td class="text-danger" t-esc="money(state.data.ageing['90_plus'])"/><td class="text-info" t-esc="money(state.data.ageing.disputed)"/>
+                                </tr></tbody>
+                            </table>
+                        </div>
+                        <div class="card mt-3"><div class="card-header fw-bold">Top arrears</div>
+                            <table class="table table-sm table-hover mb-0">
+                                <tbody>
+                                    <tr t-foreach="state.data.arrears" t-as="a" t-key="a.id" class="cursor-pointer" t-on-click="() => this.openRecord('res.partner', a.id)"><td t-esc="a.name"/><td class="text-end" t-esc="money(a.amount)"/></tr>
+                                    <tr t-if="!state.data.arrears.length"><td class="text-muted">No overdue tenants.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card"><div class="card-header fw-bold">Exceptions requiring attention</div>
+                            <table class="table table-sm table-hover mb-0">
+                                <tbody>
+                                    <tr t-foreach="state.data.exceptions" t-as="e" t-key="e.id" class="cursor-pointer" t-on-click="() => this.openRecord('re.exception', e.id)" t-att-title="e.description">
+                                        <td><span t-attf-class="badge text-bg-#{e.severity == 'critical' ? 'danger' : e.severity == 'high' ? 'warning' : 'secondary'}" t-esc="e.severity"/></td>
+                                        <td t-esc="e.check"/><td t-esc="e.property"/><td class="text-end" t-esc="money(e.amount)"/><td t-esc="e.user"/>
+                                    </tr>
+                                    <tr t-if="!state.data.exceptions.length"><td class="text-muted">No open exceptions.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card mt-3"><div class="card-header fw-bold">Expiring leases</div>
+                            <table class="table table-sm table-hover mb-0">
+                                <tbody>
+                                    <tr t-foreach="state.data.expiring" t-as="l" t-key="l.id" class="cursor-pointer" t-on-click="() => this.openRecord('re.lease', l.id)">
+                                        <td t-esc="l.name"/><td t-esc="l.tenant"/><td t-esc="l.property"/><td t-esc="l.end"/><td class="text-end"><t t-esc="l.days"/> d</td>
+                                    </tr>
+                                    <tr t-if="!state.data.expiring.length"><td class="text-muted">None.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3"><div class="card-header fw-bold">Property comparison <small class="text-muted fw-normal">(grouped by property category; NOI per m² normalises for size)</small></div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead><tr><th>Property</th><th>Type</th><th class="text-end">Units</th><th class="text-end">Occ.</th><th class="text-end">Area occ.</th><th class="text-end">Invoiced</th><th class="text-end">Collected</th><th class="text-end">Outstanding</th><th class="text-end">Opex</th><th class="text-end">NOI</th><th class="text-end">NOI/m²</th><th class="text-end">Maint.</th><th class="text-end">Net yield</th><th class="text-end">Top tenant</th><th class="text-end">Avg vacancy</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="state.data.comparison" t-as="r" t-key="r.id" class="cursor-pointer" t-on-click="() => this.openRecord('re.property', r.id)">
+                                    <td><t t-esc="r.code"/> <t t-esc="r.name"/></td><td t-esc="r.type"/>
+                                    <td class="text-end" t-esc="r.units"/><td class="text-end" t-esc="pct(r.occupancy)"/><td class="text-end" t-esc="pct(r.area_occupancy)"/>
+                                    <td class="text-end" t-esc="money(r.invoiced)"/><td class="text-end" t-esc="money(r.collected)"/><td class="text-end" t-esc="money(r.outstanding)"/>
+                                    <td class="text-end" t-esc="money(r.opex)"/><td class="text-end fw-bold" t-esc="money(r.noi)"/><td class="text-end" t-esc="num(r.noi_per_sqm, 0)"/>
+                                    <td class="text-end" t-esc="money(r.maintenance)"/><td class="text-end" t-esc="pct(r.net_yield)"/><td class="text-end" t-esc="pct(r.tenant_concentration)"/><td class="text-end"><t t-esc="num(r.avg_vacancy_days)"/> d</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

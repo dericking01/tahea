@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cron_re_lease_lifecycle" model="ir.cron">
+            <field name="name">Real Estate: Lease lifecycle, expiry alerts and escalations</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_lease_lifecycle()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="priority">5</field>
+        </record>
+        <record id="cron_re_billing" model="ir.cron">
+            <field name="name">Real Estate: Rental billing run (idempotent)</field>
+            <field name="model_id" ref="model_re_billing_schedule"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_generate_rental_invoices()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="priority">6</field>
+        </record>
+        <record id="cron_re_exceptions" model="ir.cron">
+            <field name="name">Real Estate: Revenue assurance &amp; control checks</field>
+            <field name="model_id" ref="model_re_exception"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_run_checks()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="priority">8</field>
+        </record>
+        <record id="cron_re_collections" model="ir.cron">
+            <field name="name">Real Estate: Collection cases and promises</field>
+            <field name="model_id" ref="model_re_collection_case"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_collections()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+        <record id="cron_re_preventive" model="ir.cron">
+            <field name="name">Real Estate: Preventive maintenance scheduler</field>
+            <field name="model_id" ref="model_re_maintenance_plan"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_generate()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+        <record id="cron_re_vendor_contracts" model="ir.cron">
+            <field name="name">Real Estate: Vendor contract expiry</field>
+            <field name="model_id" ref="model_re_vendor_contract"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_contract_expiry()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+    </data>
+</odoo>

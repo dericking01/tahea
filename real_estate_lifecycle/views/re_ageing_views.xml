@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_ageing_search" model="ir.ui.view">
+        <field name="name">re.tenant.ageing.search</field>
+        <field name="model">re.tenant.ageing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="manager_id"/>
+                <field name="owner_id"/>
+                <filter name="overdue" string="Overdue" domain="[('days_overdue', '&gt;', 0), ('is_unallocated', '=', False)]"/>
+                <filter name="disputed" string="Disputed" domain="[('is_disputed', '=', True)]"/>
+                <filter name="confirmed" string="Confirmed (not disputed)" domain="[('is_disputed', '=', False)]"/>
+                <filter name="credits" string="Unallocated Credits" domain="[('is_unallocated', '=', True)]"/>
+                <filter name="no_deposit" string="Exclude Deposits" domain="[('is_deposit', '=', False)]"/>
+                <group>
+                    <filter name="g_tenant" string="Tenant" context="{'group_by': 'partner_id'}"/>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_building" string="Building" context="{'group_by': 'building_id'}"/>
+                    <filter name="g_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
+                    <filter name="g_manager" string="Property Manager" context="{'group_by': 'manager_id'}"/>
+                    <filter name="g_company" string="Company" context="{'group_by': 'company_id'}"/>
+                    <filter name="g_bucket" string="Bucket" context="{'group_by': 'bucket'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_ageing_list" model="ir.ui.view">
+        <field name="name">re.tenant.ageing.list</field>
+        <field name="model">re.tenant.ageing</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" decoration-info="is_disputed" decoration-muted="is_unallocated">
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="move_id"/>
+                <field name="date"/>
+                <field name="date_maturity"/>
+                <field name="days_overdue"/>
+                <field name="amount_current" sum="Current"/>
+                <field name="amount_1_30" sum="1-30"/>
+                <field name="amount_31_60" sum="31-60"/>
+                <field name="amount_61_90" sum="61-90"/>
+                <field name="amount_90_plus" sum="90+"/>
+                <field name="amount_disputed" sum="Disputed"/>
+                <field name="amount_residual" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="is_disputed" column_invisible="1"/>
+                <field name="is_unallocated" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_ageing_pivot" model="ir.ui.view">
+        <field name="name">re.tenant.ageing.pivot</field>
+        <field name="model">re.tenant.ageing</field>
+        <field name="arch" type="xml">
+            <pivot string="Tenant Ageing" disable_linking="0">
+                <field name="partner_id" type="row"/>
+                <field name="amount_current" type="measure"/>
+                <field name="amount_1_30" type="measure"/>
+                <field name="amount_31_60" type="measure"/>
+                <field name="amount_61_90" type="measure"/>
+                <field name="amount_90_plus" type="measure"/>
+                <field name="amount_disputed" type="measure"/>
+                <field name="amount_residual" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_re_ageing" model="ir.actions.act_window">
+        <field name="name">Tenant Accounts &amp; Ageing</field>
+        <field name="res_model">re.tenant.ageing</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="help" type="html"><p>Open tenant receivables from native Accounting, bucketed by days past due. Disputed invoices are separated from confirmed overdue debt.</p></field>
+    </record>
+</odoo>

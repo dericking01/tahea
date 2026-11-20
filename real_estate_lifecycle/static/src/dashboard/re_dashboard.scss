@@ -1,0 +1,45 @@
+.o_re_dashboard {
+    .o_re_filters label {
+        display: flex;
+        flex-direction: column;
+        min-width: 120px;
+    }
+    .o_re_cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 0.6rem;
+    }
+    .o_re_card {
+        border: 1px solid $border-color;
+        border-left: 4px solid $o-action;
+        border-radius: 6px;
+        padding: 0.6rem 0.8rem;
+        background: $o-view-background-color;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        span {
+            font-size: 0.8rem;
+            color: $text-muted;
+        }
+        b {
+            font-size: 1.35rem;
+        }
+        small {
+            color: $text-muted;
+            font-size: 0.72rem;
+        }
+        &:hover {
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+        &.o_re_warn {
+            border-left-color: $warning;
+        }
+        &.o_re_danger {
+            border-left-color: $danger;
+        }
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+}

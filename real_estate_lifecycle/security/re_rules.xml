@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="rule_re_portfolio_company" model="ir.rule">
+            <field name="name">re.portfolio: multi-company</field>
+            <field name="model_id" ref="model_re_portfolio"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_property_company" model="ir.rule">
+            <field name="name">re.property: multi-company</field>
+            <field name="model_id" ref="model_re_property"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_building_company" model="ir.rule">
+            <field name="name">re.building: multi-company</field>
+            <field name="model_id" ref="model_re_building"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_floor_company" model="ir.rule">
+            <field name="name">re.floor: multi-company</field>
+            <field name="model_id" ref="model_re_floor"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_unit_company" model="ir.rule">
+            <field name="name">re.unit: multi-company</field>
+            <field name="model_id" ref="model_re_unit"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_lease_company" model="ir.rule">
+            <field name="name">re.lease: multi-company</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_billing_schedule_company" model="ir.rule">
+            <field name="name">re.billing.schedule: multi-company</field>
+            <field name="model_id" ref="model_re_billing_schedule"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_security_deposit_company" model="ir.rule">
+            <field name="name">re.security.deposit: multi-company</field>
+            <field name="model_id" ref="model_re_security_deposit"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_service_charge_budget_company" model="ir.rule">
+            <field name="name">re.service.charge.budget: multi-company</field>
+            <field name="model_id" ref="model_re_service_charge_budget"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_meter_company" model="ir.rule">
+            <field name="name">re.meter: multi-company</field>
+            <field name="model_id" ref="model_re_meter"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_meter_reading_company" model="ir.rule">
+            <field name="name">re.meter.reading: multi-company</field>
+            <field name="model_id" ref="model_re_meter_reading"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_collection_case_company" model="ir.rule">
+            <field name="name">re.collection.case: multi-company</field>
+            <field name="model_id" ref="model_re_collection_case"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_exception_company" model="ir.rule">
+            <field name="name">re.exception: multi-company</field>
+            <field name="model_id" ref="model_re_exception"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_tenant_ticket_company" model="ir.rule">
+            <field name="name">re.tenant.ticket: multi-company</field>
+            <field name="model_id" ref="model_re_tenant_ticket"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_building_issue_company" model="ir.rule">
+            <field name="name">re.building.issue: multi-company</field>
+            <field name="model_id" ref="model_re_building_issue"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_announcement_company" model="ir.rule">
+            <field name="name">re.announcement: multi-company</field>
+            <field name="model_id" ref="model_re_announcement"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_work_order_company" model="ir.rule">
+            <field name="name">re.work.order: multi-company</field>
+            <field name="model_id" ref="model_re_work_order"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_maintenance_plan_company" model="ir.rule">
+            <field name="name">re.maintenance.plan: multi-company</field>
+            <field name="model_id" ref="model_re_maintenance_plan"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_vendor_contract_company" model="ir.rule">
+            <field name="name">re.vendor.contract: multi-company</field>
+            <field name="model_id" ref="model_re_vendor_contract"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_tenant_ageing_company" model="ir.rule">
+            <field name="name">re.tenant.ageing: multi-company</field>
+            <field name="model_id" ref="model_re_tenant_ageing"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_investment_company" model="ir.rule">
+            <field name="name">re.investment: multi-company</field>
+            <field name="model_id" ref="model_re_investment"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_utility_tariff_company" model="ir.rule">
+            <field name="name">re.utility.tariff: multi-company</field>
+            <field name="model_id" ref="model_re_utility_tariff"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_turnover_report_company" model="ir.rule">
+            <field name="name">re.turnover.report: multi-company</field>
+            <field name="model_id" ref="model_re_turnover_report"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_property_ownership_company" model="ir.rule">
+            <field name="name">re.property.ownership: multi-company</field>
+            <field name="model_id" ref="model_re_property_ownership"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_property_valuation_company" model="ir.rule">
+            <field name="name">re.property.valuation: multi-company</field>
+            <field name="model_id" ref="model_re_property_valuation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_land_encumbrance_company" model="ir.rule">
+            <field name="name">re.land.encumbrance: multi-company</field>
+            <field name="model_id" ref="model_re_land_encumbrance"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_lease_escalation_company" model="ir.rule">
+            <field name="name">re.lease.escalation: multi-company</field>
+            <field name="model_id" ref="model_re_lease_escalation"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_lease_amendment_company" model="ir.rule">
+            <field name="name">re.lease.amendment: multi-company</field>
+            <field name="model_id" ref="model_re_lease_amendment"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_re_property_staff" model="ir.rule">
+            <field name="name">re.property: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_property"/>
+            <field name="domain_force">['|', '|', ('manager_id', '=', user.id), ('user_ids', 'in', [user.id]), ('portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_property_tech" model="ir.rule">
+            <field name="name">re.property: technician</field>
+            <field name="model_id" ref="model_re_property"/>
+            <field name="domain_force">['|', '|', '|', ('manager_id', '=', user.id), ('user_ids', 'in', [user.id]), ('portfolio_id.manager_id', '=', user.id), ('work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_property_investor" model="ir.rule">
+            <field name="name">re.property: investor</field>
+            <field name="model_id" ref="model_re_property"/>
+            <field name="domain_force">[('investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_property_all" model="ir.rule">
+            <field name="name">re.property: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_property"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_building_staff" model="ir.rule">
+            <field name="name">re.building: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_building"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_building_tech" model="ir.rule">
+            <field name="name">re.building: technician</field>
+            <field name="model_id" ref="model_re_building"/>
+            <field name="domain_force">['|', ('property_id.work_order_ids.technician_id', '=', user.id), ('property_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_building_investor" model="ir.rule">
+            <field name="name">re.building: investor</field>
+            <field name="model_id" ref="model_re_building"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_building_all" model="ir.rule">
+            <field name="name">re.building: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_building"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_floor_staff" model="ir.rule">
+            <field name="name">re.floor: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_floor"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_floor_tech" model="ir.rule">
+            <field name="name">re.floor: technician</field>
+            <field name="model_id" ref="model_re_floor"/>
+            <field name="domain_force">['|', ('property_id.work_order_ids.technician_id', '=', user.id), ('property_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_floor_investor" model="ir.rule">
+            <field name="name">re.floor: investor</field>
+            <field name="model_id" ref="model_re_floor"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_floor_all" model="ir.rule">
+            <field name="name">re.floor: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_floor"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_unit_staff" model="ir.rule">
+            <field name="name">re.unit: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_unit"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_unit_tech" model="ir.rule">
+            <field name="name">re.unit: technician</field>
+            <field name="model_id" ref="model_re_unit"/>
+            <field name="domain_force">['|', ('property_id.work_order_ids.technician_id', '=', user.id), ('property_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_unit_investor" model="ir.rule">
+            <field name="name">re.unit: investor</field>
+            <field name="model_id" ref="model_re_unit"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_unit_all" model="ir.rule">
+            <field name="name">re.unit: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_unit"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_property_ownership_staff" model="ir.rule">
+            <field name="name">re.property.ownership: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_property_ownership"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_property_ownership_investor" model="ir.rule">
+            <field name="name">re.property.ownership: investor</field>
+            <field name="model_id" ref="model_re_property_ownership"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_property_ownership_all" model="ir.rule">
+            <field name="name">re.property.ownership: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_property_ownership"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_property_valuation_staff" model="ir.rule">
+            <field name="name">re.property.valuation: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_property_valuation"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_property_valuation_investor" model="ir.rule">
+            <field name="name">re.property.valuation: investor</field>
+            <field name="model_id" ref="model_re_property_valuation"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_property_valuation_all" model="ir.rule">
+            <field name="name">re.property.valuation: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_property_valuation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_land_encumbrance_staff" model="ir.rule">
+            <field name="name">re.land.encumbrance: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_land_encumbrance"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_land_encumbrance_investor" model="ir.rule">
+            <field name="name">re.land.encumbrance: investor</field>
+            <field name="model_id" ref="model_re_land_encumbrance"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_re_land_encumbrance_all" model="ir.rule">
+            <field name="name">re.land.encumbrance: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_land_encumbrance"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_lease_staff" model="ir.rule">
+            <field name="name">re.lease: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_lease_tech" model="ir.rule">
+            <field name="name">re.lease: technician</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="domain_force">[('unit_ids.work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_lease_all" model="ir.rule">
+            <field name="name">re.lease: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_lease_charge_staff" model="ir.rule">
+            <field name="name">re.lease.charge: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_lease_charge"/>
+            <field name="domain_force">['|', '|', ('lease_id.property_id.manager_id', '=', user.id), ('lease_id.property_id.user_ids', 'in', [user.id]), ('lease_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_lease_charge_all" model="ir.rule">
+            <field name="name">re.lease.charge: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_lease_charge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_lease_escalation_staff" model="ir.rule">
+            <field name="name">re.lease.escalation: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_lease_escalation"/>
+            <field name="domain_force">['|', '|', ('lease_id.property_id.manager_id', '=', user.id), ('lease_id.property_id.user_ids', 'in', [user.id]), ('lease_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_lease_escalation_all" model="ir.rule">
+            <field name="name">re.lease.escalation: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_lease_escalation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_lease_amendment_staff" model="ir.rule">
+            <field name="name">re.lease.amendment: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_lease_amendment"/>
+            <field name="domain_force">['|', '|', ('lease_id.property_id.manager_id', '=', user.id), ('lease_id.property_id.user_ids', 'in', [user.id]), ('lease_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_lease_amendment_all" model="ir.rule">
+            <field name="name">re.lease.amendment: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_lease_amendment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_billing_schedule_staff" model="ir.rule">
+            <field name="name">re.billing.schedule: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_billing_schedule"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_billing_schedule_all" model="ir.rule">
+            <field name="name">re.billing.schedule: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_billing_schedule"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_turnover_report_staff" model="ir.rule">
+            <field name="name">re.turnover.report: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_turnover_report"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_turnover_report_all" model="ir.rule">
+            <field name="name">re.turnover.report: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_turnover_report"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_security_deposit_staff" model="ir.rule">
+            <field name="name">re.security.deposit: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_security_deposit"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_security_deposit_all" model="ir.rule">
+            <field name="name">re.security.deposit: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_security_deposit"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_deposit_deduction_staff" model="ir.rule">
+            <field name="name">re.deposit.deduction: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_deposit_deduction"/>
+            <field name="domain_force">['|', '|', ('deposit_id.property_id.manager_id', '=', user.id), ('deposit_id.property_id.user_ids', 'in', [user.id]), ('deposit_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_deposit_deduction_all" model="ir.rule">
+            <field name="name">re.deposit.deduction: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_deposit_deduction"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_service_charge_budget_staff" model="ir.rule">
+            <field name="name">re.service.charge.budget: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_service_charge_budget"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_service_charge_budget_all" model="ir.rule">
+            <field name="name">re.service.charge.budget: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_service_charge_budget"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_service_charge_budget_line_staff" model="ir.rule">
+            <field name="name">re.service.charge.budget.line: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_service_charge_budget_line"/>
+            <field name="domain_force">['|', '|', ('budget_id.property_id.manager_id', '=', user.id), ('budget_id.property_id.user_ids', 'in', [user.id]), ('budget_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_service_charge_budget_line_all" model="ir.rule">
+            <field name="name">re.service.charge.budget.line: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_service_charge_budget_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_service_charge_allocation_staff" model="ir.rule">
+            <field name="name">re.service.charge.allocation: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_service_charge_allocation"/>
+            <field name="domain_force">['|', '|', ('budget_id.property_id.manager_id', '=', user.id), ('budget_id.property_id.user_ids', 'in', [user.id]), ('budget_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_service_charge_allocation_all" model="ir.rule">
+            <field name="name">re.service.charge.allocation: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_service_charge_allocation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_meter_staff" model="ir.rule">
+            <field name="name">re.meter: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_meter"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_meter_tech" model="ir.rule">
+            <field name="name">re.meter: technician</field>
+            <field name="model_id" ref="model_re_meter"/>
+            <field name="domain_force">[('property_id.work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_meter_all" model="ir.rule">
+            <field name="name">re.meter: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_meter"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_meter_reading_staff" model="ir.rule">
+            <field name="name">re.meter.reading: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_meter_reading"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_meter_reading_tech" model="ir.rule">
+            <field name="name">re.meter.reading: technician</field>
+            <field name="model_id" ref="model_re_meter_reading"/>
+            <field name="domain_force">[('property_id.work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_meter_reading_all" model="ir.rule">
+            <field name="name">re.meter.reading: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_meter_reading"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_collection_case_staff" model="ir.rule">
+            <field name="name">re.collection.case: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_collection_case"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_collection_case_all" model="ir.rule">
+            <field name="name">re.collection.case: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_collection_case"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_collection_promise_staff" model="ir.rule">
+            <field name="name">re.collection.promise: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_collection_promise"/>
+            <field name="domain_force">['|', '|', ('case_id.property_id.manager_id', '=', user.id), ('case_id.property_id.user_ids', 'in', [user.id]), ('case_id.property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_collection_promise_all" model="ir.rule">
+            <field name="name">re.collection.promise: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_collection_promise"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_exception_staff" model="ir.rule">
+            <field name="name">re.exception: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_exception"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_exception_tech" model="ir.rule">
+            <field name="name">re.exception: technician</field>
+            <field name="model_id" ref="model_re_exception"/>
+            <field name="domain_force">[('property_id.work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_exception_all" model="ir.rule">
+            <field name="name">re.exception: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_exception"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_tenant_ticket_staff" model="ir.rule">
+            <field name="name">re.tenant.ticket: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_tenant_ticket"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_tenant_ticket_tech" model="ir.rule">
+            <field name="name">re.tenant.ticket: technician</field>
+            <field name="model_id" ref="model_re_tenant_ticket"/>
+            <field name="domain_force">[('work_order_id.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_tenant_ticket_all" model="ir.rule">
+            <field name="name">re.tenant.ticket: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_tenant_ticket"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_building_issue_staff" model="ir.rule">
+            <field name="name">re.building.issue: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_building_issue"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_building_issue_tech" model="ir.rule">
+            <field name="name">re.building.issue: technician</field>
+            <field name="model_id" ref="model_re_building_issue"/>
+            <field name="domain_force">[('property_id.work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_building_issue_all" model="ir.rule">
+            <field name="name">re.building.issue: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_building_issue"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_work_order_staff" model="ir.rule">
+            <field name="name">re.work.order: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_work_order"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_work_order_tech" model="ir.rule">
+            <field name="name">re.work.order: technician</field>
+            <field name="model_id" ref="model_re_work_order"/>
+            <field name="domain_force">[('technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_work_order_all" model="ir.rule">
+            <field name="name">re.work.order: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_work_order"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_maintenance_plan_staff" model="ir.rule">
+            <field name="name">re.maintenance.plan: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_maintenance_plan"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_maintenance_plan_tech" model="ir.rule">
+            <field name="name">re.maintenance.plan: technician</field>
+            <field name="model_id" ref="model_re_maintenance_plan"/>
+            <field name="domain_force">[('technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_re_maintenance_plan_all" model="ir.rule">
+            <field name="name">re.maintenance.plan: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_maintenance_plan"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_re_tenant_ageing_staff" model="ir.rule">
+            <field name="name">re.tenant.ageing: authorised properties (staff)</field>
+            <field name="model_id" ref="model_re_tenant_ageing"/>
+            <field name="domain_force">['|', '|', ('property_id.manager_id', '=', user.id), ('property_id.user_ids', 'in', [user.id]), ('property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_re_tenant_ageing_all" model="ir.rule">
+            <field name="name">re.tenant.ageing: all records (company-wide roles)</field>
+            <field name="model_id" ref="model_re_tenant_ageing"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_equipment_staff" model="ir.rule">
+            <field name="name">Equipment: authorised properties</field>
+            <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+            <field name="domain_force">['|', ('re_property_id', '=', False)] + ['|', '|', ('re_property_id.manager_id', '=', user.id), ('re_property_id.user_ids', 'in', [user.id]), ('re_property_id.portfolio_id.manager_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_leasing_officer'))]"/>
+        </record>
+        <record id="rule_equipment_tech" model="ir.rule">
+            <field name="name">Equipment: technician</field>
+            <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+            <field name="domain_force">['|', ('re_property_id', '=', False), ('re_work_order_ids.technician_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_re_technician'))]"/>
+        </record>
+        <record id="rule_equipment_investor" model="ir.rule">
+            <field name="name">Equipment: investor</field>
+            <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+            <field name="domain_force">['|', ('re_property_id', '=', False), ('re_property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_equipment_all" model="ir.rule">
+            <field name="name">Equipment: company-wide roles</field>
+            <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_re_maintenance_manager')), (4, ref('group_re_procurement')), (4, ref('group_re_accountant')), (4, ref('group_re_investment_manager'))]"/>
+        </record>
+        <record id="rule_investment_investor" model="ir.rule">
+            <field name="name">Investment: investor</field>
+            <field name="model_id" ref="model_re_investment"/>
+            <field name="domain_force">[('property_id.investor_user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_re_investor'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_portal_lease" model="ir.rule">
+            <field name="name">Portal: own leases</field>
+            <field name="model_id" ref="model_re_lease"/>
+            <field name="domain_force">['|', ('tenant_id', 'child_of', [user.commercial_partner_id.id]), ('joint_tenant_ids', 'in', [user.partner_id.id])]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_portal_ticket" model="ir.rule">
+            <field name="name">Portal: own requests</field>
+            <field name="model_id" ref="model_re_tenant_ticket"/>
+            <field name="domain_force">[('partner_id', 'child_of', [user.commercial_partner_id.id])]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_portal_work_order" model="ir.rule">
+            <field name="name">Portal: own requests / assigned contractor jobs</field>
+            <field name="model_id" ref="model_re_work_order"/>
+            <field name="domain_force">['|', ('requested_by_partner_id', 'child_of', [user.commercial_partner_id.id]), ('contractor_id', 'child_of', [user.commercial_partner_id.id])]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_portal_announcement" model="ir.rule">
+            <field name="name">Portal: published announcements for my properties</field>
+            <field name="model_id" ref="model_re_announcement"/>
+            <field name="domain_force">[('published', '=', True), '|', ('property_ids', '=', False), ('property_ids.lease_ids.tenant_id', 'child_of', [user.commercial_partner_id.id])]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

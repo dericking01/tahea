@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="control_unit_occupied_no_lease" model="re.control.check">
+            <field name="code">unit_occupied_no_lease</field>
+            <field name="category">revenue</field>
+            <field name="severity">critical</field>
+            <field name="name">Occupied unit without an active lease</field>
+            <field name="description">A unit is physically occupied but no active lease exists, so no rent is billed.</field>
+            <field name="recommendation">Verify who occupies the unit; register and approve a lease or record the move-out.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="0"/>
+        </record>
+        <record id="control_lease_missing_invoice" model="re.control.check">
+            <field name="code">lease_missing_invoice</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Billing due but not invoiced</field>
+            <field name="description">Billing obligations of a lease passed their invoice date (plus grace) without an invoice.</field>
+            <field name="recommendation">Run the billing run for the lease or investigate why billing failed.</field>
+            <field name="threshold_days" eval="3"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="10"/>
+        </record>
+        <record id="control_escalation_not_applied" model="re.control.check">
+            <field name="code">escalation_not_applied</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Escalation date passed without approval</field>
+            <field name="description">An escalation date passed but the escalation is not approved, so invoices use the old rent.</field>
+            <field name="recommendation">Approve the escalation (pending lines are recomputed) and issue a supplementary invoice for past periods if contractually due.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="20"/>
+        </record>
+        <record id="control_duplicate_rent_invoice" model="re.control.check">
+            <field name="code">duplicate_rent_invoice</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Duplicate rent invoice</field>
+            <field name="description">Two non-cancelled invoices bill rent for the same lease and period.</field>
+            <field name="recommendation">Confirm the duplicate and reverse it with a credit note (do not edit the posted invoice).</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="30"/>
+        </record>
+        <record id="control_expired_lease_occupied" model="re.control.check">
+            <field name="code">expired_lease_occupied</field>
+            <field name="category">revenue</field>
+            <field name="severity">critical</field>
+            <field name="name">Expired lease still occupied</field>
+            <field name="description">The lease ended but the unit is still occupied without a renewal (holding over).</field>
+            <field name="recommendation">Renew the lease, bill mesne profits per policy, or record the move-out.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="40"/>
+        </record>
+        <record id="control_utility_unbilled" model="re.control.check">
+            <field name="code">utility_unbilled</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Recharged utility not billed</field>
+            <field name="description">Metered consumption that is contractually recharged has not been billed.</field>
+            <field name="recommendation">Confirm the readings and bill them.</field>
+            <field name="threshold_days" eval="7"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="50"/>
+        </record>
+        <record id="control_service_charge_missing" model="re.control.check">
+            <field name="code">service_charge_missing</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Service charge missing</field>
+            <field name="description">A lease with a service-charge obligation is not billed under the current approved budget.</field>
+            <field name="recommendation">Apply the budget to the lease (Service Charges &gt; Apply to Leases).</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="60"/>
+        </record>
+        <record id="control_payment_unallocated" model="re.control.check">
+            <field name="code">payment_unallocated</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Unallocated tenant receipt</field>
+            <field name="description">A tenant receipt is not reconciled with an invoice (advance, overpayment or misallocation).</field>
+            <field name="recommendation">Reconcile the payment with the right invoices or confirm it as an advance.</field>
+            <field name="threshold_days" eval="3"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="70"/>
+        </record>
+        <record id="control_unusual_adjustment" model="re.control.check">
+            <field name="code">unusual_adjustment</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Unapproved tenant adjustment</field>
+            <field name="description">A credit note or manual entry reduced a tenant receivable without approval.</field>
+            <field name="recommendation">Obtain approval or reverse the adjustment.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="80"/>
+        </record>
+        <record id="control_refund_unapproved" model="re.control.check">
+            <field name="code">refund_unapproved</field>
+            <field name="category">financial</field>
+            <field name="severity">critical</field>
+            <field name="name">Refund without approval</field>
+            <field name="description">Money was paid back to a tenant without an approved credit note / deposit refund.</field>
+            <field name="recommendation">Investigate the payment and obtain retrospective approval or recover the funds.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="90"/>
+        </record>
+        <record id="control_deposit_outstanding" model="re.control.check">
+            <field name="code">deposit_outstanding</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Deposit not received</field>
+            <field name="description">A security deposit of an active lease is not invoiced or not received.</field>
+            <field name="recommendation">Invoice and collect the deposit.</field>
+            <field name="threshold_days" eval="14"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="100"/>
+        </record>
+        <record id="control_lease_unsigned" model="re.control.check">
+            <field name="code">lease_unsigned</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Unsigned active lease</field>
+            <field name="description">An active lease has no signed agreement recorded.</field>
+            <field name="recommendation">Obtain the signature and attach the signed agreement.</field>
+            <field name="threshold_days" eval="7"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="110"/>
+        </record>
+        <record id="control_vendor_bill_over_approved" model="re.control.check">
+            <field name="code">vendor_bill_over_approved</field>
+            <field name="category">financial</field>
+            <field name="severity">high</field>
+            <field name="name">Bill above approved amount</field>
+            <field name="description">Vendor bills of a work order exceed the approved budget/quotation beyond tolerance.</field>
+            <field name="recommendation">Verify the bill against the PO and quotation; request supplementary approval or dispute with the vendor.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="120"/>
+        </record>
+        <record id="control_unapproved_spend" model="re.control.check">
+            <field name="code">unapproved_spend</field>
+            <field name="category">financial</field>
+            <field name="severity">high</field>
+            <field name="name">Unapproved maintenance spend</field>
+            <field name="description">Bills were recorded on a work order without an approved budget.</field>
+            <field name="recommendation">Obtain approval or reject the expenditure.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="130"/>
+        </record>
+        <record id="control_bill_without_po" model="re.control.check">
+            <field name="code">bill_without_po</field>
+            <field name="category">financial</field>
+            <field name="severity">medium</field>
+            <field name="name">Contractor bill without PO</field>
+            <field name="description">Contractor work was billed directly without a purchase order.</field>
+            <field name="recommendation">Confirm the authorised exception or raise a PO retrospectively per policy.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="140"/>
+        </record>
+        <record id="control_duplicate_vendor_bill" model="re.control.check">
+            <field name="code">duplicate_vendor_bill</field>
+            <field name="category">financial</field>
+            <field name="severity">high</field>
+            <field name="name">Possible duplicate vendor bill</field>
+            <field name="description">Bills from the same vendor share a reference, or the same amount and date.</field>
+            <field name="recommendation">Check and cancel / reverse the duplicate before payment.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="150"/>
+        </record>
+        <record id="control_missing_analytic" model="re.control.check">
+            <field name="code">missing_analytic</field>
+            <field name="category">financial</field>
+            <field name="severity">medium</field>
+            <field name="name">Missing property allocation</field>
+            <field name="description">Property expenditure has no property analytic allocation and is missing from property P&amp;L.</field>
+            <field name="recommendation">Add the analytic distribution to the bill lines.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="160"/>
+        </record>
+        <record id="control_wrong_property_allocation" model="re.control.check">
+            <field name="code">wrong_property_allocation</field>
+            <field name="category">financial</field>
+            <field name="severity">medium</field>
+            <field name="name">Wrong property allocation</field>
+            <field name="description">A work-order bill is allocated to another property.</field>
+            <field name="recommendation">Correct the analytic distribution.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="170"/>
+        </record>
+        <record id="control_service_charge_overrun" model="re.control.check">
+            <field name="code">service_charge_overrun</field>
+            <field name="category">financial</field>
+            <field name="severity">medium</field>
+            <field name="name">Service-charge overrun</field>
+            <field name="description">Actual service-charge expenditure exceeds the budget beyond the threshold %.</field>
+            <field name="recommendation">Review spending and inform tenants per lease terms.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="5"/>
+            <field name="sequence" eval="180"/>
+        </record>
+        <record id="control_service_charge_unreconciled" model="re.control.check">
+            <field name="code">service_charge_unreconciled</field>
+            <field name="category">financial</field>
+            <field name="severity">medium</field>
+            <field name="name">Service charges not reconciled</field>
+            <field name="description">A service-charge period ended and was not reconciled with tenants.</field>
+            <field name="recommendation">Run the year-end reconciliation.</field>
+            <field name="threshold_days" eval="90"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="190"/>
+        </record>
+        <record id="control_emergency_not_reviewed" model="re.control.check">
+            <field name="code">emergency_not_reviewed</field>
+            <field name="category">operational</field>
+            <field name="severity">high</field>
+            <field name="name">Emergency work not reviewed</field>
+            <field name="description">Emergency work started without approval and was not reviewed by a manager.</field>
+            <field name="recommendation">Review and accept or reject the emergency expenditure.</field>
+            <field name="threshold_days" eval="3"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="200"/>
+        </record>
+        <record id="control_contractor_non_compliant" model="re.control.check">
+            <field name="code">contractor_non_compliant</field>
+            <field name="category">operational</field>
+            <field name="severity">medium</field>
+            <field name="name">Non-compliant contractor</field>
+            <field name="description">A contractor with an expired licence or insurance is assigned to open work.</field>
+            <field name="recommendation">Renew compliance documents or reassign the work.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="210"/>
+        </record>
+        <record id="control_insurance_expiry" model="re.control.check">
+            <field name="code">insurance_expiry</field>
+            <field name="category">operational</field>
+            <field name="severity">medium</field>
+            <field name="name">Insurance expiry</field>
+            <field name="description">Property insurance has expired or expires soon.</field>
+            <field name="recommendation">Renew the policy.</field>
+            <field name="threshold_days" eval="30"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="220"/>
+        </record>
+        <record id="control_billing_failure" model="re.control.check">
+            <field name="code">billing_failure</field>
+            <field name="category">revenue</field>
+            <field name="severity">high</field>
+            <field name="name">Billing failure</field>
+            <field name="description">The automatic billing run failed for a lease.</field>
+            <field name="recommendation">Fix the configuration error indicated and rerun billing.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="230"/>
+        </record>
+        <record id="control_termination_overbilled" model="re.control.check">
+            <field name="code">termination_overbilled</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Invoice after termination</field>
+            <field name="description">An invoice covers a period after the lease termination date.</field>
+            <field name="recommendation">Issue a credit note for the unearned period if appropriate.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="240"/>
+        </record>
+        <record id="control_negative_billing" model="re.control.check">
+            <field name="code">negative_billing</field>
+            <field name="category">revenue</field>
+            <field name="severity">medium</field>
+            <field name="name">Negative billing</field>
+            <field name="description">Concessions exceed charges for a billing period.</field>
+            <field name="recommendation">Review the concession; issue a credit note if appropriate.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="250"/>
+        </record>
+        <record id="control_control_override" model="re.control.check">
+            <field name="code">control_override</field>
+            <field name="category">financial</field>
+            <field name="severity">high</field>
+            <field name="name">Control override</field>
+            <field name="description">A user with override rights posted a document that failed a financial control.</field>
+            <field name="recommendation">Review the justification of the override.</field>
+            <field name="threshold_days" eval="0"/>
+            <field name="threshold_amount" eval="0"/>
+            <field name="threshold_pct" eval="0"/>
+            <field name="sequence" eval="260"/>
+        </record>
+    </data>
+</odoo>

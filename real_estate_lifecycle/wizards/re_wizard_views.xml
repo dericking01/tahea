@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_reject_wizard" model="ir.ui.view">
+        <field name="name">re.reject.wizard.form</field>
+        <field name="model">re.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="reason" placeholder="Reason for rejection (recorded in the approval audit trail)"/>
+                <footer>
+                    <button name="action_reject" type="object" string="Reject" class="btn-danger"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_terminate_wizard" model="ir.ui.view">
+        <field name="name">re.lease.terminate.wizard.form</field>
+        <field name="model">re.lease.terminate.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="alert alert-warning" role="alert" invisible="not notice_warning"><field name="notice_warning"/></div>
+                <group>
+                    <field name="lease_id" readonly="1"/>
+                    <field name="termination_date"/>
+                    <field name="termination_type"/>
+                    <field name="vacate_units"/>
+                    <field name="reason"/>
+                </group>
+                <p class="text-muted">Pending billing after the termination date is removed. Posted invoices are never modified: invoices covering later periods are flagged for credit-note review.</p>
+                <footer>
+                    <button name="action_terminate" type="object" string="Terminate Lease" class="btn-danger"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_renew_wizard" model="ir.ui.view">
+        <field name="name">re.lease.renew.wizard.form</field>
+        <field name="model">re.lease.renew.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="lease_id" readonly="1"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="rent_amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="copy_charges"/>
+                </group>
+                <p class="text-muted">A new draft lease is created and must be approved. The current lease becomes "Renewed" when the renewal is activated.</p>
+                <footer>
+                    <button name="action_renew" type="object" string="Create Renewal" class="btn-primary"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_rfq_wizard" model="ir.ui.view">
+        <field name="name">re.rfq.wizard.form</field>
+        <field name="model">re.rfq.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="work_order_id" readonly="1"/>
+                    <field name="vendor_ids" widget="many2many_tags"/>
+                    <field name="quantity"/>
+                    <field name="description"/>
+                </group>
+                <p class="text-muted">One Request for Quotation (native Purchase) is created per contractor. Enter quoted prices on each RFQ, compare them and select the best one on the work order.</p>
+                <footer>
+                    <button name="action_create_rfqs" type="object" string="Create RFQs" class="btn-primary"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_billing_run_wizard" model="ir.ui.view">
+        <field name="name">re.billing.run.wizard.form</field>
+        <field name="model">re.billing.run.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_to"/>
+                    <field name="lease_ids" widget="many2many_tags"/>
+                </group>
+                <p class="text-muted">Creates native customer invoices for every billing obligation scheduled up to the date. The run is idempotent: obligations already invoiced are skipped, so running it twice never duplicates invoices.</p>
+                <footer>
+                    <button name="action_run" type="object" string="Run Billing" class="btn-primary"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_billing_run_wizard" model="ir.actions.act_window">
+        <field name="name">Run Rental Billing</field>
+        <field name="res_model">re.billing.run.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_re_subdivide_wizard" model="ir.ui.view">
+        <field name="name">re.land.subdivide.wizard.form</field>
+        <field name="model">re.land.subdivide.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="property_id"/>
+                    <field name="prefix"/>
+                    <field name="start_number"/>
+                    <field name="count"/>
+                    <label for="area"/>
+                    <div class="o_row"><field name="area"/><field name="area_unit_id"/></div>
+                    <field name="land_use"/>
+                    <field name="plot_value"/>
+                </group>
+                <footer>
+                    <button name="action_subdivide" type="object" string="Create Plots" class="btn-primary"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_land_subdivide_wizard" model="ir.actions.act_window">
+        <field name="name">Subdivide Land</field>
+        <field name="res_model">re.land.subdivide.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

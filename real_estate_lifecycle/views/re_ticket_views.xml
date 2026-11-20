@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_ticket_search" model="ir.ui.view">
+        <field name="name">re.tenant.ticket.search</field>
+        <field name="model">re.tenant.ticket</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="subject"/>
+                <field name="partner_id"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="category_id"/>
+                <filter name="open" string="Open" domain="[('state', 'in', ('new', 'in_progress', 'waiting'))]"/>
+                <filter name="complaints" string="Complaints" domain="[('ticket_type', '=', 'complaint')]"/>
+                <filter name="disputes" string="Billing Disputes" domain="[('ticket_type', '=', 'billing_dispute')]"/>
+                <filter name="renewals" string="Renewal Requests" domain="[('ticket_type', '=', 'renewal_request')]"/>
+                <filter name="shared" string="Part of Shared Issue" domain="[('building_issue_id', '!=', False)]"/>
+                <group>
+                    <filter name="g_building" string="Building" context="{'group_by': 'building_id'}"/>
+                    <filter name="g_category" string="Category" context="{'group_by': 'category_id'}"/>
+                    <filter name="g_type" string="Type" context="{'group_by': 'ticket_type'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_ticket_list" model="ir.ui.view">
+        <field name="name">re.tenant.ticket.list</field>
+        <field name="model">re.tenant.ticket</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="create_date" string="Date"/>
+                <field name="ticket_type"/>
+                <field name="subject"/>
+                <field name="partner_id"/>
+                <field name="building_id" optional="show"/>
+                <field name="category_id"/>
+                <field name="building_issue_id" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_ticket_pivot" model="ir.ui.view">
+        <field name="name">re.tenant.ticket.pivot</field>
+        <field name="model">re.tenant.ticket</field>
+        <field name="arch" type="xml">
+            <pivot string="Building Complaint Analysis">
+                <field name="building_id" type="row"/>
+                <field name="category_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_re_ticket_kanban" model="ir.ui.view">
+        <field name="name">re.tenant.ticket.kanban</field>
+        <field name="model">re.tenant.ticket</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="subject" class="fw-bold"/>
+                            <field name="priority" widget="priority"/>
+                        </div>
+                        <field name="partner_id"/>
+                        <div class="text-muted"><field name="ticket_type"/> · <field name="category_id"/></div>
+                        <field name="building_issue_id" class="text-warning"/>
+                        <field name="user_id" widget="many2one_avatar_user"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_ticket_form" model="ir.ui.view">
+        <field name="name">re.tenant.ticket.form</field>
+        <field name="model">re.tenant.ticket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Start" class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_create_work_order" type="object" string="Create Work Order" invisible="work_order_id or ticket_type not in ('complaint', 'enquiry')"/>
+                    <button name="action_create_renewal" type="object" string="Prepare Renewal" invisible="ticket_type != 'renewal_request' or state in ('resolved', 'closed')"/>
+                    <button name="action_resolve" type="object" string="Resolve" invisible="state in ('resolved', 'closed', 'rejected')"/>
+                    <button name="action_reject" type="object" string="Reject" invisible="state in ('resolved', 'closed', 'rejected')"/>
+                    <button name="action_close" type="object" string="Close" invisible="state != 'resolved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,resolved,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1><h2><field name="subject" placeholder="Subject"/></h2></div>
+                    <group>
+                        <group>
+                            <field name="ticket_type"/>
+                            <field name="category_id"/>
+                            <field name="partner_id"/>
+                            <field name="lease_id"/>
+                            <field name="property_id"/>
+                            <field name="building_id"/>
+                            <field name="unit_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="source"/>
+                            <field name="invoice_id" invisible="ticket_type != 'billing_dispute'"/>
+                            <field name="work_order_id"/>
+                            <field name="building_issue_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                    <group>
+                        <field name="resolution"/>
+                        <field name="satisfaction" widget="priority"/>
+                        <field name="feedback"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_ticket" model="ir.actions.act_window">
+        <field name="name">Tenant Requests &amp; Complaints</field>
+        <field name="res_model">re.tenant.ticket</field>
+        <field name="view_mode">kanban,list,form,pivot</field>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+
+    <record id="view_re_issue_list" model="ir.ui.view">
+        <field name="name">re.building.issue.list</field>
+        <field name="model">re.building.issue</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'open'">
+                <field name="name"/>
+                <field name="building_id"/>
+                <field name="category_id"/>
+                <field name="tenant_count"/>
+                <field name="ticket_count"/>
+                <field name="work_order_id"/>
+                <field name="user_id"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_issue_form" model="ir.ui.view">
+        <field name="name">re.building.issue.form</field>
+        <field name="model">re.building.issue</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_work_order" type="object" string="Work Order" class="btn-primary" invisible="state != 'open'"/>
+                    <button name="action_resolve" type="object" string="Resolve All Linked Complaints" invisible="state != 'open'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="building_id"/>
+                            <field name="category_id"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="tenant_count"/>
+                            <field name="ticket_count"/>
+                            <field name="work_order_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="root_cause"/>
+                        <field name="resolution"/>
+                    </group>
+                    <field name="ticket_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="create_date"/>
+                            <field name="partner_id"/>
+                            <field name="unit_id"/>
+                            <field name="subject"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_building_issue" model="ir.actions.act_window">
+        <field name="name">Shared Building Issues</field>
+        <field name="res_model">re.building.issue</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_re_announcement_list" model="ir.ui.view">
+        <field name="name">re.announcement.list</field>
+        <field name="model">re.announcement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="property_ids" widget="many2many_tags"/>
+                <field name="date_expiry"/>
+                <field name="published"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_re_announcement_form" model="ir.ui.view">
+        <field name="name">re.announcement.form</field>
+        <field name="model">re.announcement</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish" type="object" string="Publish on Portal" invisible="published"/>
+                    <button name="action_send_email" type="object" string="Publish &amp; Email Tenants" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="date_expiry"/>
+                            <field name="published"/>
+                        </group>
+                        <group>
+                            <field name="property_ids" widget="many2many_tags"/>
+                            <field name="building_ids" widget="many2many_tags"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="body"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_announcement" model="ir.actions.act_window">
+        <field name="name">Announcements</field>
+        <field name="res_model">re.announcement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_wo_search" model="ir.ui.view">
+        <field name="name">re.work.order.search</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="equipment_id"/>
+                <field name="technician_id"/>
+                <field name="contractor_id"/>
+                <filter name="mine" string="My Work Orders" domain="[('technician_id', '=', uid)]"/>
+                <filter name="requests" string="New Requests" domain="[('state', 'in', ('new', 'triage'))]"/>
+                <filter name="open" string="Open" domain="[('state', 'not in', ('closed', 'cancelled', 'completed', 'tenant_confirmation'))]"/>
+                <filter name="to_approve" string="Awaiting Approval" domain="[('state', '=', 'approval')]"/>
+                <filter name="overdue" string="Overdue" domain="[('is_overdue', '=', True)]"/>
+                <filter name="emergency" string="Emergency" domain="[('maintenance_type', '=', 'emergency')]"/>
+                <filter name="preventive" string="Preventive" domain="[('maintenance_type', '=', 'preventive')]"/>
+                <filter name="capex" string="CAPEX" domain="[('expenditure_type', '=', 'capex')]"/>
+                <filter name="repeat" string="Repeat Faults" domain="[('is_repeat_fault', '=', True)]"/>
+                <group>
+                    <filter name="g_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_equipment" string="Equipment" context="{'group_by': 'equipment_id'}"/>
+                    <filter name="g_contractor" string="Contractor" context="{'group_by': 'contractor_id'}"/>
+                    <filter name="g_type" string="Type" context="{'group_by': 'maintenance_type'}"/>
+                    <filter name="g_month" string="Month" context="{'group_by': 'date_request:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_wo_list" model="ir.ui.view">
+        <field name="name">re.work.order.list</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue" decoration-muted="state in ('closed', 'cancelled')">
+                <field name="name"/>
+                <field name="date_request"/>
+                <field name="title"/>
+                <field name="property_id"/>
+                <field name="building_id" optional="hide"/>
+                <field name="unit_id" optional="show"/>
+                <field name="equipment_id" optional="show"/>
+                <field name="maintenance_type"/>
+                <field name="priority" widget="priority"/>
+                <field name="technician_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="contractor_id" optional="show"/>
+                <field name="date_target"/>
+                <field name="estimated_cost" optional="hide"/>
+                <field name="approved_budget" optional="show" sum="Approved"/>
+                <field name="actual_cost" sum="Actual"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="is_overdue" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state in ('completed', 'closed')" decoration-warning="state in ('approval', 'pending')" decoration-info="state == 'in_progress'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_wo_kanban" model="ir.ui.view">
+        <field name="name">re.work.order.kanban</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="currency_id"/>
+                <field name="is_overdue"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="name" class="text-muted small"/>
+                            <field name="priority" widget="priority"/>
+                        </div>
+                        <field name="title" class="fw-bold"/>
+                        <div class="text-muted"><field name="property_id"/> <field name="unit_id"/></div>
+                        <field name="equipment_id"/>
+                        <div class="d-flex justify-content-between">
+                            <span t-att-class="record.is_overdue.raw_value ? 'text-danger' : ''"><field name="date_target"/></span>
+                            <field name="technician_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_wo_calendar" model="ir.ui.view">
+        <field name="name">re.work.order.calendar</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <calendar string="Maintenance Schedule" date_start="date_target" color="technician_id" mode="month" quick_create="0">
+                <field name="title"/>
+                <field name="property_id" filters="1"/>
+                <field name="technician_id" filters="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_re_wo_pivot" model="ir.ui.view">
+        <field name="name">re.work.order.pivot</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Maintenance Expenditure">
+                <field name="property_id" type="row"/>
+                <field name="maintenance_type" type="col"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="approved_budget" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_re_wo_graph" model="ir.ui.view">
+        <field name="name">re.work.order.graph</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <graph string="Maintenance Cost" type="bar">
+                <field name="date_request" interval="month"/>
+                <field name="actual_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_re_wo_form" model="ir.ui.view">
+        <field name="name">re.work.order.form</field>
+        <field name="model">re.work.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_triage" type="object" string="Triage" class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_open_rfq_wizard" type="object" string="Request Quotations" invisible="state not in ('new', 'triage')" groups="real_estate_lifecycle.group_re_property_manager,real_estate_lifecycle.group_re_maintenance_manager,real_estate_lifecycle.group_re_procurement"/>
+                    <button name="action_submit_approval" type="object" string="Submit Budget for Approval" class="btn-primary" invisible="state not in ('new', 'triage')"/>
+                    <button name="action_emergency_start" type="object" string="Emergency Start" class="btn-danger" invisible="state not in ('new', 'triage', 'approval')" confirm="Start emergency work before approval? A manager must review it afterwards."/>
+                    <button name="action_approve" type="object" string="Approve Budget" class="btn-primary" invisible="not re_can_approve"/>
+                    <button name="action_re_open_reject_wizard" type="object" string="Reject" invisible="not re_can_approve"/>
+                    <button name="action_confirm_selected_po" type="object" string="Confirm Selected PO" invisible="not selected_po_id or re_approval_state not in ('approved', 'not_required')" groups="real_estate_lifecycle.group_re_procurement,real_estate_lifecycle.group_re_maintenance_manager"/>
+                    <button name="action_start" type="object" string="Start Work" class="btn-primary" invisible="state != 'assigned'"/>
+                    <button name="action_set_pending" type="object" string="Pending Parts / Contractor" invisible="state != 'in_progress'"/>
+                    <button name="action_resume" type="object" string="Resume" invisible="state != 'pending'"/>
+                    <button name="action_complete" type="object" string="Complete" class="btn-primary" invisible="state not in ('in_progress', 'pending')"/>
+                    <button name="action_request_supplementary" type="object" string="Request Supplementary Budget" invisible="state not in ('assigned', 'in_progress', 'pending')"/>
+                    <button name="action_request_confirmation" type="object" string="Request Tenant Confirmation" invisible="state != 'completed'"/>
+                    <button name="action_close" type="object" string="Close" invisible="state not in ('completed', 'tenant_confirmation')"/>
+                    <button name="action_emergency_review" type="object" string="Accept Emergency" invisible="emergency_review_state != 'pending'" context="{'review_decision': 'accepted'}" groups="real_estate_lifecycle.group_re_maintenance_manager"/>
+                    <button name="action_emergency_review" type="object" string="Reject Emergency" invisible="emergency_review_state != 'pending'" context="{'review_decision': 'rejected'}" groups="real_estate_lifecycle.group_re_maintenance_manager"/>
+                    <button name="action_create_vendor_bill" type="object" string="Direct Vendor Bill" invisible="execution != 'contractor' or state in ('new', 'cancelled', 'closed')" groups="real_estate_lifecycle.group_re_accountant"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('closed', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,triage,approval,assigned,in_progress,completed,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_purchase_orders" type="object" class="oe_stat_button" icon="fa-balance-scale">
+                            <field name="rfq_count" widget="statinfo" string="Quotations / POs"/>
+                        </button>
+                        <button name="action_view_bills" type="object" class="oe_stat_button" icon="fa-file-text-o" groups="account.group_account_invoice">
+                            <div class="o_stat_info"><span class="o_stat_text">Vendor</span><span class="o_stat_text">Bills</span></div>
+                        </button>
+                        <button name="action_view_attachments" type="object" class="oe_stat_button" icon="fa-camera">
+                            <field name="attachment_count" widget="statinfo" string="Evidence"/>
+                        </button>
+                        <button name="action_re_view_approval_log" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="re_approval_log_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Emergency" bg_color="text-bg-danger" invisible="not is_emergency"/>
+                    <widget name="web_ribbon" title="Overdue" bg_color="text-bg-warning" invisible="not is_overdue or is_emergency"/>
+                    <div class="oe_title">
+                        <field name="name" class="text-muted"/>
+                        <h1><field name="title" placeholder="Lift stuck between floors"/></h1>
+                    </div>
+                    <field name="re_can_approve" invisible="1"/>
+                    <field name="is_emergency" invisible="1"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <group>
+                        <group string="Location">
+                            <field name="property_id" options="{'no_create': True}"/>
+                            <field name="building_id" options="{'no_create': True}"/>
+                            <field name="floor_id" options="{'no_create': True}"/>
+                            <field name="unit_id" options="{'no_create': True}"/>
+                            <field name="equipment_id" options="{'no_create': True}"/>
+                            <field name="lease_id"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="maintenance_type"/>
+                            <field name="category_id"/>
+                            <field name="expenditure_type"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="requested_by_partner_id"/>
+                            <field name="ticket_id"/>
+                            <field name="plan_id" invisible="not plan_id"/>
+                        </group>
+                        <group string="Assignment">
+                            <field name="execution"/>
+                            <field name="technician_id" widget="many2one_avatar_user"/>
+                            <field name="contractor_id"/>
+                            <field name="selected_po_id" invisible="not selected_po_id"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="date_request"/>
+                            <field name="date_target"/>
+                            <field name="scheduled_date" invisible="not scheduled_date"/>
+                            <field name="date_start"/>
+                            <field name="date_done"/>
+                        </group>
+                        <group string="Costs">
+                            <field name="estimated_cost" readonly="re_approval_state == 'pending'"/>
+                            <field name="approved_budget"/>
+                            <field name="pending_budget" invisible="re_approval_state != 'pending'"/>
+                            <field name="committed_cost"/>
+                            <field name="actual_cost"/>
+                            <field name="budget_variance" decoration-danger="budget_variance &gt; 0"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Approval">
+                            <field name="re_approval_state"/>
+                            <field name="re_approval_rule_id"/>
+                            <field name="re_requested_by_id"/>
+                            <field name="re_approved_by_id"/>
+                            <field name="re_rejection_reason" invisible="not re_rejection_reason"/>
+                            <field name="emergency_review_state" invisible="emergency_review_state == 'none'"/>
+                            <field name="emergency_reviewed_by_id" invisible="not emergency_reviewed_by_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Problem" name="problem">
+                            <field name="description" placeholder="Describe the fault, symptoms and access arrangements..."/>
+                        </page>
+                        <page string="Completion" name="completion">
+                            <group>
+                                <group>
+                                    <field name="labour_hours"/>
+                                    <field name="downtime_hours"/>
+                                    <field name="pending_reason"/>
+                                </group>
+                                <group>
+                                    <field name="tenant_rating" widget="priority"/>
+                                    <field name="tenant_confirmed"/>
+                                    <field name="is_repeat_fault"/>
+                                    <field name="on_time"/>
+                                </group>
+                            </group>
+                            <field name="completion_report" placeholder="Work performed, parts used, root cause, recommendations..."/>
+                            <field name="tenant_feedback" placeholder="Tenant feedback"/>
+                        </page>
+                        <page string="Vendor Bills" name="bills" groups="account.group_account_invoice">
+                            <field name="vendor_bill_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="amount_untaxed"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="payment_state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_work_order" model="ir.actions.act_window">
+        <field name="name">Work Orders</field>
+        <field name="res_model">re.work.order</field>
+        <field name="view_mode">kanban,list,form,calendar,pivot,graph</field>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+
+    <record id="action_re_maintenance_request" model="ir.actions.act_window">
+        <field name="name">Maintenance Requests</field>
+        <field name="res_model">re.work.order</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'search_default_requests': 1}</field>
+    </record>
+</odoo>

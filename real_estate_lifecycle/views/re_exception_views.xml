@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_exception_search" model="ir.ui.view">
+        <field name="name">re.exception.search</field>
+        <field name="model">re.exception</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="check_code"/>
+                <field name="property_id"/>
+                <field name="lease_id"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="open" string="Open" domain="[('state', 'in', ('new', 'investigating'))]"/>
+                <filter name="mine" string="Assigned to Me" domain="[('user_id', '=', uid)]"/>
+                <filter name="critical" string="High / Critical" domain="[('severity', 'in', ('high', 'critical'))]"/>
+                <separator/>
+                <filter name="revenue" string="Revenue Assurance" domain="[('category', '=', 'revenue')]"/>
+                <filter name="financial" string="Financial Control" domain="[('category', '=', 'financial')]"/>
+                <filter name="operational" string="Operational" domain="[('category', '=', 'operational')]"/>
+                <separator/>
+                <filter name="resolved" string="Resolved" domain="[('state', '=', 'resolved')]"/>
+                <group>
+                    <filter name="g_check" string="Check" context="{'group_by': 'check_code'}"/>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_user" string="Responsible" context="{'group_by': 'user_id'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_exception_list" model="ir.ui.view">
+        <field name="name">re.exception.list</field>
+        <field name="model">re.exception</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="severity == 'critical' and state in ('new', 'investigating')" decoration-warning="severity == 'high' and state in ('new', 'investigating')" decoration-muted="state in ('resolved', 'dismissed')">
+                <field name="name"/>
+                <field name="detected_date"/>
+                <field name="check_code"/>
+                <field name="severity" widget="badge"/>
+                <field name="property_id"/>
+                <field name="reference" optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="amount" sum="Amount at risk"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="description" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="age_days" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'resolved'" decoration-info="state == 'investigating'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_exception_kanban" model="ir.ui.view">
+        <field name="name">re.exception.kanban</field>
+        <field name="model">re.exception</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" create="0">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="check_code" class="fw-bold"/>
+                            <field name="severity" widget="label_selection" options="{'classes': {'critical': 'danger', 'high': 'warning', 'medium': 'info', 'low': 'default'}}"/>
+                        </div>
+                        <field name="property_id" class="text-muted"/>
+                        <field name="description" class="small"/>
+                        <div class="d-flex justify-content-between">
+                            <field name="amount" widget="monetary"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_exception_pivot" model="ir.ui.view">
+        <field name="name">re.exception.pivot</field>
+        <field name="model">re.exception</field>
+        <field name="arch" type="xml">
+            <pivot string="Exceptions">
+                <field name="check_code" type="row"/>
+                <field name="state" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_re_exception_form" model="ir.ui.view">
+        <field name="name">re.exception.form</field>
+        <field name="model">re.exception</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_investigate" type="object" string="Investigate" class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_resolve" type="object" string="Mark Resolved" invisible="state not in ('new', 'investigating')"/>
+                    <button name="action_dismiss" type="object" string="Dismiss (not an issue)" invisible="state not in ('new', 'investigating')"/>
+                    <button name="action_reopen" type="object" string="Reopen" invisible="state not in ('resolved', 'dismissed')"/>
+                    <button name="action_open_source" type="object" string="Open Source Document"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Auto-resolved" invisible="not auto_resolved"/>
+                    <div class="oe_title"><h1><field name="name"/></h1><h3><field name="check_code"/></h3></div>
+                    <group>
+                        <group>
+                            <field name="category"/>
+                            <field name="severity"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="property_id"/>
+                            <field name="building_id"/>
+                            <field name="unit_id"/>
+                            <field name="lease_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="reference"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="detected_date"/>
+                            <field name="last_seen"/>
+                            <field name="reopen_count"/>
+                            <field name="resolved_by_id"/>
+                            <field name="resolved_date"/>
+                            <field name="auto_resolved" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Finding"><field name="description" nolabel="1" colspan="2"/></group>
+                    <group string="Recommended Investigation"><field name="recommendation" nolabel="1" colspan="2"/></group>
+                    <group string="Resolution"><field name="resolution_note" nolabel="1" colspan="2" placeholder="Corrective action taken (credit note reference, lease created, etc.)"/></group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_exception" model="ir.actions.act_window">
+        <field name="name">Revenue Assurance &amp; Controls</field>
+        <field name="res_model">re.exception</field>
+        <field name="view_mode">list,kanban,form,pivot</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No open exceptions</p>
+            <p>Revenue-leakage and financial-control checks run daily (or on demand from Configuration › Controls). Exceptions recommend an investigation; they never change posted accounting entries.</p>
+        </field>
+    </record>
+
+    <record id="view_re_control_list" model="ir.ui.view">
+        <field name="name">re.control.check.list</field>
+        <field name="model">re.control.check</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="category"/>
+                <field name="code" readonly="1"/>
+                <field name="name"/>
+                <field name="severity"/>
+                <field name="threshold_days"/>
+                <field name="threshold_amount"/>
+                <field name="threshold_pct"/>
+                <field name="responsible_user_id"/>
+                <field name="open_count"/>
+                <field name="last_run"/>
+                <field name="active" widget="boolean_toggle"/>
+                <button name="action_run" type="object" string="Run" icon="fa-play"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_re_control" model="ir.actions.act_window">
+        <field name="name">Controls &amp; Checks</field>
+        <field name="res_model">re.control.check</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <record id="action_server_re_run_checks" model="ir.actions.server">
+        <field name="name">Run All Checks Now</field>
+        <field name="model_id" ref="model_re_exception"/>
+        <field name="state">code</field>
+        <field name="code">model.run_checks()
+action = env['ir.actions.act_window']._for_xml_id('real_estate_lifecycle.action_re_exception')</field>
+    </record>
+</odoo>

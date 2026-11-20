@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_contract_list" model="ir.ui.view">
+        <field name="name">re.vendor.contract.list</field>
+        <field name="model">re.vendor.contract</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'active' and days_to_expiry &lt; 0" decoration-warning="state == 'active' and days_to_expiry &lt; 60">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="contract_type"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="days_to_expiry"/>
+                <field name="value"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_re_contract_form" model="ir.ui.view">
+        <field name="name">re.vendor.contract.form</field>
+        <field name="model">re.vendor.contract</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object" string="Activate" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_terminate" type="object" string="Terminate" invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="reference"/>
+                            <field name="contract_type"/>
+                            <field name="service_category_ids" widget="many2many_tags"/>
+                            <field name="property_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="value"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="payment_term_id"/>
+                            <field name="response_time_hours"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Agreed Pricing" name="pricing"><field name="pricing"/></page>
+                        <page string="Equipment Covered" name="equipment">
+                            <field name="equipment_ids" readonly="1">
+                                <list><field name="re_asset_code"/><field name="name"/><field name="re_property_id"/></list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_contract" model="ir.actions.act_window">
+        <field name="name">Vendor Contracts</field>
+        <field name="res_model">re.vendor.contract</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_re_vendor_list" model="ir.ui.view">
+        <field name="name">res.partner.re.vendor.list</field>
+        <field name="model">res.partner</field>
+        <field name="priority">60</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email" optional="show"/>
+                <field name="re_service_category_ids" widget="many2many_tags"/>
+                <field name="re_tin" optional="hide"/>
+                <field name="re_insurance_expiry" optional="show"/>
+                <field name="re_is_compliant"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_re_vendor_perf_list" model="ir.ui.view">
+        <field name="name">res.partner.re.vendor.performance</field>
+        <field name="model">res.partner</field>
+        <field name="priority">61</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="name"/>
+                <field name="re_jobs_assigned"/>
+                <field name="re_jobs_completed"/>
+                <field name="re_on_time_completion" widget="progressbar"/>
+                <field name="re_avg_completion_days"/>
+                <field name="re_repeat_faults"/>
+                <field name="re_complaints"/>
+                <field name="re_avg_rating"/>
+                <field name="re_approved_spend"/>
+                <field name="re_actual_spend"/>
+                <field name="re_cost_variance_pct"/>
+                <field name="re_company_currency_id" column_invisible="1"/>
+                <field name="re_is_compliant"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_re_vendor" model="ir.actions.act_window">
+        <field name="name">Vendor Register</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('re_is_contractor', '=', True)]</field>
+        <field name="context">{'default_re_is_contractor': True, 'default_is_company': True, 'res_partner_search_mode': 'supplier'}</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_re_vendor_list')}), (0, 0, {'view_mode': 'kanban'}), (0, 0, {'view_mode': 'form'})]"/>
+    </record>
+    <record id="action_re_vendor_performance" model="ir.actions.act_window">
+        <field name="name">Contractor Performance</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('re_is_contractor', '=', True)]</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_re_vendor_perf_list')}), (0, 0, {'view_mode': 'form'})]"/>
+    </record>
+    <record id="action_re_rfq" model="ir.actions.act_window">
+        <field name="name">Maintenance Quotations</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('re_work_order_id', '!=', False), ('state', 'in', ('draft', 'sent', 'to approve'))]</field>
+    </record>
+    <record id="action_re_po" model="ir.actions.act_window">
+        <field name="name">Property Purchase Orders</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="domain">[('re_property_id', '!=', False), ('state', 'in', ('purchase', 'done'))]</field>
+    </record>
+</odoo>

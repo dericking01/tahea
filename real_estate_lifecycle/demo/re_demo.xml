@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo data: Dar es Salaam portfolio. Amounts are in the company currency. -->
+    <record id="demo_portfolio_res" model="re.portfolio">
+        <field name="name">Dar es Salaam Residential</field>
+        <field name="code">DSM-RES</field>
+        <field name="manager_id" ref="base.user_admin"/>
+    </record>
+    <record id="demo_portfolio_com" model="re.portfolio">
+        <field name="name">Commercial &amp; Land</field>
+        <field name="code">COM</field>
+        <field name="manager_id" ref="base.user_admin"/>
+    </record>
+
+    <record id="demo_owner" model="res.partner">
+        <field name="name">Bahari Holdings Ltd</field>
+        <field name="is_company" eval="True"/>
+        <field name="city">Dar es Salaam</field>
+    </record>
+
+    <!-- Property 1: apartments -->
+    <record id="demo_prop_msasani" model="re.property">
+        <field name="name">Msasani Peninsula Apartments</field>
+        <field name="code">MSA</field>
+        <field name="property_type_id" ref="property_type_apartment"/>
+        <field name="portfolio_id" ref="demo_portfolio_res"/>
+        <field name="state">active</field>
+        <field name="street">Haile Selassie Road</field>
+        <field name="ward">Msasani</field>
+        <field name="district">Kinondoni</field>
+        <field name="region">Dar es Salaam</field>
+        <field name="latitude">-6.7516</field>
+        <field name="longitude">39.2717</field>
+        <field name="acquisition_date" eval="(DateTime.today() - relativedelta(years=6)).strftime('%Y-01-15')"/>
+        <field name="purchase_price">4500000000</field>
+        <field name="title_type">granted_ro</field>
+        <field name="title_number">CT 104523</field>
+        <field name="plot_number">1123</field>
+        <field name="block_number">B</field>
+        <field name="title_term_years">99</field>
+        <field name="title_issue_date">2004-03-01</field>
+        <field name="insurer_id" ref="demo_owner"/>
+        <field name="insurance_policy">FIRE-2026-0091</field>
+        <field name="insured_value">3800000000</field>
+        <field name="insurance_expiry" eval="(DateTime.today() + relativedelta(days=20)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="demo_own_msasani" model="re.property.ownership">
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="owner_id" ref="demo_owner"/>
+        <field name="role">legal_owner</field>
+        <field name="percentage">100</field>
+        <field name="date_from" eval="(DateTime.today() - relativedelta(years=6)).strftime('%Y-01-15')"/>
+    </record>
+    <record id="demo_val_msasani" model="re.property.valuation">
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="date" eval="(DateTime.today() - relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+        <field name="method">income</field>
+        <field name="value">5200000000</field>
+        <field name="state">approved</field>
+        <field name="re_approval_state">not_required</field>
+    </record>
+    <record id="demo_bld_a" model="re.building">
+        <field name="name">Tower A</field>
+        <field name="code">A</field>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_use">residential</field>
+        <field name="year_built">2008</field>
+    </record>
+    <record id="demo_floor_a1" model="re.floor"><field name="name">1st Floor</field><field name="level">1</field><field name="building_id" ref="demo_bld_a"/></record>
+    <record id="demo_floor_a2" model="re.floor"><field name="name">2nd Floor</field><field name="level">2</field><field name="building_id" ref="demo_bld_a"/></record>
+    <record id="demo_unit_a101" model="re.unit"><field name="name">A-101</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a1"/><field name="unit_type">apartment</field><field name="area">95</field><field name="bedrooms">2</field><field name="market_rent">2200000</field></record>
+    <record id="demo_unit_a102" model="re.unit"><field name="name">A-102</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a1"/><field name="unit_type">apartment</field><field name="area">120</field><field name="bedrooms">3</field><field name="market_rent">2800000</field></record>
+    <record id="demo_unit_a103" model="re.unit"><field name="name">A-103</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a1"/><field name="unit_type">studio</field><field name="area">45</field><field name="market_rent">1100000</field></record>
+    <record id="demo_unit_a201" model="re.unit"><field name="name">A-201</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a2"/><field name="unit_type">apartment</field><field name="area">95</field><field name="bedrooms">2</field><field name="market_rent">2300000</field></record>
+    <record id="demo_unit_a202" model="re.unit"><field name="name">A-202</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a2"/><field name="unit_type">apartment</field><field name="area">120</field><field name="bedrooms">3</field><field name="market_rent">2900000</field>
+        <!-- Occupied without a lease: demonstrates revenue-leakage detection -->
+        <field name="occupancy_status">occupied</field></record>
+    <record id="demo_unit_a203" model="re.unit"><field name="name">A-203</field><field name="property_id" ref="demo_prop_msasani"/><field name="building_id" ref="demo_bld_a"/><field name="floor_id" ref="demo_floor_a2"/><field name="unit_type">apartment</field><field name="area">95</field><field name="bedrooms">2</field><field name="market_rent">2300000</field></record>
+
+    <!-- Property 2: commercial -->
+    <record id="demo_prop_kariakoo" model="re.property">
+        <field name="name">Kariakoo Trade Centre</field>
+        <field name="code">KTC</field>
+        <field name="property_type_id" ref="property_type_mall"/>
+        <field name="portfolio_id" ref="demo_portfolio_com"/>
+        <field name="state">active</field>
+        <field name="street">Msimbazi Street</field>
+        <field name="ward">Kariakoo</field>
+        <field name="district">Ilala</field>
+        <field name="region">Dar es Salaam</field>
+        <field name="purchase_price">7800000000</field>
+    </record>
+    <record id="demo_bld_k" model="re.building">
+        <field name="name">Main Block</field>
+        <field name="code">M</field>
+        <field name="property_id" ref="demo_prop_kariakoo"/>
+        <field name="building_use">retail</field>
+    </record>
+    <record id="demo_unit_k01" model="re.unit"><field name="name">G-01</field><field name="property_id" ref="demo_prop_kariakoo"/><field name="building_id" ref="demo_bld_k"/><field name="unit_type">retail</field><field name="area">60</field><field name="market_rent">3500000</field></record>
+    <record id="demo_unit_k02" model="re.unit"><field name="name">G-02</field><field name="property_id" ref="demo_prop_kariakoo"/><field name="building_id" ref="demo_bld_k"/><field name="unit_type">retail</field><field name="area">80</field><field name="market_rent">4500000</field></record>
+    <record id="demo_unit_k03" model="re.unit"><field name="name">G-03</field><field name="property_id" ref="demo_prop_kariakoo"/><field name="building_id" ref="demo_bld_k"/><field name="unit_type">retail</field><field name="area">40</field><field name="market_rent">2500000</field></record>
+    <record id="demo_unit_k04" model="re.unit"><field name="name">MGT</field><field name="property_id" ref="demo_prop_kariakoo"/><field name="building_id" ref="demo_bld_k"/><field name="unit_type">common</field><field name="area">30</field><field name="is_lettable" eval="False"/><field name="service_charge_basis">excluded</field></record>
+
+    <!-- Property 3: land -->
+    <record id="demo_prop_land" model="re.property">
+        <field name="name">Kigamboni Residential Plots</field>
+        <field name="code">KGB</field>
+        <field name="property_type_id" ref="property_type_res_plots"/>
+        <field name="portfolio_id" ref="demo_portfolio_com"/>
+        <field name="district">Kigamboni</field>
+        <field name="region">Dar es Salaam</field>
+        <field name="land_area">5</field>
+        <field name="land_area_unit_id" ref="area_unit_ha"/>
+        <field name="purchase_price">900000000</field>
+        <field name="title_type">offer_letter</field>
+    </record>
+    <record id="demo_land_enc" model="re.land.encumbrance">
+        <field name="property_id" ref="demo_prop_land"/>
+        <field name="encumbrance_type">mortgage</field>
+        <field name="holder_id" ref="demo_owner"/>
+        <field name="amount">400000000</field>
+        <field name="reference">MTG/2025/77</field>
+    </record>
+    <record id="demo_plot_1" model="re.unit"><field name="name">KGB-1</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/1</field></record>
+    <record id="demo_plot_2" model="re.unit"><field name="name">KGB-2</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/2</field></record>
+    <record id="demo_plot_3" model="re.unit"><field name="name">KGB-3</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/3</field></record>
+    <record id="demo_plot_4" model="re.unit"><field name="name">KGB-4</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/4</field></record>
+    <record id="demo_plot_5" model="re.unit"><field name="name">KGB-5</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/5</field></record>
+    <record id="demo_plot_6" model="re.unit"><field name="name">KGB-6</field><field name="property_id" ref="demo_prop_land"/><field name="unit_type">plot</field><field name="area">600</field><field name="land_use">residential</field><field name="service_charge_basis">excluded</field><field name="plot_value">45000000</field><field name="survey_number">SP/KGB/6</field></record>
+
+    <!-- Tenants -->
+    <record id="demo_tenant_1" model="res.partner"><field name="name">Neema Mushi</field><field name="re_is_tenant" eval="True"/><field name="re_tenant_type">individual</field><field name="re_id_type">nida</field><field name="re_id_number">19850312-12345-00001-21</field><field name="email">neema.mushi@example.com</field><field name="phone">+255 754 000 111</field></record>
+    <record id="demo_tenant_2" model="res.partner"><field name="name">Juma Kassim</field><field name="re_is_tenant" eval="True"/><field name="re_tenant_type">individual</field><field name="email">juma.kassim@example.com</field></record>
+    <record id="demo_tenant_3" model="res.partner"><field name="name">Upendo Pharmacy Ltd</field><field name="is_company" eval="True"/><field name="re_is_tenant" eval="True"/><field name="re_tenant_type">company</field><field name="email">info@upendo.example.com</field></record>
+    <record id="demo_tenant_4" model="res.partner"><field name="name">Safari Electronics</field><field name="is_company" eval="True"/><field name="re_is_tenant" eval="True"/><field name="re_tenant_type">company</field></record>
+
+    <!-- Contractors -->
+    <record id="demo_contractor_lift" model="res.partner">
+        <field name="name">Lifti Bora Engineering</field>
+        <field name="is_company" eval="True"/>
+        <field name="re_is_contractor" eval="True"/>
+        <field name="re_service_category_ids" eval="[(6, 0, [ref('service_category_lifts')])]"/>
+        <field name="re_tin">123-456-789</field>
+        <field name="re_insurance_expiry" eval="(DateTime.today() + relativedelta(months=8)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="demo_contractor_lift_crb" model="re.vendor.license">
+        <field name="partner_id" ref="demo_contractor_lift"/>
+        <field name="license_type">crb</field>
+        <field name="number">CRB/EL/2291</field>
+        <field name="grade">Class II Electrical</field>
+        <field name="expiry_date" eval="(DateTime.today() + relativedelta(months=5)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="demo_contractor_plumb" model="res.partner">
+        <field name="name">Maji Safi Plumbers</field>
+        <field name="is_company" eval="True"/>
+        <field name="re_is_contractor" eval="True"/>
+        <field name="re_service_category_ids" eval="[(6, 0, [ref('service_category_plumbing')])]"/>
+        <field name="re_insurance_expiry" eval="(DateTime.today() - relativedelta(days=10)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="demo_contract_lift" model="re.vendor.contract">
+        <field name="name">Lift maintenance agreement – Tower A</field>
+        <field name="partner_id" ref="demo_contractor_lift"/>
+        <field name="contract_type">maintenance</field>
+        <field name="date_start" eval="(DateTime.today() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="date_end" eval="(DateTime.today() + relativedelta(days=45)).strftime('%Y-%m-%d')"/>
+        <field name="value">12000000</field>
+        <field name="state">active</field>
+        <field name="property_ids" eval="[(6, 0, [ref('demo_prop_msasani')])]"/>
+    </record>
+
+    <!-- Leases (demo: approved directly, then activated through the normal action) -->
+    <record id="demo_lease_1" model="re.lease">
+        <field name="tenant_id" ref="demo_tenant_1"/>
+        <field name="lease_type_id" ref="lease_type_residential"/>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_id" ref="demo_bld_a"/>
+        <field name="unit_ids" eval="[(6, 0, [ref('demo_unit_a101')])]"/>
+        <field name="date_start" eval="(DateTime.today() - relativedelta(months=10)).strftime('%Y-%m-01')"/>
+        <field name="date_end" eval="(DateTime.today() + relativedelta(months=2)).strftime('%Y-%m-28')"/>
+        <field name="rent_amount">2200000</field>
+        <field name="deposit_amount">4400000</field>
+        <field name="state">approved</field>
+        <field name="re_approval_state">not_required</field>
+        <field name="is_signed" eval="True"/>
+    </record>
+    <record id="demo_lease_2" model="re.lease">
+        <field name="tenant_id" ref="demo_tenant_2"/>
+        <field name="lease_type_id" ref="lease_type_residential"/>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_id" ref="demo_bld_a"/>
+        <field name="unit_ids" eval="[(6, 0, [ref('demo_unit_a102')])]"/>
+        <field name="date_start" eval="(DateTime.today() - relativedelta(months=4)).strftime('%Y-%m-01')"/>
+        <field name="date_end" eval="(DateTime.today() + relativedelta(months=20)).strftime('%Y-%m-28')"/>
+        <field name="rent_amount">2800000</field>
+        <field name="state">approved</field>
+        <field name="re_approval_state">not_required</field>
+    </record>
+    <record id="demo_lease_3" model="re.lease" context="{'re_lease_amendment_apply': True}">
+        <field name="tenant_id" ref="demo_tenant_3"/>
+        <field name="lease_type_id" ref="lease_type_commercial"/>
+        <field name="property_id" ref="demo_prop_kariakoo"/>
+        <field name="building_id" ref="demo_bld_k"/>
+        <field name="unit_ids" eval="[(6, 0, [ref('demo_unit_k01'), ref('demo_unit_k02')])]"/>
+        <field name="date_start" eval="(DateTime.today() - relativedelta(months=14)).strftime('%Y-%m-01')"/>
+        <field name="date_end" eval="(DateTime.today() + relativedelta(months=46)).strftime('%Y-%m-28')"/>
+        <field name="rent_amount">7500000</field>
+        <field name="billing_frequency">quarterly</field>
+        <field name="turnover_rent_enabled" eval="True"/>
+        <field name="turnover_rate">6</field>
+        <field name="state">approved</field>
+        <field name="re_approval_state">not_required</field>
+        <field name="is_signed" eval="True"/>
+        <field name="escalation_ids" eval="[(0, 0, {'effective_date': (DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-01'), 'method': 'percent', 'value': 7.0, 'state': 'approved', 'contractual': True})]"/>
+    </record>
+    <function model="re.lease" name="action_activate" eval="[[ref('demo_lease_1'), ref('demo_lease_2'), ref('demo_lease_3')]]"/>
+
+    <!-- Equipment & maintenance -->
+    <record id="demo_eq_lift" model="maintenance.equipment">
+        <field name="name">Passenger Lift – Tower A</field>
+        <field name="re_property_id" ref="demo_prop_msasani"/>
+        <field name="re_building_id" ref="demo_bld_a"/>
+        <field name="re_asset_category_id" ref="asset_category_elevator"/>
+        <field name="re_manufacturer">Otis</field>
+        <field name="serial_no">OT-TZ-88231</field>
+        <field name="re_installation_date">2008-06-01</field>
+        <field name="re_expected_life_years">20</field>
+        <field name="re_criticality">critical</field>
+        <field name="re_condition">fair</field>
+        <field name="re_replacement_cost">180000000</field>
+        <field name="re_service_contract_id" ref="demo_contract_lift"/>
+    </record>
+    <record id="demo_eq_gen" model="maintenance.equipment">
+        <field name="name">Standby Generator 250 kVA</field>
+        <field name="re_property_id" ref="demo_prop_msasani"/>
+        <field name="re_building_id" ref="demo_bld_a"/>
+        <field name="re_asset_category_id" ref="asset_category_generator"/>
+        <field name="serial_no">GEN-250-4410</field>
+        <field name="re_installation_date">2016-02-01</field>
+        <field name="re_expected_life_years">15</field>
+        <field name="re_criticality">critical</field>
+        <field name="re_replacement_cost">95000000</field>
+    </record>
+    <record id="demo_plan_lift" model="re.maintenance.plan">
+        <field name="name">Monthly lift service</field>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_id" ref="demo_bld_a"/>
+        <field name="equipment_id" ref="demo_eq_lift"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="next_date" eval="(DateTime.today() + relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="contractor_id" ref="demo_contractor_lift"/>
+        <field name="estimated_cost">1000000</field>
+    </record>
+    <record id="demo_wo_1" model="re.work.order">
+        <field name="title">Lift doors not closing on level 2</field>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_id" ref="demo_bld_a"/>
+        <field name="equipment_id" ref="demo_eq_lift"/>
+        <field name="maintenance_type">corrective</field>
+        <field name="priority">2</field>
+        <field name="estimated_cost">2500000</field>
+        <field name="contractor_id" ref="demo_contractor_lift"/>
+        <field name="execution">contractor</field>
+        <field name="state">triage</field>
+        <field name="date_target" eval="(DateTime.today() - relativedelta(days=3)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- Approval tiers for maintenance (review amounts for your currency) -->
+    <record id="demo_rule_wo_mm" model="re.approval.rule">
+        <field name="name">Maintenance >= 5,000,000 (maintenance manager)</field>
+        <field name="document_type">work_order</field>
+        <field name="min_amount">5000000</field>
+        <field name="group_id" ref="group_re_maintenance_manager"/>
+        <field name="segregation" eval="True"/>
+    </record>
+    <record id="demo_rule_wo_dir" model="re.approval.rule">
+        <field name="name">Maintenance >= 20,000,000 (director)</field>
+        <field name="document_type">work_order</field>
+        <field name="min_amount">20000000</field>
+        <field name="group_id" ref="group_re_director"/>
+        <field name="segregation" eval="True"/>
+    </record>
+
+    <!-- Utilities -->
+    <record id="demo_tariff_elec" model="re.utility.tariff">
+        <field name="name">Electricity recovery tariff</field>
+        <field name="utility_type">electricity</field>
+        <field name="uom_label">kWh</field>
+        <field name="rate">357</field>
+        <field name="note">Review against the current utility tariff schedule.</field>
+    </record>
+    <record id="demo_tariff_water" model="re.utility.tariff">
+        <field name="name">Water recovery tariff</field>
+        <field name="utility_type">water</field>
+        <field name="uom_label">m³</field>
+        <field name="rate">1663</field>
+    </record>
+    <record id="demo_meter_a101_w" model="re.meter">
+        <field name="name">W-A101</field>
+        <field name="utility_type">water</field>
+        <field name="property_id" ref="demo_prop_msasani"/>
+        <field name="building_id" ref="demo_bld_a"/>
+        <field name="unit_id" ref="demo_unit_a101"/>
+        <field name="tariff_id" ref="demo_tariff_water"/>
+        <field name="initial_reading">1200</field>
+    </record>
+
+    <!-- Tenant experience: two water complaints in the same building => shared issue -->
+    <record id="demo_ticket_1" model="re.tenant.ticket">
+        <field name="subject">No water since morning</field>
+        <field name="ticket_type">complaint</field>
+        <field name="category_id" ref="complaint_category_water"/>
+        <field name="partner_id" ref="demo_tenant_1"/>
+        <field name="lease_id" ref="demo_lease_1"/>
+    </record>
+    <record id="demo_ticket_2" model="re.tenant.ticket">
+        <field name="subject">Low water pressure</field>
+        <field name="ticket_type">complaint</field>
+        <field name="category_id" ref="complaint_category_water"/>
+        <field name="partner_id" ref="demo_tenant_2"/>
+        <field name="lease_id" ref="demo_lease_2"/>
+    </record>
+    <record id="demo_announcement" model="re.announcement">
+        <field name="name">Scheduled water tank cleaning</field>
+        <field name="body">&lt;p&gt;Water supply will be interrupted on Saturday from 08:00 to 12:00 for tank cleaning.&lt;/p&gt;</field>
+        <field name="property_ids" eval="[(6, 0, [ref('demo_prop_msasani')])]"/>
+        <field name="published" eval="True"/>
+    </record>
+
+    <!-- Rental prospect -->
+    <record id="demo_lead_1" model="crm.lead">
+        <field name="name">Enquiry – 2-bed apartment Msasani</field>
+        <field name="type">opportunity</field>
+        <field name="re_is_rental" eval="True"/>
+        <field name="contact_name">Rehema Said</field>
+        <field name="email_from">rehema@example.com</field>
+        <field name="re_property_id" ref="demo_prop_msasani"/>
+        <field name="re_unit_ids" eval="[(6, 0, [ref('demo_unit_a203')])]"/>
+        <field name="re_proposed_rent">2300000</field>
+        <field name="re_viewing_date" eval="(DateTime.today() + relativedelta(days=2)).strftime('%Y-%m-%d 10:00:00')"/>
+    </record>
+
+    <!-- Investment appraisal -->
+    <record id="demo_investment" model="re.investment">
+        <field name="name">Mbezi Beach Townhouses</field>
+        <field name="property_type_id" ref="property_type_residential"/>
+        <field name="location">Mbezi Beach, Dar es Salaam</field>
+        <field name="region">Dar es Salaam</field>
+        <field name="land_cost">600000000</field>
+        <field name="construction_cost">2400000000</field>
+        <field name="professional_fees">180000000</field>
+        <field name="other_costs">60000000</field>
+        <field name="loan_amount">1500000000</field>
+        <field name="interest_rate">16</field>
+        <field name="loan_term_years">10</field>
+        <field name="annual_gross_rent">480000000</field>
+        <field name="expected_occupancy">88</field>
+        <field name="annual_opex">60000000</field>
+        <field name="annual_maintenance">20000000</field>
+        <field name="annual_capex">10000000</field>
+        <field name="rent_growth">6</field>
+        <field name="opex_growth">5</field>
+        <field name="discount_rate">15</field>
+        <field name="holding_years">10</field>
+        <field name="exit_cap_rate">10</field>
+        <field name="assumptions_note">&lt;p&gt;Rent based on comparable townhouse lettings; construction per QS estimate; bank term sheet indicative.&lt;/p&gt;</field>
+    </record>
+
+    <function model="re.exception" name="run_checks"/>
+</odoo>

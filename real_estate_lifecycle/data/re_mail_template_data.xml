@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_re_payment_reminder" model="mail.template">
+            <field name="name">Real Estate: Payment Reminder</field>
+            <field name="model_id" ref="model_re_collection_case"/>
+            <field name="subject">Payment reminder - {{ object.company_id.name }}</field>
+            <field name="email_from">{{ (object.user_id.email_formatted or object.company_id.email_formatted or '') }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; font-size: 14px;">
+    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+    <p>Our records show an overdue balance of
+        <strong><t t-out="format_amount(object.overdue_amount, object.currency_id)"/></strong>
+        on your tenant account<t t-if="object.lease_id"> for lease <t t-out="object.lease_id.name"/></t>.</p>
+    <p t-if="object.disputed_amount">Amounts under dispute
+        (<t t-out="format_amount(object.disputed_amount, object.currency_id)"/>) are excluded until the dispute is resolved.</p>
+    <p>Please settle the balance or contact us to agree a payment arrangement. If you have already paid, please share the
+        payment reference so that we can allocate it.</p>
+    <p>You can view your statement and invoices in your tenant portal.</p>
+    <p>Kind regards,<br/><t t-out="object.user_id.name or object.company_id.name"/></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
+</odoo>

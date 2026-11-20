@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_collection_list" model="ir.ui.view">
+        <field name="name">re.collection.case.list</field>
+        <field name="model">re.collection.case</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="priority == '2'" decoration-warning="priority == '1'">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="lease_id" optional="show"/>
+                <field name="property_id" optional="show"/>
+                <field name="overdue_amount"/>
+                <field name="disputed_amount"/>
+                <field name="oldest_days"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="next_action_date"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="priority" widget="priority"/>
+                <field name="review_required" optional="show"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_collection_kanban" model="ir.ui.view">
+        <field name="name">re.collection.case.kanban</field>
+        <field name="model">re.collection.case</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="partner_id" class="fw-bold"/>
+                            <field name="priority" widget="priority"/>
+                        </div>
+                        <field name="property_id" class="text-muted"/>
+                        <div>Overdue: <field name="overdue_amount" widget="monetary"/></div>
+                        <div class="d-flex justify-content-between">
+                            <field name="next_action_date"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_collection_form" model="ir.ui.view">
+        <field name="name">re.collection.case.form</field>
+        <field name="model">re.collection.case</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_send_reminder" type="object" string="Send Reminder" class="btn-primary" invisible="state in ('resolved', 'closed')"/>
+                    <button name="action_escalate" type="object" string="Escalate" invisible="state in ('resolved', 'closed', 'legal')"/>
+                    <button name="action_legal" type="object" string="Legal / Notice" invisible="state != 'escalated'"/>
+                    <button name="action_management_review" type="object" string="Record Management Review" invisible="not review_required"/>
+                    <button name="action_resolve" type="object" string="Resolved" invisible="state in ('resolved', 'closed')"/>
+                    <button name="action_close" type="object" string="Close" invisible="state == 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,promise,arrangement,escalated,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_open_items" type="object" class="oe_stat_button" icon="fa-list" string="Open Items"/>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="lease_id"/>
+                            <field name="property_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="next_action_date"/>
+                        </group>
+                        <group>
+                            <field name="overdue_amount"/>
+                            <field name="disputed_amount"/>
+                            <field name="total_due"/>
+                            <field name="oldest_days"/>
+                            <field name="escalation_level"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Promises &amp; Arrangements" name="promises">
+                            <field name="promise_ids">
+                                <list editable="bottom" decoration-success="state == 'kept'" decoration-danger="state == 'broken'">
+                                    <field name="kind"/>
+                                    <field name="date_recorded"/>
+                                    <field name="date_promised"/>
+                                    <field name="amount" sum="Promised"/>
+                                    <field name="received_amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Review" name="review">
+                            <group>
+                                <field name="review_required"/>
+                                <field name="reviewed_by_id"/>
+                                <field name="reviewed_date"/>
+                                <field name="review_note"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_collection" model="ir.actions.act_window">
+        <field name="name">Collections</field>
+        <field name="res_model">re.collection.case</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+</odoo>

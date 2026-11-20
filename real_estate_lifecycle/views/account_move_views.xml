@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_re" model="ir.ui.view">
+        <field name="name">account.move.form.re</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="re_can_approve" invisible="1"/>
+                <field name="re_is_tenant_document" invisible="1"/>
+                <button name="action_re_request_adjustment_approval" type="object" string="Request Adjustment Approval" invisible="move_type != 'out_refund' or not re_is_tenant_document or re_approval_state not in ('none', 'rejected') or re_deposit_id"/>
+                <button name="action_re_approve_adjustment" type="object" string="Approve Adjustment" class="btn-primary" invisible="not re_can_approve"/>
+                <button name="action_re_open_reject_wizard" type="object" string="Reject Adjustment" invisible="not re_can_approve"/>
+            </xpath>
+            <xpath expr="//page[@name='other_info']" position="before">
+                <page string="Real Estate" name="real_estate" invisible="not re_lease_id and not re_work_order_id and not re_property_id and not re_deposit_id">
+                    <group>
+                        <group>
+                            <field name="re_lease_id"/>
+                            <field name="re_property_id"/>
+                            <field name="re_building_id"/>
+                            <field name="re_deposit_id"/>
+                            <field name="re_work_order_id" invisible="move_type not in ('in_invoice', 'in_refund')"/>
+                        </group>
+                        <group string="Dispute" invisible="move_type != 'out_invoice'">
+                            <field name="re_dispute_state"/>
+                            <field name="re_dispute_reason" invisible="re_dispute_state == 'none'"/>
+                            <field name="re_dispute_ticket_id" invisible="not re_dispute_ticket_id"/>
+                        </group>
+                        <group string="Adjustment Approval" invisible="move_type != 'out_refund'">
+                            <field name="re_approval_state"/>
+                            <field name="re_requested_by_id"/>
+                            <field name="re_approved_by_id"/>
+                            <field name="re_approved_date"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='name']" position="after">
+                <field name="re_charge_type" optional="hide"/>
+                <field name="re_period_start" optional="hide"/>
+                <field name="re_period_end" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_line_tree_re" model="ir.ui.view">
+        <field name="name">account.move.line.re.list</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">60</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="date"/>
+                <field name="move_id"/>
+                <field name="account_id"/>
+                <field name="partner_id"/>
+                <field name="re_property_id"/>
+                <field name="re_building_id" optional="show"/>
+                <field name="re_lease_id" optional="show"/>
+                <field name="re_charge_type" optional="show"/>
+                <field name="name"/>
+                <field name="balance" sum="Balance"/>
+                <field name="company_currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_re_rental_invoices" model="ir.actions.act_window">
+        <field name="name">Rental Invoices</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('re_lease_id', '!=', False), ('move_type', 'in', ('out_invoice', 'out_refund'))]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+    </record>
+
+    <record id="action_re_disputed_invoices" model="ir.actions.act_window">
+        <field name="name">Disputed Invoices</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('re_dispute_state', '=', 'open')]</field>
+    </record>
+
+    <record id="action_re_property_profitability" model="ir.actions.act_window">
+        <field name="name">Property Profitability (Ledger)</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('re_property_id', '!=', False), ('parent_state', '=', 'posted'), ('account_id.account_type', 'in', ('income', 'income_other', 'expense', 'expense_direct_cost'))]</field>
+        <field name="context">{'pivot_row_groupby': ['re_property_id', 'account_id'], 'pivot_column_groupby': ['date:quarter'], 'pivot_measures': ['balance']}</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'pivot'}), (0, 0, {'view_mode': 'graph'}), (0, 0, {'view_mode': 'list', 'view_id': ref('view_move_line_tree_re')})]"/>
+        <field name="help" type="html"><p>Posted revenue and operating expense lines analytically allocated to properties. Revenue shows as negative balance (credit). Use the Property Income Statement report for NOI.</p></field>
+    </record>
+</odoo>

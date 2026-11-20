@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_lease_search" model="ir.ui.view">
+        <field name="name">re.lease.search</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="unit_ids"/>
+                <field name="user_id"/>
+                <filter name="my" string="My Leases" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="to_approve" string="Awaiting Approval" domain="[('state', '=', 'to_approve')]"/>
+                <filter name="live" string="Active &amp; Expiring" domain="[('state', 'in', ('active', 'expiring'))]"/>
+                <filter name="expiring" string="Expiring" domain="[('state', '=', 'expiring')]"/>
+                <filter name="ended" string="Expired / Terminated" domain="[('state', 'in', ('expired', 'terminated'))]"/>
+                <separator/>
+                <filter name="exp90" string="Ends within 90 days" domain="[('state', 'in', ('active', 'expiring')), ('effective_end_date', '&lt;=', (context_today() + relativedelta(days=90)).strftime('%Y-%m-%d'))]"/>
+                <filter name="unsigned" string="Not Signed" domain="[('is_signed', '=', False), ('state', 'in', ('approved', 'active', 'expiring'))]"/>
+                <filter name="renewals" string="Renewals" domain="[('parent_lease_id', '!=', False)]"/>
+                <filter name="turnover" string="Turnover Rent" domain="[('turnover_rent_enabled', '=', True)]"/>
+                <group>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="g_type" string="Lease Type" context="{'group_by': 'lease_type_id'}"/>
+                    <filter name="g_officer" string="Leasing Officer" context="{'group_by': 'user_id'}"/>
+                    <filter name="g_end" string="End Month" context="{'group_by': 'effective_end_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_lease_list" model="ir.ui.view">
+        <field name="name">re.lease.list</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="state == 'expiring'" decoration-muted="state in ('expired', 'terminated', 'renewed', 'cancelled')" decoration-info="state in ('draft', 'to_approve')">
+                <field name="name"/>
+                <field name="tenant_id"/>
+                <field name="property_id"/>
+                <field name="unit_ids" widget="many2many_tags" optional="show"/>
+                <field name="lease_type_id" optional="hide"/>
+                <field name="date_start"/>
+                <field name="effective_end_date"/>
+                <field name="rent_amount" optional="hide"/>
+                <field name="current_rent" optional="show"/>
+                <field name="billing_frequency" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="amount_due" optional="show"/>
+                <field name="is_signed" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-warning="state in ('expiring', 'to_approve')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_lease_kanban" model="ir.ui.view">
+        <field name="name">re.lease.kanban</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" sample="1">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="name" class="fw-bold"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </div>
+                        <field name="tenant_id" class="fs-5"/>
+                        <div class="text-muted"><field name="property_id"/></div>
+                        <field name="unit_ids" widget="many2many_tags"/>
+                        <div class="d-flex justify-content-between">
+                            <field name="current_rent" widget="monetary"/>
+                            <span><field name="date_start"/> → <field name="effective_end_date"/></span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_lease_calendar" model="ir.ui.view">
+        <field name="name">re.lease.calendar</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <calendar string="Lease Expirations" date_start="effective_end_date" color="property_id" mode="month" quick_create="0">
+                <field name="tenant_id"/>
+                <field name="property_id" filters="1"/>
+                <field name="current_rent"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_re_lease_pivot" model="ir.ui.view">
+        <field name="name">re.lease.pivot</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <pivot string="Leases">
+                <field name="property_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="rent_amount" type="measure"/>
+                <field name="leased_area_sqm" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_re_lease_form" model="ir.ui.view">
+        <field name="name">re.lease.form</field>
+        <field name="model">re.lease</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="not re_can_approve or state != 'to_approve'"/>
+                    <button name="action_re_open_reject_wizard" type="object" string="Reject" invisible="not re_can_approve or state != 'to_approve'"/>
+                    <button name="action_activate" type="object" string="Activate (Move-in)" class="btn-primary" invisible="state != 'approved'"/>
+                    <button name="action_mark_signed" type="object" string="Mark as Signed" invisible="is_signed or state not in ('approved', 'active', 'expiring')"/>
+                    <button name="action_generate_due_invoices" type="object" string="Invoice Due Charges" invisible="state not in ('active', 'expiring', 'terminated', 'expired')" groups="real_estate_lifecycle.group_re_accountant,real_estate_lifecycle.group_re_leasing_officer"/>
+                    <button name="action_new_amendment" type="object" string="Amend" invisible="state not in ('approved', 'active', 'expiring')"/>
+                    <button name="action_open_renew_wizard" type="object" string="Renew" invisible="state not in ('active', 'expiring', 'expired')"/>
+                    <button name="action_open_terminate_wizard" type="object" string="Terminate" invisible="state not in ('approved', 'active', 'expiring')"/>
+                    <button name="action_record_move_out" type="object" string="Record Move-out" invisible="state not in ('expired', 'terminated') or move_out_date"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state not in ('to_approve', 'approved', 'cancelled')"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'to_approve', 'approved')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,approved,active,expiring"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o" groups="account.group_account_invoice">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_schedule" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <div class="o_stat_info"><span class="o_stat_text">Billing</span><span class="o_stat_text">Schedule</span></div>
+                        </button>
+                        <button name="action_re_view_approval_log" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="re_approval_log_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Not Signed" bg_color="text-bg-warning" invisible="is_signed or state in ('draft', 'to_approve', 'cancelled')"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <field name="re_can_approve" invisible="1"/>
+                    <group>
+                        <group string="Parties &amp; Premises">
+                            <field name="tenant_id" readonly="state != 'draft'" context="{'default_re_is_tenant': True}"/>
+                            <field name="joint_tenant_ids" widget="many2many_tags"/>
+                            <field name="lease_type_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="property_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="building_id" options="{'no_create': True}"/>
+                            <field name="unit_ids" widget="many2many_tags" readonly="state != 'draft'" options="{'no_create': True}" domain="[('property_id', '=', property_id), ('is_lettable', '=', True)]"/>
+                            <field name="leased_area_sqm"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Term">
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="date_end" readonly="state != 'draft'"/>
+                            <field name="termination_date" invisible="not termination_date"/>
+                            <field name="effective_end_date" invisible="not termination_date"/>
+                            <field name="duration_months"/>
+                            <field name="days_to_expiry" invisible="state not in ('active', 'expiring')"/>
+                            <field name="move_in_date"/>
+                            <field name="move_out_date" invisible="state not in ('expired', 'terminated', 'renewed')"/>
+                            <field name="notice_period_days"/>
+                            <field name="parent_lease_id" invisible="not parent_lease_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rent &amp; Billing" name="rent">
+                            <group>
+                                <group string="Rent">
+                                    <field name="currency_id" readonly="state != 'draft'" groups="base.group_multi_currency"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="company_currency_id" invisible="1"/>
+                                    <field name="rent_amount" readonly="state != 'draft'"/>
+                                    <field name="current_rent"/>
+                                    <label for="rent_free_date_from" string="Rent-free Period"/>
+                                    <div class="o_row">
+                                        <field name="rent_free_date_from" readonly="state != 'draft'"/> - <field name="rent_free_date_to" readonly="state != 'draft'"/>
+                                    </div>
+                                    <field name="rent_free_includes_charges" readonly="state != 'draft'"/>
+                                    <field name="deposit_amount" readonly="state != 'draft'"/>
+                                </group>
+                                <group string="Billing">
+                                    <field name="billing_frequency" readonly="state != 'draft'"/>
+                                    <field name="billing_anchor" readonly="state != 'draft'"/>
+                                    <field name="invoice_advance_days"/>
+                                    <field name="payment_term_id"/>
+                                    <field name="payment_due_days" invisible="payment_term_id"/>
+                                    <field name="fiscal_position_id"/>
+                                    <field name="next_invoice_date"/>
+                                    <field name="service_charge_applicable"/>
+                                    <field name="utility_recharge"/>
+                                </group>
+                            </group>
+                            <separator string="Escalations"/>
+                            <button name="action_generate_annual_escalations" type="object" string="Generate 5% annual escalations" class="btn-link" invisible="state != 'draft'" context="{'escalation_pct': 5.0}"/>
+                            <field name="escalation_ids" context="{'default_lease_id': id}">
+                                <list editable="bottom" decoration-success="state in ('approved', 'applied')" decoration-warning="state == 'to_approve'">
+                                    <field name="effective_date" readonly="state in ('approved', 'applied')"/>
+                                    <field name="method" readonly="state in ('approved', 'applied')"/>
+                                    <field name="value" readonly="state in ('approved', 'applied')"/>
+                                    <field name="rent_before"/>
+                                    <field name="rent_after"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="contractual"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="re_can_approve" column_invisible="1"/>
+                                    <button name="action_submit" type="object" icon="fa-paper-plane" title="Submit" invisible="state != 'draft' or parent.state == 'draft'"/>
+                                    <button name="action_approve" type="object" icon="fa-check" title="Approve" invisible="not re_can_approve"/>
+                                </list>
+                            </field>
+                            <separator string="Other Contractual Charges (monthly amounts)"/>
+                            <field name="charge_ids" readonly="state != 'draft'" context="{'default_lease_id': id}">
+                                <list editable="bottom">
+                                    <field name="charge_type"/>
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="service_charge_budget_id" optional="hide"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                            <group string="Financial Position (from Accounting)" groups="account.group_account_invoice,real_estate_lifecycle.group_re_leasing_officer">
+                                <field name="amount_invoiced"/>
+                                <field name="amount_due"/>
+                                <field name="deposit_held"/>
+                            </group>
+                        </page>
+                        <page string="Turnover Rent" name="turnover" invisible="lease_category not in ('commercial', 'industrial', False) and not turnover_rent_enabled">
+                            <group>
+                                <group>
+                                    <field name="lease_category" invisible="1"/>
+                                    <field name="turnover_rent_enabled" readonly="state != 'draft'"/>
+                                    <field name="turnover_rate" readonly="state != 'draft'" invisible="not turnover_rent_enabled"/>
+                                    <field name="turnover_breakpoint" readonly="state != 'draft'" invisible="not turnover_rent_enabled"/>
+                                    <field name="turnover_mode" readonly="state != 'draft'" invisible="not turnover_rent_enabled"/>
+                                </group>
+                            </group>
+                            <field name="turnover_report_ids" invisible="not turnover_rent_enabled" context="{'default_lease_id': id}">
+                                <list>
+                                    <field name="period_start"/>
+                                    <field name="period_end"/>
+                                    <field name="gross_sales"/>
+                                    <field name="base_rent_billed"/>
+                                    <field name="turnover_rent"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Clauses" name="clauses">
+                            <group>
+                                <field name="renewal_terms"/>
+                                <field name="termination_conditions"/>
+                                <field name="break_clause_date"/>
+                                <field name="break_clause_terms"/>
+                            </group>
+                            <group string="Termination" invisible="not termination_type">
+                                <field name="termination_type"/>
+                                <field name="termination_reason"/>
+                            </group>
+                        </page>
+                        <page string="Deposits" name="deposits">
+                            <field name="deposit_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="purpose"/>
+                                    <field name="amount"/>
+                                    <field name="received_amount"/>
+                                    <field name="held_amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Amendments" name="amendments">
+                            <field name="amendment_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="amendment_type"/>
+                                    <field name="effective_date"/>
+                                    <field name="description"/>
+                                    <field name="re_requested_by_id"/>
+                                    <field name="re_approved_by_id"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Signature &amp; Approval" name="approval">
+                            <group>
+                                <group string="Agreement">
+                                    <field name="is_signed"/>
+                                    <field name="signed_date"/>
+                                    <field name="signed_attachment_id" options="{'no_create': True}"/>
+                                    <field name="crm_lead_id"/>
+                                </group>
+                                <group string="Approval">
+                                    <field name="re_approval_state"/>
+                                    <field name="re_approval_rule_id"/>
+                                    <field name="re_requested_by_id"/>
+                                    <field name="re_approved_by_id"/>
+                                    <field name="re_approved_date"/>
+                                    <field name="re_rejection_reason" invisible="not re_rejection_reason"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_lease" model="ir.actions.act_window">
+        <field name="name">Leases</field>
+        <field name="res_model">re.lease</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a lease</p>
+            <p>Draft → Submitted → Approved → Active → Expiring → Renewed / Terminated. Billing starts on activation.</p>
+        </field>
+    </record>
+
+    <record id="action_re_lease_renewals" model="ir.actions.act_window">
+        <field name="name">Renewals</field>
+        <field name="res_model">re.lease</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">['|', ('parent_lease_id', '!=', False), ('state', '=', 'renewed')]</field>
+    </record>
+
+    <record id="action_re_lease_expiring" model="ir.actions.act_window">
+        <field name="name">Lease Expirations</field>
+        <field name="res_model">re.lease</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="domain">[('state', 'in', ('active', 'expiring', 'expired'))]</field>
+        <field name="context">{'search_default_exp90': 1}</field>
+    </record>
+
+    <!-- Amendments -->
+    <record id="view_re_amendment_form" model="ir.ui.view">
+        <field name="name">re.lease.amendment.form</field>
+        <field name="model">re.lease.amendment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit for Approval" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="not re_can_approve"/>
+                    <button name="action_re_open_reject_wizard" type="object" string="Reject" invisible="not re_can_approve"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,applied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_re_view_approval_log" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="re_approval_log_count" widget="statinfo" string="Approvals"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <field name="re_can_approve" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="lease_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="amendment_type" readonly="state != 'draft'"/>
+                            <field name="effective_date" readonly="state != 'draft'"/>
+                            <field name="current_rent"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="new_rent_amount" invisible="amendment_type != 'rent_change'" readonly="state != 'draft'"/>
+                            <field name="new_date_end" invisible="amendment_type != 'extension'" readonly="state != 'draft'"/>
+                            <field name="concession_amount" invisible="amendment_type != 'concession'" readonly="state != 'draft'"/>
+                            <field name="concession_date_to" invisible="amendment_type != 'concession'" readonly="state != 'draft'"/>
+                            <field name="charge_type" invisible="amendment_type != 'charge'" readonly="state != 'draft'"/>
+                            <field name="charge_name" invisible="amendment_type != 'charge'" readonly="state != 'draft'"/>
+                            <field name="charge_amount" invisible="amendment_type != 'charge'" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Reason and agreed terms..." readonly="state != 'draft'"/>
+                    <group string="Approval">
+                        <field name="re_approval_state"/>
+                        <field name="re_requested_by_id"/>
+                        <field name="re_approved_by_id"/>
+                        <field name="re_approved_date"/>
+                        <field name="re_rejection_reason" invisible="not re_rejection_reason"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_re_amendment_list" model="ir.ui.view">
+        <field name="name">re.lease.amendment.list</field>
+        <field name="model">re.lease.amendment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="lease_id"/>
+                <field name="amendment_type"/>
+                <field name="effective_date"/>
+                <field name="re_requested_by_id"/>
+                <field name="re_approved_by_id"/>
+                <field name="state" widget="badge" decoration-warning="state == 'to_approve'" decoration-success="state == 'applied'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_re_amendment" model="ir.actions.act_window">
+        <field name="name">Lease Amendments</field>
+        <field name="res_model">re.lease.amendment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_re_escalation_list" model="ir.ui.view">
+        <field name="name">re.lease.escalation.list</field>
+        <field name="model">re.lease.escalation</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state in ('draft', 'to_approve') and effective_date &lt;= current_date">
+                <field name="lease_id"/>
+                <field name="effective_date"/>
+                <field name="method"/>
+                <field name="value"/>
+                <field name="rent_before"/>
+                <field name="rent_after"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="contractual"/>
+                <field name="state" widget="badge"/>
+                <field name="re_can_approve" column_invisible="1"/>
+                <button name="action_submit" type="object" icon="fa-paper-plane" title="Submit" invisible="state != 'draft'"/>
+                <button name="action_approve" type="object" icon="fa-check" title="Approve" invisible="not re_can_approve"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_re_escalation" model="ir.actions.act_window">
+        <field name="name">Rent Escalations</field>
+        <field name="res_model">re.lease.escalation</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

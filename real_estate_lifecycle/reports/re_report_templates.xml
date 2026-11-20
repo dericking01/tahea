@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Generic management report: any dataset built by re.report.wizard -->
+    <template id="report_re_management">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wiz">
+                <t t-set="data" t-value="wiz._get_report_data()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 10px;">
+                        <h3 t-out="data['title']"/>
+                        <p>
+                            <strong>Period:</strong> <span t-out="data['date_from']"/> – <span t-out="data['date_to']"/>
+                            · <strong>Currency:</strong> <span t-out="data['currency']"/>
+                            · <strong>Scope:</strong> <span t-out="data['scope']"/>
+                            · <strong>Generated:</strong> <span t-out="data['generated']"/> by <span t-out="data['user']"/>
+                        </p>
+                        <t t-foreach="data['tables']" t-as="table">
+                            <h5 class="mt-3" t-out="table['title']"/>
+                            <table class="table table-sm table-bordered o_main_table">
+                                <thead>
+                                    <tr><t t-foreach="table['columns']" t-as="col"><th t-out="col"/></t></tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="table['rows']" t-as="row">
+                                        <t t-foreach="row" t-as="cell">
+                                            <t t-set="c" t-value="wiz._re_cell(cell)"/>
+                                            <td t-att-class="'text-end' if c[1] else ''" t-out="c[0]"/>
+                                        </t>
+                                    </tr>
+                                    <tr t-if="not table['rows']"><td t-att-colspan="len(table['columns'])" class="text-muted">No records.</td></tr>
+                                </tbody>
+                                <tfoot t-if="table.get('totals')">
+                                    <tr class="fw-bold">
+                                        <t t-foreach="table['totals']" t-as="cell">
+                                            <t t-set="c" t-value="wiz._re_cell(cell)"/>
+                                            <td t-att-class="'text-end' if c[1] else ''" t-out="c[0]"/>
+                                        </t>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+                        <h5 class="mt-4">Definitions</h5>
+                        <dl>
+                            <t t-foreach="data['definitions'].items()" t-as="item">
+                                <dt t-out="item[0]"/>
+                                <dd t-out="item[1]"/>
+                            </t>
+                        </dl>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_tenant_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="partner">
+                <t t-set="data" t-value="partner._re_statement_data()"/>
+                <t t-set="currency" t-value="res_company.currency_id"/>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3>Tenant Account Statement</h3>
+                        <p><strong t-out="partner.name"/><br/><span t-out="partner.contact_address"/></p>
+                        <p>Statement date: <span t-out="data['date_to']"/></p>
+                        <table class="table table-sm o_main_table">
+                            <thead><tr><th>Date</th><th>Reference</th><th>Description</th><th>Due</th><th class="text-end">Debit</th><th class="text-end">Credit</th><th class="text-end">Balance</th></tr></thead>
+                            <tbody>
+                                <tr t-if="data['date_from']"><td colspan="6">Opening balance</td><td class="text-end"><span t-out="data['opening']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td></tr>
+                                <tr t-foreach="data['rows']" t-as="r">
+                                    <td t-out="r['date']"/>
+                                    <td t-out="r['ref']"/>
+                                    <td><t t-out="r['label']"/> <span t-if="r['disputed']" class="badge text-bg-info">Disputed</span></td>
+                                    <td t-out="r['due'] or ''"/>
+                                    <td class="text-end"><span t-out="r['debit']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                    <td class="text-end"><span t-out="r['credit']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                    <td class="text-end"><span t-out="r['balance']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot><tr class="fw-bold"><td colspan="6">Balance due</td><td class="text-end"><span t-out="data['closing']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td></tr></tfoot>
+                        </table>
+                        <p class="text-muted small">Amounts in company currency, from posted accounting entries. Negative balance = credit in your favour.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_service_charge">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="b">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 11px;">
+                        <h3>Service-Charge Reconciliation – <span t-field="b.name"/></h3>
+                        <p><span t-field="b.property_id"/> <span t-field="b.building_id"/> · Period <span t-field="b.date_from"/> – <span t-field="b.date_to"/> · Basis: <span t-field="b.allocation_basis"/> · Status: <span t-field="b.state"/></p>
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Category</th><th class="text-end">Budget</th><th class="text-end">Actual</th><th class="text-end">Variance</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="b.line_ids" t-as="l"><td><span t-field="l.name"/></td><td class="text-end"><span t-field="l.budget_amount"/></td><td class="text-end"><span t-field="l.actual_amount"/></td><td class="text-end"><span t-field="l.variance"/></td></tr>
+                            </tbody>
+                            <tfoot><tr class="fw-bold"><td>Total</td><td class="text-end"><span t-field="b.total_budget"/></td><td class="text-end"><span t-field="b.total_actual"/></td><td class="text-end"><span t-field="b.variance"/></td></tr></tfoot>
+                        </table>
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Unit</th><th>Tenant</th><th class="text-end">Share %</th><th class="text-end">Budget Share</th><th class="text-end">Billed</th><th class="text-end">Collected</th><th class="text-end">Actual Share</th><th class="text-end">Balance (+ due / − refund)</th><th>Document</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="b.allocation_ids" t-as="a">
+                                    <td><span t-field="a.unit_id"/></td>
+                                    <td><t t-if="a.tenant_id" t-out="a.tenant_id.name"/><i t-else="">Vacant – landlord cost</i></td>
+                                    <td class="text-end" t-out="'%.2f' % a.share_pct"/>
+                                    <td class="text-end"><span t-field="a.budget_share"/></td>
+                                    <td class="text-end"><span t-field="a.billed_amount"/></td>
+                                    <td class="text-end"><span t-field="a.collected_amount"/></td>
+                                    <td class="text-end"><span t-field="a.actual_share"/></td>
+                                    <td class="text-end"><span t-field="a.balance"/></td>
+                                    <td t-out="a.recon_move_id.name or ''"/>
+                                </tr>
+                            </tbody>
+                            <tfoot><tr class="fw-bold"><td colspan="4">Totals</td><td class="text-end"><span t-field="b.total_billed"/></td><td class="text-end"><span t-field="b.total_collected"/></td><td colspan="3">Vacant-unit share borne by landlord: <span t-field="b.landlord_void_share"/></td></tr></tfoot>
+                        </table>
+                        <p class="text-muted">Actual cost = posted expenditure on the mapped expense accounts, analytically allocated to the building/property, dated within the budget period. Balance = actual share − amount billed.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_investment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="i">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size: 11px;">
+                        <h3>Investment Appraisal – <span t-field="i.name"/> (v<span t-field="i.version"/>)</h3>
+                        <p class="text-danger"><strong>Projection based on stated assumptions – not actual results.</strong> Status: <span t-field="i.state"/></p>
+                        <div class="row">
+                            <div class="col-6">
+                                <table class="table table-sm">
+                                    <tr><td>Total investment</td><td class="text-end"><span t-field="i.total_investment"/></td></tr>
+                                    <tr><td>Gross potential rent (yr 1)</td><td class="text-end"><span t-field="i.annual_gross_rent"/></td></tr>
+                                    <tr><td>Occupancy</td><td class="text-end"><span t-field="i.expected_occupancy"/> %</td></tr>
+                                    <tr><td>Opex + maintenance (yr 1)</td><td class="text-end"><t t-out="i.annual_opex + i.annual_maintenance" t-options="{'widget': 'monetary', 'display_currency': i.currency_id}"/></td></tr>
+                                    <tr><td>Rent / opex growth</td><td class="text-end"><span t-field="i.rent_growth"/>% / <span t-field="i.opex_growth"/>%</td></tr>
+                                    <tr><td>Discount rate / exit cap</td><td class="text-end"><span t-field="i.discount_rate"/>% / <span t-field="i.exit_cap_rate"/>%</td></tr>
+                                    <tr><td>Loan / rate / term</td><td class="text-end"><span t-field="i.loan_amount"/> / <span t-field="i.interest_rate"/>% / <span t-field="i.loan_term_years"/> y</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm">
+                                    <tr><td>NPV</td><td class="text-end"><span t-field="i.npv"/></td></tr>
+                                    <tr><td>Project IRR</td><td class="text-end"><span t-field="i.irr"/> %</td></tr>
+                                    <tr><td>Equity IRR</td><td class="text-end"><span t-field="i.equity_irr"/> %</td></tr>
+                                    <tr><td>ROI over period</td><td class="text-end"><span t-field="i.roi"/> %</td></tr>
+                                    <tr><td>Payback</td><td class="text-end"><span t-field="i.payback_years"/> y <span t-field="i.payback_note"/></td></tr>
+                                    <tr><td>NOI yr 1 / gross / net yield</td><td class="text-end"><span t-field="i.noi_year1"/> / <span t-field="i.gross_yield"/>% / <span t-field="i.net_yield"/>%</td></tr>
+                                    <tr><td>DSCR yr 1 / break-even occupancy</td><td class="text-end"><span t-field="i.dscr_year1"/> / <span t-field="i.break_even_occupancy"/>%</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <table class="table table-sm table-bordered">
+                            <thead><tr><th>Year</th><th class="text-end">GPR</th><th class="text-end">EGI</th><th class="text-end">Opex</th><th class="text-end">NOI</th><th class="text-end">Capex</th><th class="text-end">Debt Service</th><th class="text-end">Sale</th><th class="text-end">Net CF</th><th class="text-end">PV</th><th class="text-end">Cumulative</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="i.cashflow_ids" t-as="c">
+                                    <td><span t-field="c.year"/></td><td class="text-end"><span t-field="c.gpr"/></td><td class="text-end"><span t-field="c.egi"/></td><td class="text-end"><span t-field="c.opex"/></td><td class="text-end"><span t-field="c.noi"/></td><td class="text-end"><span t-field="c.capex"/></td><td class="text-end"><span t-field="c.debt_service"/></td><td class="text-end"><span t-field="c.sale_proceeds"/></td><td class="text-end"><span t-field="c.net_cf"/></td><td class="text-end"><span t-field="c.discounted_cf"/></td><td class="text-end"><span t-field="c.cumulative_cf"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div t-if="i.assumptions_note"><h5>Assumption sources</h5><div t-field="i.assumptions_note"/></div>
+                        <p class="text-muted">Definitions: NOI = EGI − operating expenses (excl. financing, tax, depreciation, capex). Terminal value = NOI of year N+1 ÷ exit cap rate, less selling costs. IRR solves NPV = 0. Payback excludes sale proceeds.</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_work_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="w">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3>Work Order <span t-field="w.name"/></h3>
+                        <h4 t-field="w.title"/>
+                        <table class="table table-sm">
+                            <tr><td>Property / Building / Unit</td><td><span t-field="w.property_id"/> <span t-field="w.building_id"/> <span t-field="w.unit_id"/></td></tr>
+                            <tr><td>Equipment</td><td><span t-field="w.equipment_id"/></td></tr>
+                            <tr><td>Type / Priority</td><td><span t-field="w.maintenance_type"/> / <span t-field="w.priority"/></td></tr>
+                            <tr><td>Technician / Contractor</td><td><span t-field="w.technician_id"/> <span t-field="w.contractor_id"/></td></tr>
+                            <tr><td>Requested / Target / Done</td><td><span t-field="w.date_request"/> / <span t-field="w.date_target"/> / <span t-field="w.date_done"/></td></tr>
+                            <tr><td>Approved budget / Actual</td><td><span t-field="w.approved_budget"/> / <span t-field="w.actual_cost"/></td></tr>
+                            <tr><td>Approved by</td><td><span t-field="w.re_approved_by_id"/></td></tr>
+                            <tr><td>Status</td><td><span t-field="w.state"/></td></tr>
+                        </table>
+                        <h5>Problem</h5><div t-field="w.description"/>
+                        <h5>Completion report</h5><div t-field="w.completion_report"/>
+                        <p class="mt-5">Technician signature: ____________________ &#160;&#160; Tenant / supervisor signature: ____________________</p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_lease">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="l">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3>Lease Summary <span t-field="l.name"/></h3>
+                        <table class="table table-sm">
+                            <tr><td>Tenant</td><td><span t-field="l.tenant_id"/></td></tr>
+                            <tr><td>Property / Units</td><td><span t-field="l.property_id"/> – <t t-out="', '.join(l.unit_ids.mapped('name'))"/> (<span t-field="l.leased_area_sqm"/> m²)</td></tr>
+                            <tr><td>Type</td><td><span t-field="l.lease_type_id"/></td></tr>
+                            <tr><td>Term</td><td><span t-field="l.date_start"/> – <span t-field="l.effective_end_date"/></td></tr>
+                            <tr><td>Base / current monthly rent</td><td><span t-field="l.rent_amount"/> / <span t-field="l.current_rent"/></td></tr>
+                            <tr><td>Billing</td><td><span t-field="l.billing_frequency"/>, <span t-field="l.billing_anchor"/></td></tr>
+                            <tr><td>Rent-free</td><td><span t-field="l.rent_free_date_from"/> – <span t-field="l.rent_free_date_to"/></td></tr>
+                            <tr><td>Deposit required</td><td><span t-field="l.deposit_amount"/></td></tr>
+                            <tr><td>Notice period</td><td><span t-field="l.notice_period_days"/> days</td></tr>
+                            <tr><td>Status / approved by</td><td><span t-field="l.state"/> / <span t-field="l.re_approved_by_id"/></td></tr>
+                        </table>
+                        <h5>Escalations</h5>
+                        <table class="table table-sm">
+                            <tr t-foreach="l.escalation_ids" t-as="e"><td><span t-field="e.effective_date"/></td><td><span t-field="e.method"/></td><td><span t-field="e.value"/></td><td><span t-field="e.rent_after"/></td><td><span t-field="e.state"/></td></tr>
+                        </table>
+                        <h5>Other charges (monthly)</h5>
+                        <table class="table table-sm">
+                            <tr t-foreach="l.charge_ids" t-as="c"><td><span t-field="c.charge_type"/></td><td><span t-field="c.name"/></td><td><span t-field="c.amount"/></td><td><span t-field="c.date_from"/> – <span t-field="c.date_to"/></td></tr>
+                        </table>
+                        <h5>Clauses</h5>
+                        <p><strong>Renewal:</strong> <span t-field="l.renewal_terms"/></p>
+                        <p><strong>Termination:</strong> <span t-field="l.termination_conditions"/></p>
+                        <p><strong>Break clause:</strong> <span t-field="l.break_clause_date"/> <span t-field="l.break_clause_terms"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

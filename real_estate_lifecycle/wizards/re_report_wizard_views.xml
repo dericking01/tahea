@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_report_wizard" model="ir.ui.view">
+        <field name="name">re.report.wizard.form</field>
+        <field name="model">re.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="report_type"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="portfolio_id"/>
+                        <field name="property_ids" widget="many2many_tags"/>
+                        <field name="only_vacant" invisible="report_type != 'occupancy'"/>
+                        <field name="expiry_days" invisible="report_type not in ('lease_expiry', 'escalation')"/>
+                    </group>
+                </group>
+                <p class="text-muted">Reports are computed from live records, respect your access rights and company restrictions, and include the reporting period and calculation definitions. Lists can also be exported to Excel/CSV from any list view.</p>
+                <footer>
+                    <button name="action_print_pdf" type="object" string="PDF" class="btn-primary" icon="fa-file-pdf-o"/>
+                    <button name="action_export_xlsx" type="object" string="Excel" class="btn-secondary" icon="fa-file-excel-o"/>
+                    <button special="cancel" string="Close"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_re_report_property" model="ir.actions.act_window">
+        <field name="name">Property Reports</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'property_register'}</field>
+    </record>
+    <record id="action_re_report_leasing" model="ir.actions.act_window">
+        <field name="name">Rental Reports</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'rent_roll'}</field>
+    </record>
+    <record id="action_re_report_financial" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'rental_income'}</field>
+    </record>
+    <record id="action_re_report_performance" model="ir.actions.act_window">
+        <field name="name">Property Performance</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'property_comparison'}</field>
+    </record>
+    <record id="action_re_report_maintenance" model="ir.actions.act_window">
+        <field name="name">Maintenance Reports</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'work_orders'}</field>
+    </record>
+    <record id="action_re_report_investment" model="ir.actions.act_window">
+        <field name="name">Investment Reports</field>
+        <field name="res_model">re.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'investment'}</field>
+    </record>
+</odoo>

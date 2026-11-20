@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_re_unit_search" model="ir.ui.view">
+        <field name="name">re.unit.search</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="building_id"/>
+                <field name="tenant_id"/>
+                <field name="unit_type"/>
+                <filter name="vacant" string="Vacant" domain="[('occupancy_status', '=', 'vacant'), ('is_lettable', '=', True)]"/>
+                <filter name="occupied" string="Occupied" domain="[('occupancy_status', '=', 'occupied')]"/>
+                <filter name="available" string="Available to Let" domain="[('rental_status', '=', 'available')]"/>
+                <filter name="let" string="Let" domain="[('rental_status', '=', 'let')]"/>
+                <filter name="occupied_unlet" string="Occupied without Lease" domain="[('occupancy_status', '=', 'occupied'), ('rental_status', '!=', 'let')]"/>
+                <separator/>
+                <filter name="plots" string="Plots" domain="[('is_plot', '=', True)]"/>
+                <filter name="spaces" string="Spaces" domain="[('is_plot', '=', False)]"/>
+                <filter name="lettable" string="Rentable" domain="[('is_lettable', '=', True)]"/>
+                <group>
+                    <filter name="g_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="g_building" string="Building" context="{'group_by': 'building_id'}"/>
+                    <filter name="g_floor" string="Floor" context="{'group_by': 'floor_id'}"/>
+                    <filter name="g_type" string="Unit Type" context="{'group_by': 'unit_type'}"/>
+                    <filter name="g_occ" string="Occupancy" context="{'group_by': 'occupancy_status'}"/>
+                    <filter name="g_rental" string="Rental Status" context="{'group_by': 'rental_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_re_unit_list" model="ir.ui.view">
+        <field name="name">re.unit.list</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <list decoration-success="occupancy_status == 'occupied'" decoration-warning="occupancy_status == 'vacant' and is_lettable" decoration-muted="not is_lettable">
+                <field name="property_id"/>
+                <field name="building_id" optional="show"/>
+                <field name="floor_id" optional="show"/>
+                <field name="name"/>
+                <field name="unit_type"/>
+                <field name="area_sqm" sum="Area"/>
+                <field name="is_lettable" column_invisible="1"/>
+                <field name="occupancy_status"/>
+                <field name="rental_status" widget="badge" decoration-success="rental_status == 'let'" decoration-info="rental_status == 'reserved'" decoration-warning="rental_status == 'available'"/>
+                <field name="tenant_id" optional="show"/>
+                <field name="lease_end_date" optional="show"/>
+                <field name="market_rent" sum="Market"/>
+                <field name="current_rent" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="vacancy_days" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_re_unit_kanban" model="ir.ui.view">
+        <field name="name">re.unit.kanban</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="rental_status" sample="1">
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <field name="occupancy_status" widget="label_selection" options="{'classes': {'occupied': 'success', 'vacant': 'warning', 'unavailable': 'danger', 'owner_occupied': 'info'}}"/>
+                        </div>
+                        <div class="text-muted"><field name="property_id"/> <field name="building_id"/></div>
+                        <div><field name="unit_type"/> · <field name="area_sqm"/> m²</div>
+                        <field name="tenant_id"/>
+                        <div class="d-flex justify-content-between">
+                            <field name="market_rent" widget="monetary"/>
+                            <field name="lease_end_date"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_re_unit_pivot" model="ir.ui.view">
+        <field name="name">re.unit.pivot</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <pivot string="Occupancy" sample="1">
+                <field name="property_id" type="row"/>
+                <field name="occupancy_status" type="col"/>
+                <field name="area_sqm" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_re_unit_graph" model="ir.ui.view">
+        <field name="name">re.unit.graph</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <graph string="Units" type="bar" stacked="1" sample="1">
+                <field name="property_id"/>
+                <field name="occupancy_status"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_re_unit_form" model="ir.ui.view">
+        <field name="name">re.unit.form</field>
+        <field name="model">re.unit</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_leases" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="lease_count" widget="statinfo" string="Leases"/>
+                        </button>
+                        <button name="action_view_work_orders" type="object" class="oe_stat_button" icon="fa-wrench">
+                            <field name="work_order_count" widget="statinfo" string="Maintenance"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Location">
+                            <field name="property_id" options="{'no_create': True}"/>
+                            <field name="building_id" invisible="is_plot" options="{'no_create': True}"/>
+                            <field name="floor_id" invisible="is_plot" options="{'no_create': True}"/>
+                            <field name="unit_type"/>
+                            <field name="is_plot" invisible="1"/>
+                        </group>
+                        <group string="Physical">
+                            <label for="area"/>
+                            <div class="o_row"><field name="area"/><field name="area_unit_id" options="{'no_create': True}"/></div>
+                            <field name="area_sqm"/>
+                            <field name="bedrooms" invisible="is_plot or unit_type not in ('apartment', 'house', 'studio')"/>
+                            <field name="bathrooms" invisible="is_plot or unit_type not in ('apartment', 'house', 'studio')"/>
+                            <field name="furnished" invisible="is_plot"/>
+                        </group>
+                        <group string="Occupancy (physical)">
+                            <field name="occupancy_status"/>
+                            <field name="vacant_since" invisible="occupancy_status != 'vacant'"/>
+                            <field name="vacancy_days" invisible="occupancy_status != 'vacant'"/>
+                            <field name="is_lettable"/>
+                            <field name="allow_multi_occupancy" groups="real_estate_lifecycle.group_re_portfolio_manager"/>
+                        </group>
+                        <group string="Rental (contractual)">
+                            <field name="rental_status" widget="badge"/>
+                            <field name="active_lease_id"/>
+                            <field name="tenant_id"/>
+                            <field name="lease_end_date"/>
+                            <field name="market_rent"/>
+                            <field name="current_rent"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Service Charge &amp; Meters" name="sc" invisible="is_plot">
+                            <group>
+                                <group>
+                                    <field name="service_charge_basis"/>
+                                    <field name="service_charge_share" invisible="service_charge_basis != 'custom'"/>
+                                </group>
+                                <group>
+                                    <field name="electricity_meter_id"/>
+                                    <field name="water_meter_id"/>
+                                </group>
+                            </group>
+                            <field name="meter_ids" context="{'default_unit_id': id, 'default_property_id': property_id, 'default_building_id': building_id}">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="utility_type"/>
+                                    <field name="scope"/>
+                                    <field name="tariff_id"/>
+                                    <field name="prepaid"/>
+                                    <field name="last_reading"/>
+                                    <field name="property_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Plot Details" name="plot" invisible="not is_plot">
+                            <group>
+                                <group>
+                                    <field name="survey_number"/>
+                                    <field name="plot_title_number"/>
+                                    <field name="land_use"/>
+                                </group>
+                                <group>
+                                    <field name="plot_status"/>
+                                    <field name="plot_value"/>
+                                    <field name="buyer_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Lease History" name="leases">
+                            <field name="lease_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="tenant_id"/>
+                                    <field name="date_start"/>
+                                    <field name="effective_end_date"/>
+                                    <field name="rent_amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Maintenance History" name="maintenance">
+                            <field name="work_order_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="maintenance_type"/>
+                                    <field name="date_request"/>
+                                    <field name="date_done"/>
+                                    <field name="actual_cost"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_re_unit" model="ir.actions.act_window">
+        <field name="name">Rental Units</field>
+        <field name="res_model">re.unit</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+        <field name="context">{'search_default_spaces': 1}</field>
+    </record>
+
+    <record id="action_re_plot" model="ir.actions.act_window">
+        <field name="name">Plots</field>
+        <field name="res_model">re.unit</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_plot', '=', True)]</field>
+        <field name="context">{'default_unit_type': 'plot', 'default_service_charge_basis': 'excluded'}</field>
+    </record>
+</odoo>

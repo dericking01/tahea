@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_po_form_re" model="ir.ui.view">
+        <field name="name">purchase.order.form.re</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="re_is_selected" invisible="1"/>
+                <button name="action_re_select_for_work_order" type="object" string="Select for Work Order" class="btn-primary" invisible="not re_work_order_id or re_is_selected or state not in ('draft', 'sent')"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field name="re_work_order_id"/>
+                <field name="re_property_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_re_po_comparison_list" model="ir.ui.view">
+        <field name="name">purchase.order.re.comparison</field>
+        <field name="model">purchase.order</field>
+        <field name="priority">60</field>
+        <field name="arch" type="xml">
+            <list string="Quotation Comparison" create="0" default_order="amount_untaxed" decoration-success="re_is_selected" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="partner_ref"/>
+                <field name="date_order"/>
+                <field name="amount_untaxed"/>
+                <field name="amount_total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+                <field name="re_is_selected"/>
+                <button name="action_re_select_for_work_order" type="object" string="Select" icon="fa-check" invisible="re_is_selected or state not in ('draft', 'sent')"/>
+            </list>
+        </field>
+    </record>
+</odoo>
