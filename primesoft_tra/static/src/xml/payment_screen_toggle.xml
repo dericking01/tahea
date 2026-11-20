@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!--
+        Extend PaymentScreen to inject a "Receipt Type" toggle and an optional
+        customer TIN field above the payment action buttons.
+
+        IMPORTANT OWL RULES applied here:
+          - t-on-click must use `() => this.method()` — not `() => method()`
+            (without `this.` the method is looked up on the global scope, not
+            the component, and `this` inside it will be undefined/wrong)
+          - t-attf-class uses {{ }} for interpolation, not ${}
+          - t-attf-class and t-att-class cannot both be on the same element;
+            use t-att-class with a ternary for conditional classes
+    -->
+    <t t-name="primesoft_tra.PaymentScreenReceiptToggle"
+       t-inherit="point_of_sale.PaymentScreenButtons"
+       t-inherit-mode="extension"
+       owl="1">
+
+        <xpath expr="//div[hasclass('payment-buttons')]" position="before">
+            <t t-if="traReceiptEnabled">
+                <div class="tra-receipt-toggle"
+                     style="
+                         display: flex;
+                         align-items: center;
+                         gap: 8px;
+                         padding: 10px 12px;
+                         border-bottom: 1px solid #dee2e6;
+                         background: #f8f9fa;
+                         flex-wrap: wrap;
+                     ">
+
+                    <span style="font-size:0.82rem; font-weight:600; color:#495057; white-space:nowrap; margin-right:4px;">
+                        Receipt Type:
+                    </span>
+
+                    <!-- TRA Fiscal Receipt -->
+                    <button
+                        t-att-class="'btn btn-sm ' + (isTraReceiptSelected ? 'btn-success' : 'btn-outline-secondary')"
+                        t-on-click="() => this.toggleTraReceiptType('tra')"
+                        style="font-size:0.78rem; padding:4px 12px; display:flex; align-items:center; gap:5px;">
+                        <i t-att-class="'fa ' + (isTraReceiptSelected ? 'fa-check-circle' : 'fa-circle-o')"/>
+                        TRA Fiscal
+                    </button>
+
+                    <!-- Standard Receipt -->
+                    <button t-if="traAllowStandard"
+                        t-att-class="'btn btn-sm ' + (!isTraReceiptSelected ? 'btn-primary' : 'btn-outline-secondary')"
+                        t-on-click="() => this.toggleTraReceiptType('default')"
+                        style="font-size:0.78rem; padding:4px 12px; display:flex; align-items:center; gap:5px;">
+                        <i t-att-class="'fa ' + (!isTraReceiptSelected ? 'fa-check-circle' : 'fa-circle-o')"/>
+                        Standard
+                    </button>
+
+                    <!-- Optional customer TIN, printed on the receipt and sent to TRA -->
+                    <div t-if="isTraReceiptSelected"
+                         style="display:flex; align-items:center; gap:6px; flex-basis:100%;">
+                        <label for="tra_customer_tin"
+                               style="font-size:0.82rem; font-weight:600; color:#495057; white-space:nowrap; margin:0;">
+                            Customer TIN:
+                        </label>
+                        <input id="tra_customer_tin"
+                               type="text"
+                               inputmode="numeric"
+                               maxlength="11"
+                               class="form-control form-control-sm"
+                               placeholder="Optional – 9 digits"
+                               style="max-width:180px; font-size:0.82rem;"
+                               t-model="traState.customerTin"
+                               t-on-keydown.stop="() => {}"
+                               t-on-keyup.stop="() => {}"/>
+                    </div>
+
+                </div>
+            </t>
+        </xpath>
+
+    </t>
+
+</templates>

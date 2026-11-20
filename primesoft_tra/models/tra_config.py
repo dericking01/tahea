@@ -1,0 +1,272 @@
+import re
+import requests
+import logging
+from datetime import datetime, timedelta
+from odoo import models, fields, api, _
+from odoo.exceptions import AccessError, UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+# Same audience as Odoo's Invoicing/Accounting app: read-only auditors may view,
+# invoicing users and above may also issue receipts and sync. POS managers are
+# included so that a company using TRA on Point of Sale only can run it.
+TRA_VIEW_GROUPS = ('account.group_account_readonly', 'account.group_account_invoice',
+                   'point_of_sale.group_pos_manager')
+TRA_OPERATE_GROUPS = ('account.group_account_invoice', 'point_of_sale.group_pos_manager')
+
+
+def check_tra_access(env, operate=True):
+    """Raise unless the user is in Finance or manages the POS. Buttons can be called directly."""
+    if env.su:
+        return
+    groups = TRA_OPERATE_GROUPS if operate else TRA_VIEW_GROUPS
+    if not any(env.user.has_group(group) for group in groups):
+        raise AccessError(_('Only Finance users and Point of Sale managers can use TRA EFD.'))
+
+
+class TraEfdUncertainError(UserError):
+    """The request may have reached TRA, but no usable response came back."""
+
+
+class TraEfdConfig(models.Model):
+    _name = 'tra.efd.config'
+    _description = 'TRA EFD Configuration'
+    _rec_name = 'name'
+
+    name = fields.Char(string='Configuration Name', required=True, default='TRA EFD Config')
+    active = fields.Boolean(default=True)
+
+    # API Credentials
+    api_base_url = fields.Char(
+        string='API Base URL',
+        required=True,
+        default='https://webshop.co.tz/api/public/index.php/api/v1',
+        help='Zalongwa WebSHOP VEFD API base URL'
+    )
+    client_id = fields.Char(string='Client ID', required=True)
+    client_secret = fields.Char(string='Client Secret', required=True)
+
+    # Token storage
+    access_token = fields.Char(string='Access Token', readonly=True)
+    token_expiry = fields.Datetime(string='Token Expiry', readonly=True)
+    token_user_name = fields.Char(string='Token User', readonly=True)
+    token_email = fields.Char(string='Token Email', readonly=True)
+
+    # Company Info from API
+    company_vrn = fields.Char(string='VRN', readonly=True)
+    company_tin = fields.Char(string='TIN', readonly=True)
+    company_serial = fields.Char(string='EFD Serial', readonly=True)
+    company_vin = fields.Char(string='VIN', readonly=True)
+    tax_office = fields.Char(string='Tax Office', readonly=True)
+    company_name = fields.Char(string='Registered Name', readonly=True)
+    company_mobile = fields.Char(string='Mobile', readonly=True)
+    company_address = fields.Char(string='Address', readonly=True)
+
+    # Where TRA receipts are issued
+    use_on_invoices = fields.Boolean(
+        string='Use on Invoices',
+        default=True,
+        help='Issue TRA receipts from customer invoices.'
+    )
+    use_on_pos = fields.Boolean(
+        string='Use on Point of Sale',
+        default=True,
+        help='Issue TRA receipts from Point of Sale orders. Each Point of Sale can still be '
+             'switched off in its own settings.'
+    )
+    default_tax_code = fields.Selection(
+        [('1', 'Standard 18%'), ('2', 'Special Rate'), ('3', 'Zero Rated'),
+         ('4', 'Special Relief'), ('5', 'Exempted')],
+        string='Tax Code for Lines Without Tax',
+        help='TRA tax code sent for invoice and POS lines that carry no tax, for example when the '
+             'company is not VAT registered. Leave empty to refuse such lines.'
+    )
+
+    # Status
+    connection_status = fields.Selection([
+        ('not_tested', 'Not Tested'),
+        ('connected', 'Connected'),
+        ('failed', 'Failed'),
+    ], string='Connection Status', default='not_tested', readonly=True)
+    last_connection = fields.Datetime(string='Last Successful Connection', readonly=True)
+
+    go_live_date = fields.Date(
+        string='TRA Go-Live Date',
+        default=fields.Date.context_today,
+        help='Invoices dated before this are not counted as missing a receipt on the dashboard.'
+    )
+    auto_generate_receipt = fields.Boolean(
+        string='Generate Receipts Automatically',
+        default=False,
+        help='When enabled, a TRA receipt is generated as soon as a customer invoice is confirmed. '
+             'Otherwise use the Generate TRA Receipt button on the invoice.'
+    )
+
+    _sql_constraints = [
+        ('unique_active', 'CHECK(1=1)', 'Only one active configuration is recommended'),
+    ]
+
+    @api.model
+    def get_active_config(self):
+        # sudo: invoicing users need the API, but only managers may read the credentials
+        config = self.sudo().search([('active', '=', True)], limit=1)
+        if not config:
+            raise UserError(_('No active TRA EFD configuration found. Please configure TRA EFD settings first.'))
+        return config
+
+    def _get_valid_token(self):
+        """Return a valid bearer token, refreshing if expired."""
+        self.ensure_one()
+        now = datetime.now()
+        if self.access_token and self.token_expiry:
+            expiry = fields.Datetime.from_string(self.token_expiry)
+            if expiry > now + timedelta(minutes=5):
+                return self.access_token
+        # Token missing or expired — re-authenticate
+        return self._authenticate()
+
+    def _authenticate(self):
+        """Authenticate with the Zalongwa WebSHOP API and store the token."""
+        self.ensure_one()
+        url = f"{self.api_base_url}/login"
+        try:
+            resp = requests.post(
+                url,
+                data={'client_id': self.client_id, 'client_secret': self.client_secret},
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except requests.exceptions.RequestException as e:
+            self.write({'connection_status': 'failed'})
+            raise UserError(_('TRA EFD API connection failed: %s') % str(e))
+
+        if 'access_token' not in data:
+            self.write({'connection_status': 'failed'})
+            raise UserError(_('TRA EFD authentication failed. Check your Client ID and Secret. (%s)',
+                              data.get('message', '')))
+
+        expiry = datetime.now() + timedelta(seconds=data.get('expires_in', 3600))
+        self.write({
+            'access_token': data['access_token'],
+            'token_expiry': fields.Datetime.to_string(expiry),
+            'token_user_name': data.get('name', ''),
+            'token_email': data.get('email', ''),
+            'connection_status': 'connected',
+            'last_connection': fields.Datetime.now(),
+        })
+        return data['access_token']
+
+    def action_test_connection(self):
+        """Test API connection and fetch company profile."""
+        self.ensure_one()
+        token = self._authenticate()
+        # Fetch company profile
+        try:
+            resp = requests.get(
+                f"{self.api_base_url}/companyprofile",
+                headers={
+                    'Authorization': f'Bearer {token}',
+                    'Content-Type': 'application/json',
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            self.write({
+                'company_vrn': data.get('vrn', ''),
+                'company_tin': data.get('tin', ''),
+                'company_serial': data.get('serial', ''),
+                'company_vin': data.get('vin', ''),
+                'tax_office': data.get('taxoffice', ''),
+                'company_name': data.get('name', ''),
+                'company_mobile': data.get('mobile', ''),
+                'company_address': ', '.join(
+                    data[key].strip() for key in ('address1', 'address2', 'address3')
+                    if data.get(key)),
+            })
+        except Exception as e:
+            _logger.warning('Could not fetch company profile: %s', e)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('TRA EFD Connection Successful'),
+                'message': _('Connected as %s (%s)') % (self.token_user_name, self.token_email),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
+    def _get_receipt_header_values(self, company):
+        """Seller details printed on the POS fiscal receipt. Works on an empty recordset."""
+        address = self.company_address or ', '.join(filter(None, [company.street, company.city]))
+        return {
+            'company_name': self.company_name or company.name or '',
+            'company_address': address,
+            'company_mobile': self.company_mobile or company.phone or '',
+            'company_tin': self.company_tin or '',
+            'company_vrn': self.company_vrn or '',
+            'company_serial': self.company_serial or '',
+            'company_uin': self.company_vin or '',
+            'tax_office': re.sub(r'^tax office\s*:?\s*', '', self.tax_office or '', flags=re.I),
+        }
+
+    def action_refresh_token(self):
+        self.ensure_one()
+        self._authenticate()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Token Refreshed'),
+                'message': _('Access token has been refreshed successfully.'),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
+    def _api_get(self, endpoint):
+        """Generic GET request helper."""
+        self.ensure_one()
+        token = self._get_valid_token()
+        url = f"{self.api_base_url}/{endpoint}"
+        try:
+            resp = requests.get(
+                url,
+                headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            return resp.json()
+        except requests.exceptions.RequestException as e:
+            raise UserError(_('TRA EFD API error: %s') % str(e))
+
+    def _api_post(self, endpoint, payload):
+        """Generic POST request helper."""
+        self.ensure_one()
+        token = self._get_valid_token()
+        url = f"{self.api_base_url}/{endpoint}"
+        try:
+            resp = requests.post(
+                url,
+                json=payload,
+                headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+                timeout=60,
+            )
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            raise TraEfdUncertainError(_('TRA EFD API did not respond: %s') % str(e))
+        except requests.exceptions.RequestException as e:
+            raise UserError(_('TRA EFD API error: %s') % str(e))
+
+        if resp.status_code >= 500:
+            raise TraEfdUncertainError(_('TRA EFD API error %s: %s') % (resp.status_code, resp.text[:500]))
+        if resp.status_code >= 400:
+            raise UserError(_('TRA EFD API error %s: %s') % (resp.status_code, resp.text[:500]))
+        _logger.debug('API POST to %s successful. Response: %s', endpoint, resp.text)
+        try:
+            return resp.json()
+        except ValueError:
+            raise TraEfdUncertainError(_('TRA EFD API returned an unreadable response: %s') % resp.text[:500])

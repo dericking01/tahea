@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_tra_receipt_confirm_form" model="ir.ui.view">
+        <field name="name">tra.receipt.confirm.form</field>
+        <field name="model">tra.receipt.confirm</field>
+        <field name="arch" type="xml">
+            <form string="Confirm TRA Receipt">
+                <div class="alert alert-info" role="alert">
+                    Check these details. Once confirmed, the receipt is issued to TRA and cannot be changed.
+                </div>
+                <div class="alert alert-warning" role="alert" invisible="not warning">
+                    <field name="warning" nolabel="1"/>
+                </div>
+                <group>
+                    <group string="Customer">
+                        <field name="customer_name"/>
+                        <field name="customer_id_type"/>
+                        <field name="customer_id_number"/>
+                        <field name="customer_mobile"/>
+                        <field name="partner_id"/>
+                    </group>
+                    <group string="Amounts sent to TRA">
+                        <field name="item_count"/>
+                        <field name="total_excl_tax"/>
+                        <field name="total_tax"/>
+                        <field name="total_incl_tax" class="fw-bold"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="invoice_total"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object"
+                            string="Confirm and Send to TRA" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

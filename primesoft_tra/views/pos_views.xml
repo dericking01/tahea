@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Point of Sale settings -->
+    <record id="view_pos_config_form_tra_receipt" model="ir.ui.view">
+        <field name="name">pos.config.form.tra.receipt</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="TRA Receipt">
+                    <group>
+                        <field name="tra_receipt_enabled"/>
+                        <field name="tra_allow_standard" invisible="not tra_receipt_enabled"/>
+                        <field name="tra_receipt_default"
+                               invisible="not tra_receipt_enabled or not tra_allow_standard"
+                               widget="selection"/>
+                    </group>
+                    <group>
+                        <div class="text-muted" colspan="2">
+                            <strong>TRA Fiscal Receipt</strong>: sends the sale to TRA and prints a legal fiscal receipt with QR code.<br/>
+                            <strong>Standard Receipt</strong>: prints a receipt without sending the sale to TRA.<br/><br/>
+                            Untick <strong>Allow Standard Receipt</strong> to fiscalise every sale.
+                            Nothing is sent while <strong>Use on Point of Sale</strong> is off in TRA EFD &gt; Configuration.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Payment method: TRA payment type -->
+    <record id="view_pos_payment_method_form_tra" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.tra</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="TRA EFD">
+                    <field name="tra_payment_type"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS orders list: TRA columns -->
+    <record id="view_pos_order_list_tra" model="ir.ui.view">
+        <field name="name">pos.order.list.tra</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="tra_receipt_type" optional="hide"/>
+                <field name="tra_receipt_number" optional="show" string="TRA Receipt #"/>
+                <field name="tra_receipt_status" optional="show" widget="badge" string="TRA Status"
+                       decoration-success="tra_receipt_status == 'success'"
+                       decoration-danger="tra_receipt_status == 'failed'"
+                       decoration-warning="tra_receipt_status == 'pending'"/>
+                <field name="tra_verification_code" optional="hide"/>
+                <field name="tra_customer_tin" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- POS order form: TRA tab -->
+    <record id="view_pos_order_form_tra" model="ir.ui.view">
+        <field name="name">pos.order.form.tra</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="TRA EFD" name="tra_efd">
+                    <div class="mb-2" groups="point_of_sale.group_pos_manager,account.group_account_invoice">
+                        <button name="action_retry_tra_submission"
+                                string="Send to TRA"
+                                type="object"
+                                class="btn-primary me-2"
+                                invisible="tra_receipt_status in ('success', 'pending') or state not in ('paid', 'done', 'invoiced')"
+                                confirm="Send this order to TRA now as a fiscal receipt?"/>
+                        <button name="action_check_tra_receipt"
+                                string="Check TRA Status"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="tra_receipt_status != 'pending'"/>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="tra_receipt_status != 'pending'">
+                        TRA did not answer, so this order may already have a receipt. Use Check TRA Status before anything else.
+                    </div>
+                    <group>
+                        <group string="Receipt">
+                            <field name="tra_receipt_type" readonly="1"/>
+                            <field name="tra_customer_tin" readonly="tra_receipt_status in ('success', 'pending')"/>
+                            <field name="tra_receipt_id"/>
+                            <field name="tra_receipt_status"/>
+                            <field name="tra_ack_state" invisible="tra_receipt_status != 'success'"/>
+                            <field name="tra_error" invisible="not tra_error"/>
+                        </group>
+                        <group string="Receipt Details" invisible="tra_receipt_status != 'success'">
+                            <field name="tra_receipt_number"/>
+                            <field name="tra_znum"/>
+                            <field name="tra_receipt_date"/>
+                            <field name="tra_receipt_time"/>
+                            <field name="tra_verification_code"/>
+                            <field name="tra_verify_link" widget="url"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

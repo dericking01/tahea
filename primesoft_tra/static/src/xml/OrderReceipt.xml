@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="primesoft_tra.CustomOrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension"
+       owl="1">
+
+        <xpath expr="//div[hasclass('pos-receipt')]" position="replace">
+
+            <div class="pos-receipt-wrapper">
+
+                <!-- ==================== TRA FISCAL RECEIPT ==================== -->
+                <div t-if="traReceiptType === 'tra'"
+                     class="pos-receipt tra-fiscal-receipt"
+                     style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;
+                            line-height: 1.5; max-width: 320px; margin: 0 auto;
+                            padding: 15px; background: white; color: #000;">
+
+                    <div style="text-align: center; font-weight: bold; border-bottom: 1px dashed #000;
+                                margin-bottom: 8px; padding-bottom: 6px; font-size: 0.85em; letter-spacing: 1px;">
+                        *** START OF LEGAL RECEIPT ***
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 6px;">
+                        <img src="/primesoft_tra/static/src/img/tralogo.png"
+                             style="width: 55px; height: auto;" alt="TRA"/>
+                    </div>
+
+                    <div t-if="traState.tra_is_demo"
+                         style="text-align: center; font-weight: bold; border: 1px solid #000;
+                                margin-bottom: 6px; padding: 2px; font-size: 0.85em;">
+                        DEMO RECEIPT - NOT VALID FOR TAX
+                    </div>
+                    <div style="text-align: center; font-weight: bold; font-size: 1.1em;
+                                text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">
+                        <t t-esc="traState.company_name"/>
+                    </div>
+
+                    <div style="text-align: center; font-size: 0.85em; line-height: 1.6; margin-bottom: 10px;">
+                        <t t-if="traState.company_address">
+                            <span t-esc="traState.company_address"/><br/>
+                        </t>
+                        <t>
+                            <span>MOBILE: <t t-esc="traState.company_mobile"/></span><br/>
+                        </t>
+                        <t>
+                            <span>TIN: <t t-esc="traState.company_tin"/></span><br/>
+                        </t>
+                        <t>
+                            <span>VRN: <t t-esc="traState.company_vrn"/></span><br/>
+                        </t>
+                        <t>
+                            <span>SERIAL NUMBER: <t t-esc="traState.company_serial"/></span><br/>
+                        </t>
+                        <t t-if="traState.company_uin">
+                            <span>UIN: <t t-esc="traState.company_uin"/></span><br/>
+                        </t>
+                        <t>
+                            <span>TAX OFFICE : <t t-esc="traState.tax_office"/></span><br/>
+                        </t>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 6px 0;"/>
+
+                    <!-- CUSTOMER -->
+                    <div style="font-size: 0.88em; line-height: 1.65; margin-bottom: 6px;">
+                        <div>
+                            <span style="display: inline-block; min-width: 115px;">CUSTOMER NAME:</span>
+                            <span><t t-esc="props.data.partner ? props.data.partner.name : 'Walk-in Customer'"/></span>
+                        </div>
+                        <div>
+                            <span style="display: inline-block; min-width: 115px;">CUSTOMER ID TYPE:</span>
+                            <span><t t-esc="traState.tra_customer_tin ? 'TIN' : 'NIL'"/></span>
+                        </div>
+                        <div>
+                            <span style="display: inline-block; min-width: 115px;">CUSTOMER ID:</span>
+                            <span><t t-esc="traState.tra_customer_tin or 'NIL'"/></span>
+                        </div>
+                        <div>
+                            <span style="display: inline-block; min-width: 115px;">MOBILE:</span>
+                            <span><t t-esc="props.data.partner ? (props.data.partner.phone or props.data.partner.mobile or 'N/A') : 'N/A'"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 6px 0;"/>
+
+                    <!-- RECEIPT INFO -->
+                    <div style="font-size: 0.95em;">
+                        RECEIPT NO: <strong><t t-esc="props.data.name"/></strong><br/>
+                        RCT NUM: <t t-esc="traState.tra_receipt_number || 'PENDING'"/><br/>
+                        Z NUMBER:  <t t-esc="traState.tra_z_number || 'PENDING'"/><br/>
+
+                        <!-- TRA receipt time once fiscalised, otherwise the POS order date -->
+                        RECEIPT DATETIME: <t t-esc="traState.tra_receipt_datetime || props.data.date"/>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 6px 0;"/>
+
+                    <div style="text-align: center; font-weight: bold; margin: 6px 0 4px;
+                                font-size: 0.9em; letter-spacing: 0.5px;">PURCHASED ITEMS</div>
+
+                    <!-- Items Table -->
+                    <table class="w-100" style="border-top: 1px dashed black; border-collapse: collapse; font-size: 0.95em;">
+                        <thead>
+                            <tr style="border-bottom: 1px dashed black;">
+                                <th class="text-start">Description</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="props.data.orderlines" t-as="line" t-key="line.id || line.cid || line_index">
+                                <tr>
+                                    <td class="text-start" style="padding: 2px 0;">
+                                        <t t-esc="line.productName || line.product_name || line.full_product_name || 'Unknown Item'"/>
+                                    </td>
+                                    <td class="text-center"><t t-esc="line.qty"/></td>
+                                    <td class="text-end"><t t-esc="line.price"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Totals -->
+                    <div style="margin-top: 10px; border-top: 1px solid black; padding-top: 6px; font-size: 0.95em;">
+                        <div class="d-flex justify-content-between">
+                            <span>TOTAL EXCL. TAX:</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_total - props.data.amount_tax)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>TOTAL TAX:</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_tax)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-weight: bold; font-size: 1.1em; border-top: 1px solid black; margin-top: 4px; padding-top: 4px;">
+                            <span>TOTAL INCL. TAX:</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_total)"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 10px 0;"/>
+
+                    <!-- VERIFICATION CODE -->
+                    <div style="text-align: center; margin-top: 10px;">
+                        <div style="font-size: 0.8em; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">
+                            RECEIPT VERIFICATION CODE
+                        </div>
+                        <div style="font-size: 1.2em; font-weight: bold; letter-spacing: 2px;">
+                            <t t-esc="traState.tra_verification_code or 'PENDING'"/>
+                        </div>
+                    </div>
+
+                    <!-- QR CODE -->
+                    <div t-if="traQrSrc" style="text-align: center; margin-top: 12px;">
+                        <img t-att-src="traQrSrc"
+                             style="width: 130px; height: 130px; border: 1px solid #ccc;
+                                    padding: 4px; background: white;"/>
+                        <div style="font-size: 0.7em; margin-top: 4px; color: #555;
+                                    word-break: break-all; padding: 0 5px;">
+                            <t t-esc="traState.tra_qr_url"/>
+                        </div>
+                    </div>
+
+                    <!-- TRA ERROR -->
+                    <div t-if="traState.tra_error"
+                         style="margin-top: 10px; padding: 6px; border: 1px solid #c00;
+                                font-size: 0.8em; color: #c00; text-align: center;">
+                        TRA ERROR: <t t-esc="traState.tra_error"/>
+                    </div>
+
+                    <div style="text-align: center; font-weight: bold; margin-top: 15px;
+                                border-top: 1px dashed #000; padding-top: 8px;
+                                font-size: 0.85em; letter-spacing: 1px;">
+                        *** END OF LEGAL RECEIPT ***
+                    </div>
+
+                </div><!-- /.tra-fiscal-receipt -->
+
+
+                <!-- ==================== STANDARD (DEFAULT) RECEIPT ==================== -->
+                <div t-else=""
+                     class="pos-receipt standard-receipt"
+                     style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;
+                            line-height: 1.5; max-width: 320px; margin: 0 auto;
+                            padding: 15px; background: white; color: #000;">
+
+                    <div t-if="traCompanyLogo" style="text-align: center; margin-bottom: 6px;">
+                        <img t-att-src="traCompanyLogo"
+                             style="width: 55px; height: auto;" alt="Logo"/>
+                    </div>
+
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 4px;
+                                font-size: 1.1em; text-transform: uppercase;">
+                        <t t-esc="traState.company_name"/>
+                    </div>
+
+                    <div style="text-align: center; font-size: 0.85em; line-height: 1.6; margin-bottom: 10px;">
+                        <t t-if="traState.company_address">
+                            <span t-esc="traState.company_address"/><br/>
+                        </t>
+                        <t>
+                            <span>MOBILE: <t t-esc="traState.company_mobile"/></span><br/>
+                        </t>
+                        <t>
+                            <span>TIN: <t t-esc="traState.company_tin"/></span><br/>
+                        </t>
+                        <t>
+                            <span>VRN: <t t-esc="traState.company_vrn"/></span><br/>
+                        </t>
+                        <t>
+                            <span>SERIAL NUMBER: <t t-esc="traState.company_serial"/></span><br/>
+                        </t>
+                        <t t-if="traState.company_uin">
+                            <span>UIN: <t t-esc="traState.company_uin"/></span><br/>
+                        </t>
+                        <t>
+                            <span>TAX OFFICE : <t t-esc="traState.tax_office"/></span><br/>
+                        </t>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 6px 0;"/>
+
+                     <div style="font-size: 0.95em;">
+                        RECEIPT NO: <strong><t t-esc="props.data.name"/></strong><br/>                        
+                        <!-- Improved Date & Time -->
+                        RECEIPT DATETIME: <t t-esc="props.data.date "/>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 6px 0;"/>
+
+                    <div style="font-weight: bold; font-size: 0.85em; margin-bottom: 4px;
+                                text-align: center; letter-spacing: 0.5px;">PURCHASED ITEMS</div>
+
+                    <!-- Items Table -->
+                    <table class="w-100" style="border-top: 1px dashed black; border-collapse: collapse; font-size: 0.95em;">
+                        <thead>
+                            <tr style="border-bottom: 1px dashed black;">
+                                <th class="text-start">Description</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="props.data.orderlines" t-as="line" t-key="line.id || line.cid || line_index">
+                                <tr>
+                                    <td class="text-start" style="padding: 2px 0;">
+                                        <t t-esc="line.productName || line.product_name || line.full_product_name || 'Unknown Item'"/>
+                                    </td>
+                                    <td class="text-center"><t t-esc="line.qty"/></td>
+                                    <td class="text-end"><t t-esc="line.price"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- Totals -->
+                    <div style="margin-top: 10px; border-top: 1px solid black; padding-top: 6px; font-size: 0.95em;">
+                        <div class="d-flex justify-content-between">
+                            <span>TOTAL EXCL. TAX:</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_total - props.data.amount_tax)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>TOTAL TAX:</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_tax)"/></span>
+                        </div>
+                        <div class="d-flex justify-content-between" style="font-weight: bold; font-size: 1.1em; border-top: 1px solid black; margin-top: 4px; padding-top: 4px;">
+                            <span>TOTAL</span>
+                            <span><t t-esc="props.formatCurrency(props.data.amount_total)"/></span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; text-align: center; font-size: 0.85em;
+                                border-top: 1px dashed #000; padding-top: 8px;">
+                        Thank You! Please Come Again.
+                    </div>
+
+                </div><!-- /.standard-receipt -->
+
+            </div><!-- /.pos-receipt-wrapper -->
+
+        </xpath>
+
+    </t>
+
+</templates>

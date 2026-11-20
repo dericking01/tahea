@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Z-Report Tree View -->
+    <record id="view_tra_zreport_tree" model="ir.ui.view">
+        <field name="name">tra.zreport.tree</field>
+        <field name="model">tra.zreport</field>
+        <field name="arch" type="xml">
+            <list string="TRA Z-Reports">
+                <field name="report_number"/>
+                <field name="report_date"/>
+                <field name="report_time"/>
+                <field name="subtotal" sum="Subtotal"/>
+                <field name="discount"/>
+                <field name="total" sum="Total"/>
+                <field name="vat" sum="VAT"/>
+                <field name="total_gross"/>
+                <field name="ack_code"/>
+                <field name="ack_msg"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Z-Report Form View -->
+    <record id="view_tra_zreport_form" model="ir.ui.view">
+        <field name="name">tra.zreport.form</field>
+        <field name="model">tra.zreport</field>
+        <field name="arch" type="xml">
+            <form string="TRA Z-Report" create="false">
+                <sheet>
+                    <group>
+                        <group string="Report Details">
+                            <field name="report_number"/>
+                            <field name="report_date"/>
+                            <field name="report_time"/>
+                            <field name="ack_code"/>
+                            <field name="ack_msg"/>
+                        </group>
+                        <group string="Amounts">
+                            <field name="subtotal"/>
+                            <field name="discount"/>
+                            <field name="total"/>
+                            <field name="vat"/>
+                            <field name="total_gross"/>
+                        </group>
+                    </group>
+                    <group string="XML Payload" groups="base.group_system">
+                        <field name="xml_payload" nolabel="1" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_tra_zreport" model="ir.actions.act_window">
+        <field name="name">TRA Z-Reports</field>
+        <field name="res_model">tra.zreport</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Server Action: Sync Z-Reports -->
+    <record id="action_sync_zreports" model="ir.actions.server">
+        <field name="name">Sync Z-Reports from TRA</field>
+        <field name="model_id" ref="model_tra_zreport"/>
+        <field name="state">code</field>
+        <field name="code">
+action = env['tra.zreport'].action_sync_zreports()
+        </field>
+    </record>
+
+</odoo>

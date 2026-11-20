@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Placeholders on purpose: login fails until real credentials are entered -->
+        <record id="tra_efd_config_default" model="tra.efd.config">
+            <field name="name">TRA EFD Configuration</field>
+            <field name="api_base_url">https://webshop.co.tz/api/public/index.php/api/v1</field>
+            <field name="client_id">CHANGE_ME</field>
+            <field name="client_secret">CHANGE_ME</field>
+        </record>
+    </data>
+</odoo>
